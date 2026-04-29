@@ -39,7 +39,7 @@ export default function DiffCard({
 
   const formatDiff = (n: number) => {
     const abs = Math.abs(n);
-    const body = formatter ? formatter(abs) : intFmt.format(abs);
+    const body = formatter ? formatter(abs) : formatNumber(abs);
     const prefix = n > 0 ? "+" : n < 0 ? "−" : "";
     return `${prefix}${body}`;
   };
