@@ -166,7 +166,7 @@ export default function IngresosPage() {
         </div>
         <div className="bg-card rounded-lg border p-5">
           <p className="text-sm text-muted-foreground">Devengado</p>
-          <p className="text-2xl font-bold mt-1">S/ {devengado.toFixed(2)}</p>
+          <p className="text-2xl font-bold mt-1">{formatCurrency(devengado, { decimals: 2 })}</p>
           <p className="text-xs text-muted-foreground mt-1">Sesiones realizadas en el período</p>
         </div>
         <div className="bg-card rounded-lg border p-5">
