@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, Users, Package, Clock, UserCog, DollarSign } from "lucide-react";
-import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import TopClients from "@/components/dashboard/TopClients";
@@ -11,6 +9,7 @@ import OccupancyAndExpiringPackages from "@/components/dashboard/OccupancyAndExp
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import AdvancedMetrics from "@/components/dashboard/AdvancedMetrics";
 import DiffCard from "@/components/dashboard/DiffCard";
+import NoShowsSection from "@/components/dashboard/NoShowsSection";
 import {
   DashboardPeriod,
   getPeriodRange,
@@ -122,14 +121,6 @@ export default function Dashboard() {
     },
   });
 
-  const quickLinks = [
-    { title: "Agenda", icon: Calendar, href: "/agenda", description: "Ver citas del día" },
-    { title: "Clientes", icon: Users, href: "/clientes", description: "Gestionar pacientes" },
-    { title: "Paquetes", icon: Package, href: "/paquetes", description: "Planes activos" },
-    { title: "Ingresos", icon: DollarSign, href: "/ingresos", description: "Resumen financiero" },
-    { title: "Disponibilidad", icon: Clock, href: "/disponibilidad", description: "Horarios del equipo" },
-    { title: "Equipo", icon: UserCog, href: "/equipo", description: "Profesionales" },
-  ];
 
   return (
     <div className="space-y-8">
@@ -185,23 +176,8 @@ export default function Dashboard() {
       {/* Top clients */}
       <TopClients period={period} />
 
-      {/* Quick links */}
-      <div>
-        <h2 className="text-lg font-semibold mb-3">Acceso rápido</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {quickLinks.map((link) => (
-            <Link
-              key={link.href}
-              to={link.href}
-              className="bg-card rounded-lg border p-4 hover:border-primary/50 transition-colors group"
-            >
-              <link.icon className="h-5 w-5 text-primary mb-2" />
-              <p className="font-medium text-sm">{link.title}</p>
-              <p className="text-xs text-muted-foreground">{link.description}</p>
-            </Link>
-          ))}
-        </div>
-      </div>
+      {/* No-shows del período */}
+      <NoShowsSection period={period} />
     </div>
   );
 }
