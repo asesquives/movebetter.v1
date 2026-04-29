@@ -98,32 +98,25 @@ export default function AcquisitionMetrics({ period }: Props) {
   const { data: ltv } = useQuery({
     queryKey: ["acq-ltv", startIso, endIso],
     queryFn: async () => {
-      const [pkgsRes, soloRes, apptsActivityRes, allClientsRes] = await Promise.all([
-        supabase
-          .from("packages")
-          .select("client_id, total_paid, created_at"),
+      const [pkgsRes, soloRes, apptsActivityRes] = await Promise.all([
+        supabase.from("packages").select("client_id, total_paid"),
         // citas sueltas (sin package) realizadas
         supabase
           .from("appointments")
-          .select("client_id, revenue_amount, start_time, status, package_id")
+          .select("client_id, revenue_amount")
           .eq("status", "done")
           .is("package_id", null),
-        // actividad en el período (cualquier cita no cancelada o paquete creado)
+        // actividad en el período
         supabase
           .from("appointments")
-          .select("client_id, start_time")
+          .select("client_id")
           .gte("start_time", startIso)
           .lte("start_time", endIso)
           .neq("status", "cancelled"),
-        // todos los clientes con timestamp de creación
-        supabase
-          .from("clients")
-          .select("id, created_at"),
       ]);
       if (pkgsRes.error) throw pkgsRes.error;
       if (soloRes.error) throw soloRes.error;
       if (apptsActivityRes.error) throw apptsActivityRes.error;
-      if (allClientsRes.error) throw allClientsRes.error;
 
       // Sum LTV per client
       const ltvByClient = new Map<string, number>();
@@ -141,25 +134,6 @@ export default function AcquisitionMetrics({ period }: Props) {
           (ltvByClient.get(a.client_id) ?? 0) + Number(a.revenue_amount ?? 0),
         );
       });
-
-      // First-activity per client (cita o paquete) — define cohorte
-      const firstAct = new Map<string, number>();
-      const consider = (cid: string | null, ts: string | null) => {
-        if (!cid || !ts) return;
-        const t = new Date(ts).getTime();
-        const prev = firstAct.get(cid);
-        if (prev === undefined || t < prev) firstAct.set(cid, t);
-      };
-      // Use packages.created_at and a single read for all appointments (status non-cancelled)
-      // We already have packages above for paid amounts — reuse for date.
-      (pkgsRes.data ?? []).forEach((p) => consider(p.client_id, p.created_at));
-      // Need ALL appointments (not only the period ones) for first activity
-      const { data: allAppts, error: eAll } = await supabase
-        .from("appointments")
-        .select("client_id, start_time, status")
-        .neq("status", "cancelled");
-      if (eAll) throw eAll;
-      (allAppts ?? []).forEach((a) => consider(a.client_id, a.start_time));
 
       // LTV promedio general (clientes activos en el período)
       const activeInPeriod = new Set<string>();
