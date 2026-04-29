@@ -17,13 +17,6 @@ const STANDALONE_PRICES: Record<string, number> = {
   recovery: 70,
 };
 
-const formatCurrency = (n: number) =>
-  new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-    maximumFractionDigits: 0,
-  }).format(n);
-
 /**
  * Ranks clients by money paid in the period:
  *  A) packages.total_paid where packages.created_at in [start, end]
