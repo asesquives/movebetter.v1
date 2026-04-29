@@ -11,6 +11,7 @@ import {
   getPreviousPeriodRange,
 } from "@/lib/dashboard-period";
 import DiffCard from "./DiffCard";
+import { SESSION_TYPE_COLORS, type AppointmentType } from "@/lib/agenda-constants";
 
 interface Props {
   period: DashboardPeriod;
