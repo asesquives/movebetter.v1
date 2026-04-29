@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, Users, Package, Clock, UserCog, DollarSign } from "lucide-react";
-import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import TopClients from "@/components/dashboard/TopClients";
@@ -11,6 +9,7 @@ import OccupancyAndExpiringPackages from "@/components/dashboard/OccupancyAndExp
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import AdvancedMetrics from "@/components/dashboard/AdvancedMetrics";
 import DiffCard from "@/components/dashboard/DiffCard";
+import NoShowsSection from "@/components/dashboard/NoShowsSection";
 import {
   DashboardPeriod,
   getPeriodRange,
