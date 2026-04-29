@@ -147,8 +147,40 @@ export default function BusinessTrends({ period }: Props) {
   });
 
   const buckets = data ?? buildBuckets();
-  const totalRevenue = buckets.reduce((sum, b) => sum + b.revenue, 0);
-  const totalAppts = buckets.reduce((sum, b) => sum + b.appointments, 0);
+
+  // Totals shown in headers must reflect ONLY the selected period,
+  // not the full chart window (which extends further back for trend context).
+  const periodStartIso = periodStart.toISOString();
+  const periodEndIso = periodEnd.toISOString();
+
+  const { data: periodTotals } = useQuery({
+    queryKey: ["business-trends-period-totals", periodStartIso, periodEndIso],
+    queryFn: async () => {
+      const [revRes, apptRes] = await Promise.all([
+        supabase
+          .from("revenue_entries")
+          .select("amount")
+          .gte("recognized_at", periodStartIso)
+          .lte("recognized_at", periodEndIso),
+        supabase
+          .from("appointments")
+          .select("id", { count: "exact", head: true })
+          .gte("start_time", periodStartIso)
+          .lte("start_time", periodEndIso)
+          .neq("status", "cancelled"),
+      ]);
+      if (revRes.error) throw revRes.error;
+      if (apptRes.error) throw apptRes.error;
+      const revenue = (revRes.data ?? []).reduce(
+        (s, r) => s + Number(r.amount ?? 0),
+        0
+      );
+      return { revenue, appointments: apptRes.count ?? 0 };
+    },
+  });
+
+  const totalRevenue = periodTotals?.revenue ?? 0;
+  const totalAppts = periodTotals?.appointments ?? 0;
 
   const subtitle = isRelative
     ? granularity === "month"
