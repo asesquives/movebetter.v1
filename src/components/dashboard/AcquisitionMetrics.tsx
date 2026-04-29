@@ -21,7 +21,7 @@ const formatPEN = (n: number) =>
     maximumFractionDigits: 0,
   }).format(n);
 
-const DIAGNOSIS_TYPES = ["medical_diagnosis", "physio_diagnosis"];
+const DIAGNOSIS_TYPES = ["medical_diagnosis", "physio_diagnosis"] as const;
 
 const COHORT_START = new Date("2025-12-01T00:00:00Z");
 
