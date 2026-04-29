@@ -264,7 +264,7 @@ export default function PaquetesPage() {
                 />
                 {selectedCatalog && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    Sugerido: S/ {Number(selectedCatalog.price).toFixed(2)}. Edita si el cliente negoció otro precio.
+                    Sugerido: {formatCurrency(Number(selectedCatalog.price), { decimals: 2 })}. Edita si el cliente negoció otro precio.
                   </p>
                 )}
               </div>
