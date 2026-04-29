@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { addDays, endOfMonth, format } from "date-fns";
 import { ClientSearchOrCreate } from "@/components/clients/ClientSearchOrCreate";
@@ -22,6 +23,14 @@ export default function PaquetesPage() {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [catalogId, setCatalogId] = useState<string>("");
+  const [editingPkg, setEditingPkg] = useState<any | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: "",
+    total_paid: "0",
+    payment_method: "cash" as PaymentMethod,
+    receipt_type: "boleta" as ReceiptType,
+    notes: "",
+  });
   const [form, setForm] = useState({
     client_id: "",
     total_paid: "0",
@@ -141,6 +150,46 @@ export default function PaquetesPage() {
       setOpen(false);
       resetForm();
       toast.success("Paquete creado");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const openEdit = (pkg: any) => {
+    setEditingPkg(pkg);
+    setEditForm({
+      name: pkg.name ?? "",
+      total_paid: String(pkg.total_paid ?? 0),
+      payment_method: pkg.payment_method as PaymentMethod,
+      receipt_type: pkg.receipt_type as ReceiptType,
+      notes: pkg.notes ?? "",
+    });
+  };
+
+  const updatePackage = useMutation({
+    mutationFn: async () => {
+      if (!editingPkg) throw new Error("No hay paquete seleccionado");
+      const totalPaid = parseFloat(editForm.total_paid);
+      if (isNaN(totalPaid) || totalPaid < 0) throw new Error("Total pagado inválido");
+      const sessions = editingPkg.total_sessions || 0;
+      const pps = sessions > 0 ? totalPaid / sessions : 0;
+
+      const { error } = await supabase
+        .from("packages")
+        .update({
+          name: editForm.name,
+          total_paid: totalPaid,
+          price_per_session: pps,
+          payment_method: editForm.payment_method,
+          receipt_type: editForm.receipt_type,
+          notes: editForm.notes || null,
+        })
+        .eq("id", editingPkg.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["packages"] });
+      setEditingPkg(null);
+      toast.success("Paquete actualizado correctamente");
     },
     onError: (e: any) => toast.error(e.message),
   });
@@ -267,17 +316,33 @@ export default function PaquetesPage() {
           {packages.map((pkg) => {
             const progress = pkg.total_sessions > 0 ? (pkg.sessions_used / pkg.total_sessions) * 100 : 0;
             return (
-              <div key={pkg.id} className="bg-card rounded-lg border p-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{pkg.name}</p>
+              <div
+                key={pkg.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => openEdit(pkg)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openEdit(pkg); } }}
+                className="bg-card rounded-lg border p-4 space-y-2 cursor-pointer hover:bg-accent/30 transition-colors"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-medium truncate">{pkg.name}</p>
                     <p className="text-sm text-muted-foreground">
                       {(pkg.clients as any)?.name} · {pkg.is_monthly_pass ? "Monthly pass" : `${pkg.sessions_used}/${pkg.total_sessions} sesiones`} · S/ {Number(pkg.total_paid).toFixed(2)}
                     </p>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusColors[pkg.status] || ""}`}>
-                    {statusLabels[pkg.status] || pkg.status}
-                  </span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusColors[pkg.status] || ""}`}>
+                      {statusLabels[pkg.status] || pkg.status}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => { e.stopPropagation(); openEdit(pkg); }}
+                    >
+                      <Pencil className="h-4 w-4 mr-1" /> Editar
+                    </Button>
+                  </div>
                 </div>
                 <Progress value={progress} className="h-1.5" />
                 {pkg.expires_at && (
@@ -288,6 +353,112 @@ export default function PaquetesPage() {
           })}
         </div>
       )}
+
+      <Dialog open={!!editingPkg} onOpenChange={(o) => { if (!o) setEditingPkg(null); }}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Editar paquete</DialogTitle></DialogHeader>
+          {editingPkg && (
+            <form
+              onSubmit={(e) => { e.preventDefault(); updatePackage.mutate(); }}
+              className="space-y-4"
+            >
+              <div className="bg-muted/30 rounded-lg p-3 text-sm space-y-1">
+                <p>
+                  <span className="text-muted-foreground">Cliente:</span>{" "}
+                  <span className="font-medium">{(editingPkg.clients as any)?.name ?? "—"}</span>
+                </p>
+                <p>
+                  <span className="text-muted-foreground">Tipo:</span>{" "}
+                  <span className="font-medium">{editingPkg.type}</span>
+                </p>
+                <p>
+                  <span className="text-muted-foreground">Sesiones:</span>{" "}
+                  <span className="font-medium">{editingPkg.sessions_used}/{editingPkg.total_sessions}</span>
+                </p>
+                {editingPkg.expires_at && (
+                  <p>
+                    <span className="text-muted-foreground">Vence:</span>{" "}
+                    <span className="font-medium">{format(new Date(editingPkg.expires_at), "dd/MM/yyyy")}</span>
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label>Nombre del paquete</Label>
+                <Input
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label>Total pagado (S/)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={editForm.total_paid}
+                  onChange={(e) => setEditForm({ ...editForm, total_paid: e.target.value })}
+                  required
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Precio por sesión: S/{" "}
+                  {(editingPkg.total_sessions > 0
+                    ? (parseFloat(editForm.total_paid || "0") || 0) / editingPkg.total_sessions
+                    : 0
+                  ).toFixed(2)}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Método de pago</Label>
+                  <Select
+                    value={editForm.payment_method}
+                    onValueChange={(v) => setEditForm({ ...editForm, payment_method: v as PaymentMethod })}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="yape">Yape</SelectItem>
+                      <SelectItem value="transfer">Transferencia</SelectItem>
+                      <SelectItem value="card">Tarjeta</SelectItem>
+                      <SelectItem value="cash">Efectivo</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Comprobante</Label>
+                  <Select
+                    value={editForm.receipt_type}
+                    onValueChange={(v) => setEditForm({ ...editForm, receipt_type: v as ReceiptType })}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="boleta">Boleta</SelectItem>
+                      <SelectItem value="factura">Factura</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label>Notas (opcional)</Label>
+                <Textarea
+                  value={editForm.notes}
+                  onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                  rows={3}
+                  placeholder="Anotaciones internas sobre este paquete"
+                />
+              </div>
+
+              <Button type="submit" className="w-full" disabled={updatePackage.isPending}>
+                Guardar cambios
+              </Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -190,6 +190,7 @@ export type Database = {
           id: string
           is_monthly_pass: boolean
           name: string
+          notes: string | null
           payment_method: Database["public"]["Enums"]["payment_method"]
           price_per_session: number
           receipt_type: Database["public"]["Enums"]["receipt_type"]
@@ -206,6 +207,7 @@ export type Database = {
           id?: string
           is_monthly_pass?: boolean
           name: string
+          notes?: string | null
           payment_method?: Database["public"]["Enums"]["payment_method"]
           price_per_session?: number
           receipt_type?: Database["public"]["Enums"]["receipt_type"]
@@ -222,6 +224,7 @@ export type Database = {
           id?: string
           is_monthly_pass?: boolean
           name?: string
+          notes?: string | null
           payment_method?: Database["public"]["Enums"]["payment_method"]
           price_per_session?: number
           receipt_type?: Database["public"]["Enums"]["receipt_type"]
