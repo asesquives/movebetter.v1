@@ -353,6 +353,112 @@ export default function PaquetesPage() {
           })}
         </div>
       )}
+
+      <Dialog open={!!editingPkg} onOpenChange={(o) => { if (!o) setEditingPkg(null); }}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Editar paquete</DialogTitle></DialogHeader>
+          {editingPkg && (
+            <form
+              onSubmit={(e) => { e.preventDefault(); updatePackage.mutate(); }}
+              className="space-y-4"
+            >
+              <div className="bg-muted/30 rounded-lg p-3 text-sm space-y-1">
+                <p>
+                  <span className="text-muted-foreground">Cliente:</span>{" "}
+                  <span className="font-medium">{(editingPkg.clients as any)?.name ?? "—"}</span>
+                </p>
+                <p>
+                  <span className="text-muted-foreground">Tipo:</span>{" "}
+                  <span className="font-medium">{editingPkg.type}</span>
+                </p>
+                <p>
+                  <span className="text-muted-foreground">Sesiones:</span>{" "}
+                  <span className="font-medium">{editingPkg.sessions_used}/{editingPkg.total_sessions}</span>
+                </p>
+                {editingPkg.expires_at && (
+                  <p>
+                    <span className="text-muted-foreground">Vence:</span>{" "}
+                    <span className="font-medium">{format(new Date(editingPkg.expires_at), "dd/MM/yyyy")}</span>
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label>Nombre del paquete</Label>
+                <Input
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label>Total pagado (S/)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={editForm.total_paid}
+                  onChange={(e) => setEditForm({ ...editForm, total_paid: e.target.value })}
+                  required
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Precio por sesión: S/{" "}
+                  {(editingPkg.total_sessions > 0
+                    ? (parseFloat(editForm.total_paid || "0") || 0) / editingPkg.total_sessions
+                    : 0
+                  ).toFixed(2)}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Método de pago</Label>
+                  <Select
+                    value={editForm.payment_method}
+                    onValueChange={(v) => setEditForm({ ...editForm, payment_method: v as PaymentMethod })}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="yape">Yape</SelectItem>
+                      <SelectItem value="transfer">Transferencia</SelectItem>
+                      <SelectItem value="card">Tarjeta</SelectItem>
+                      <SelectItem value="cash">Efectivo</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Comprobante</Label>
+                  <Select
+                    value={editForm.receipt_type}
+                    onValueChange={(v) => setEditForm({ ...editForm, receipt_type: v as ReceiptType })}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="boleta">Boleta</SelectItem>
+                      <SelectItem value="factura">Factura</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label>Notas (opcional)</Label>
+                <Textarea
+                  value={editForm.notes}
+                  onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                  rows={3}
+                  placeholder="Anotaciones internas sobre este paquete"
+                />
+              </div>
+
+              <Button type="submit" className="w-full" disabled={updatePackage.isPending}>
+                Guardar cambios
+              </Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
