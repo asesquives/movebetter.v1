@@ -84,14 +84,14 @@ export default function AdvancedMetrics({ period }: Props) {
         supabase
           .from("appointments")
           .select("client_id")
-          .gte("start_time", prevStart.toISOString())
-          .lte("start_time", prevEnd.toISOString())
+          .gte("start_time", prevStartIso)
+          .lte("start_time", prevEndIso)
           .neq("status", "cancelled"),
         supabase
           .from("appointments")
           .select("client_id")
-          .gte("start_time", curMonthStart.toISOString())
-          .lte("start_time", curMonthEnd.toISOString())
+          .gte("start_time", startIso)
+          .lte("start_time", endIso)
           .neq("status", "cancelled"),
         supabase
           .from("packages")
@@ -108,34 +108,34 @@ export default function AdvancedMetrics({ period }: Props) {
         supabase
           .from("revenue_entries")
           .select("amount")
-          .gte("recognized_at", curMonthStart.toISOString())
-          .lte("recognized_at", curMonthEnd.toISOString()),
+          .gte("recognized_at", startIso)
+          .lte("recognized_at", endIso),
         supabase
           .from("revenue_entries")
           .select("amount")
-          .gte("recognized_at", prevStart.toISOString())
-          .lte("recognized_at", prevEnd.toISOString()),
+          .gte("recognized_at", prevStartIso)
+          .lte("recognized_at", prevEndIso),
         supabase
           .from("clients")
           .select("id", { count: "exact", head: true })
-          .gte("created_at", curMonthStart.toISOString())
-          .lte("created_at", curMonthEnd.toISOString()),
+          .gte("created_at", startIso)
+          .lte("created_at", endIso),
         supabase
           .from("clients")
           .select("id", { count: "exact", head: true })
-          .gte("created_at", prevStart.toISOString())
-          .lte("created_at", prevEnd.toISOString()),
+          .gte("created_at", prevStartIso)
+          .lte("created_at", prevEndIso),
         supabase
           .from("appointments")
           .select("id", { count: "exact", head: true })
-          .gte("start_time", curMonthStart.toISOString())
-          .lte("start_time", curMonthEnd.toISOString())
+          .gte("start_time", startIso)
+          .lte("start_time", endIso)
           .eq("status", "done"),
         supabase
           .from("appointments")
           .select("id", { count: "exact", head: true })
-          .gte("start_time", prevStart.toISOString())
-          .lte("start_time", prevEnd.toISOString())
+          .gte("start_time", prevStartIso)
+          .lte("start_time", prevEndIso)
           .eq("status", "done"),
         // Activity in period: any non-cancelled appointment
         supabase
