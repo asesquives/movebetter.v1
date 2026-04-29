@@ -23,6 +23,14 @@ export default function PaquetesPage() {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [catalogId, setCatalogId] = useState<string>("");
+  const [editingPkg, setEditingPkg] = useState<any | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: "",
+    total_paid: "0",
+    payment_method: "cash" as PaymentMethod,
+    receipt_type: "boleta" as ReceiptType,
+    notes: "",
+  });
   const [form, setForm] = useState({
     client_id: "",
     total_paid: "0",
