@@ -11,6 +11,7 @@ import {
   getPreviousPeriodRange,
 } from "@/lib/dashboard-period";
 import DiffCard from "./DiffCard";
+import { SESSION_TYPE_COLORS, type AppointmentType } from "@/lib/agenda-constants";
 
 interface Props {
   period: DashboardPeriod;
@@ -251,6 +252,38 @@ export default function AdvancedMetrics({ period }: Props) {
     },
   });
 
+  // ===== Sesión más agendada (separate, lighter query) =====
+  const { data: topType } = useQuery({
+    queryKey: ["dashboard-top-session-type", startIso, endIso],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("appointments")
+        .select("type, revenue_amount, status")
+        .gte("start_time", startIso)
+        .lte("start_time", endIso)
+        .neq("status", "cancelled");
+      if (error) throw error;
+
+      const counts = new Map<AppointmentType, { count: number; revenue: number }>();
+      (data ?? []).forEach((a) => {
+        const t = a.type as AppointmentType;
+        const cur = counts.get(t) ?? { count: 0, revenue: 0 };
+        cur.count += 1;
+        cur.revenue += Number(a.revenue_amount ?? 0);
+        counts.set(t, cur);
+      });
+
+      const ranking = Array.from(counts.entries())
+        .map(([type, v]) => ({ type, ...v }))
+        .sort((a, b) => {
+          if (b.count !== a.count) return b.count - a.count;
+          return b.revenue - a.revenue;
+        });
+
+      return ranking;
+    },
+  });
+
   const dash = "—";
 
   const retentionColor =
@@ -302,6 +335,43 @@ export default function AdvancedMetrics({ period }: Props) {
           {data?.avgRevenuePerClient == null ? dash : formatPEN(data.avgRevenuePerClient)}
         </p>
         <p className="text-xs text-muted-foreground mt-2">clientes con actividad</p>
+      </Card>
+
+      {/* 4. Sesión más agendada */}
+      <Card>
+        <p className="text-sm text-muted-foreground">Sesión más agendada</p>
+        {!topType || topType.length === 0 ? (
+          <>
+            <p className="text-3xl font-bold mt-1 tabular-nums">{dash}</p>
+            <p className="text-xs text-muted-foreground mt-2">Sin citas en el período</p>
+          </>
+        ) : (
+          <>
+            <p className="text-3xl font-bold mt-1 tabular-nums">{topType[0].count}</p>
+            <div className="mt-1">
+              <span
+                className={`inline-flex items-center gap-1.5 text-xs font-medium ${SESSION_TYPE_COLORS[topType[0].type].text}`}
+              >
+                <span
+                  className={`inline-block h-2 w-2 rounded-full ${SESSION_TYPE_COLORS[topType[0].type].bg}`}
+                />
+                {SESSION_TYPE_COLORS[topType[0].type].label}
+              </span>
+            </div>
+            <ol className="mt-3 space-y-0.5 text-xs text-muted-foreground">
+              {topType.slice(0, 3).map((r, i) => (
+                <li key={r.type} className="flex items-center gap-1.5">
+                  <span className="tabular-nums">{i + 1}.</span>
+                  <span
+                    className={`inline-block h-1.5 w-1.5 rounded-full ${SESSION_TYPE_COLORS[r.type].bg}`}
+                  />
+                  <span>{SESSION_TYPE_COLORS[r.type].label}</span>
+                  <span className="ml-auto tabular-nums">{r.count}</span>
+                </li>
+              ))}
+            </ol>
+          </>
+        )}
       </Card>
 
       {/* 4. Ingresos vs período anterior */}
