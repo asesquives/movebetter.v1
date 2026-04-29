@@ -88,6 +88,70 @@ export function getPeriodRange(period: DashboardPeriod): PeriodRange {
   };
 }
 
+/**
+ * Returns the "previous" period range relative to the given period, plus a label
+ * describing it (e.g. "marzo 2026", "semana anterior", "YTD 2025", "14 días previos").
+ */
+export function getPreviousPeriodRange(period: DashboardPeriod): PeriodRange & { shortLabel: string } {
+  const { mode, date } = period;
+
+  if (mode === "week") {
+    const ref = subWeeks(date, 1);
+    const start = startOfWeek(ref, { weekStartsOn: 1 });
+    const end = endOfWeek(ref, { weekStartsOn: 1 });
+    return {
+      start,
+      end,
+      label: `Semana del ${format(start, "d MMM", { locale: es })} - ${format(end, "d MMM yyyy", { locale: es })}`,
+      shortLabel: "semana anterior",
+      granularity: "week",
+    };
+  }
+
+  if (mode === "ytd") {
+    const now = new Date();
+    const lastYear = subYears(now, 1);
+    const start = startOfYear(lastYear);
+    // Same day-of-year cutoff as current YTD
+    const end = endOfDay(subYears(now, 1));
+    return {
+      start,
+      end,
+      label: `YTD ${format(lastYear, "yyyy")}`,
+      shortLabel: `YTD ${format(lastYear, "yyyy")}`,
+      granularity: "month",
+    };
+  }
+
+  if (mode === "custom") {
+    const cur = getPeriodRange(period);
+    const days = differenceInCalendarDays(cur.end, cur.start) + 1;
+    const end = new Date(cur.start.getTime() - 1);
+    const start = new Date(end);
+    start.setDate(start.getDate() - (days - 1));
+    start.setHours(0, 0, 0, 0);
+    return {
+      start,
+      end: endOfDay(end),
+      label: `${format(start, "d MMM yyyy", { locale: es })} - ${format(end, "d MMM yyyy", { locale: es })}`,
+      shortLabel: `${days} días previos`,
+      granularity: cur.granularity,
+    };
+  }
+
+  // month mode
+  const ref = subMonths(startOfMonth(date), 1);
+  const start = startOfMonth(ref);
+  const end = endOfMonth(ref);
+  return {
+    start,
+    end,
+    label: format(start, "MMMM yyyy", { locale: es }),
+    shortLabel: format(start, "MMMM yyyy", { locale: es }),
+    granularity: "month",
+  };
+}
+
 /** Last 12 months, current first. */
 export function buildMonthOptions() {
   return Array.from({ length: 12 }).map((_, i) => {
