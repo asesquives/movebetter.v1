@@ -222,7 +222,7 @@ export default function PaquetesPage() {
                   <SelectContent>
                     {selectableCatalog.map((c) => (
                       <SelectItem key={c.id} value={c.id}>
-                        {c.name} — S/ {Number(c.price).toFixed(2)}
+                        {c.name} — {formatCurrency(Number(c.price), { decimals: 2 })}
                       </SelectItem>
                     ))}
                   </SelectContent>
