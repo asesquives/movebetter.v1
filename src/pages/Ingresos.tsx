@@ -171,7 +171,7 @@ export default function IngresosPage() {
         </div>
         <div className="bg-card rounded-lg border p-5">
           <p className="text-sm text-muted-foreground">Saldo diferido</p>
-          <p className="text-2xl font-bold mt-1">S/ {diferido.toFixed(2)}</p>
+          <p className="text-2xl font-bold mt-1">{formatCurrency(diferido, { decimals: 2 })}</p>
           <p className="text-xs text-muted-foreground mt-1">Cobrado − Devengado</p>
         </div>
       </div>
