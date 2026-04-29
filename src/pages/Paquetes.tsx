@@ -241,7 +241,7 @@ export default function PaquetesPage() {
                   </p>
                   <p>
                     <span className="text-muted-foreground">Precio por sesión:</span>{" "}
-                    <span className="font-semibold">S/ {pricePerSession.toFixed(2)}</span>
+                    <span className="font-semibold">{formatCurrency(pricePerSession, { decimals: 2 })}</span>
                   </p>
                 </div>
               )}
