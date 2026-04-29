@@ -12,6 +12,7 @@ import {
 } from "@/lib/dashboard-period";
 import DiffCard from "./DiffCard";
 import { SESSION_TYPE_COLORS, type AppointmentType } from "@/lib/agenda-constants";
+import { formatCurrency } from "@/lib/format";
 
 interface Props {
   period: DashboardPeriod;
