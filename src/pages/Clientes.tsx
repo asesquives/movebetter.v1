@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { SESSION_TYPE_COLORS } from "@/lib/agenda-constants";
+import { formatCurrency } from "@/lib/format";
 
 export default function ClientesPage() {
   const queryClient = useQueryClient();
