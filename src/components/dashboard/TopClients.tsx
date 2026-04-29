@@ -1,13 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Trophy, Crown, Medal, Award } from "lucide-react";
+import { DashboardPeriod, getPeriodRange } from "@/lib/dashboard-period";
 
-interface ClientRevenue {
+interface ClientPayment {
   client_id: string;
   client_name: string;
   total: number;
-  appointments: number;
+  transactions: number;
 }
+
+const STANDALONE_PRICES: Record<string, number> = {
+  medical_diagnosis: 200,
+  physio_diagnosis: 150,
+  recovery: 70,
+};
 
 const formatCurrency = (n: number) =>
   new Intl.NumberFormat("es-PE", {
@@ -17,22 +24,54 @@ const formatCurrency = (n: number) =>
   }).format(n);
 
 /**
- * Aggregates revenue_entries grouped by client and returns the top N.
- * `since` (ISO string) optionally restricts the time window.
+ * Ranks clients by money paid in the period:
+ *  A) packages.total_paid where packages.created_at in [start, end]
+ *  B) standalone done appointments (package_id IS NULL, status='done') priced by type
  */
-async function fetchTopClients(since?: string, limit = 3): Promise<ClientRevenue[]> {
-  let q = supabase.from("revenue_entries").select("amount, client_id, recognized_at");
-  if (since) q = q.gte("recognized_at", since);
-  const { data: revenue, error } = await q;
-  if (error) throw error;
+async function fetchTopClientsByPaid(
+  startIso: string | undefined,
+  endIso: string | undefined,
+  limit = 3,
+): Promise<ClientPayment[]> {
+  // A) Packages purchased in the period
+  let pkgQuery = supabase
+    .from("packages")
+    .select("client_id, total_paid, created_at");
+  if (startIso) pkgQuery = pkgQuery.gte("created_at", startIso);
+  if (endIso) pkgQuery = pkgQuery.lte("created_at", endIso);
+  const { data: packages, error: pkgErr } = await pkgQuery;
+  if (pkgErr) throw pkgErr;
 
-  const totals = new Map<string, { total: number; appointments: number }>();
-  for (const r of revenue ?? []) {
-    if (!r.client_id) continue;
-    const prev = totals.get(r.client_id) ?? { total: 0, appointments: 0 };
-    totals.set(r.client_id, {
-      total: prev.total + Number(r.amount ?? 0),
-      appointments: prev.appointments + 1,
+  // B) Standalone done appointments in the period
+  let apptQuery = supabase
+    .from("appointments")
+    .select("client_id, type, start_time, status, package_id")
+    .eq("status", "done")
+    .is("package_id", null);
+  if (startIso) apptQuery = apptQuery.gte("start_time", startIso);
+  if (endIso) apptQuery = apptQuery.lte("start_time", endIso);
+  const { data: appts, error: apptErr } = await apptQuery;
+  if (apptErr) throw apptErr;
+
+  const totals = new Map<string, { total: number; transactions: number }>();
+
+  for (const p of packages ?? []) {
+    if (!p.client_id) continue;
+    const prev = totals.get(p.client_id) ?? { total: 0, transactions: 0 };
+    totals.set(p.client_id, {
+      total: prev.total + Number(p.total_paid ?? 0),
+      transactions: prev.transactions + 1,
+    });
+  }
+
+  for (const a of appts ?? []) {
+    if (!a.client_id) continue;
+    const price = STANDALONE_PRICES[a.type as string] ?? 0;
+    if (price === 0) continue;
+    const prev = totals.get(a.client_id) ?? { total: 0, transactions: 0 };
+    totals.set(a.client_id, {
+      total: prev.total + price,
+      transactions: prev.transactions + 1,
     });
   }
 
@@ -49,7 +88,7 @@ async function fetchTopClients(since?: string, limit = 3): Promise<ClientRevenue
       client_id: id,
       client_name: clients?.find((c) => c.id === id)?.name ?? "Desconocido",
       total: totals.get(id)!.total,
-      appointments: totals.get(id)!.appointments,
+      transactions: totals.get(id)!.transactions,
     }))
     .sort((a, b) => b.total - a.total)
     .slice(0, limit);
@@ -63,7 +102,7 @@ function RankingList({
   loading,
   emptyText,
 }: {
-  data: ClientRevenue[] | undefined;
+  data: ClientPayment[] | undefined;
   loading: boolean;
   emptyText: string;
 }) {
@@ -87,7 +126,7 @@ function RankingList({
               <div className="min-w-0">
                 <p className="text-sm font-medium truncate">{c.client_name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {c.appointments} {c.appointments === 1 ? "registro" : "registros"}
+                  {c.transactions} {c.transactions === 1 ? "transacción" : "transacciones"}
                 </p>
               </div>
             </div>
@@ -99,47 +138,61 @@ function RankingList({
   );
 }
 
-export default function TopClients() {
+interface TopClientsProps {
+  period: DashboardPeriod;
+}
+
+export default function TopClients({ period }: TopClientsProps) {
+  const range = getPeriodRange(period);
+  const startIso = range.start.toISOString();
+  const endIso = range.end.toISOString();
   const last30Iso = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
+  const { data: periodTop, isLoading: loadingPeriod } = useQuery({
+    queryKey: ["top-clients-paid-period", startIso, endIso],
+    queryFn: () => fetchTopClientsByPaid(startIso, endIso, 3),
+  });
+
   const { data: allTime, isLoading: loadingAll } = useQuery({
-    queryKey: ["top-clients-all-time"],
-    queryFn: () => fetchTopClients(undefined, 3),
+    queryKey: ["top-clients-paid-all-time"],
+    queryFn: () => fetchTopClientsByPaid(undefined, undefined, 3),
   });
 
   const { data: monthly, isLoading: loadingMonthly } = useQuery({
-    queryKey: ["top-clients-30d"],
-    queryFn: () => fetchTopClients(last30Iso, 3),
+    queryKey: ["top-clients-paid-30d"],
+    queryFn: () => fetchTopClientsByPaid(last30Iso, undefined, 3),
   });
 
-  const featured = allTime?.[0];
+  const featured = periodTop?.[0];
 
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold">Mejores clientes</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Featured card */}
+        {/* Featured card — #1 of selected period */}
         <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border rounded-lg p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 text-primary">
               <Trophy className="h-5 w-5" />
               <span className="text-xs font-semibold uppercase tracking-wide">Cliente destacado</span>
             </div>
-            {featured ? (
+            {loadingPeriod ? (
+              <p className="text-sm text-muted-foreground mt-3">Cargando...</p>
+            ) : featured ? (
               <>
                 <p className="text-xl font-bold mt-3 truncate">{featured.client_name}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {featured.appointments} ingresos registrados
+                  {featured.transactions} {featured.transactions === 1 ? "transacción" : "transacciones"} en el período
                 </p>
               </>
             ) : (
-              <p className="text-sm text-muted-foreground mt-3">Aún no hay datos</p>
+              <p className="text-sm text-muted-foreground mt-3">Sin pagos en el período</p>
             )}
           </div>
           {featured && (
             <div className="mt-4">
-              <p className="text-xs text-muted-foreground">Total generado</p>
+              <p className="text-xs text-muted-foreground">Total pagado</p>
               <p className="text-2xl font-bold tabular-nums">{formatCurrency(featured.total)}</p>
             </div>
           )}
@@ -151,7 +204,7 @@ export default function TopClients() {
           <RankingList
             data={allTime}
             loading={loadingAll}
-            emptyText="Aún no hay ingresos registrados."
+            emptyText="Aún no hay pagos registrados."
           />
         </div>
 
@@ -161,7 +214,7 @@ export default function TopClients() {
           <RankingList
             data={monthly}
             loading={loadingMonthly}
-            emptyText="Sin ingresos en los últimos 30 días."
+            emptyText="Sin pagos en los últimos 30 días."
           />
         </div>
       </div>
