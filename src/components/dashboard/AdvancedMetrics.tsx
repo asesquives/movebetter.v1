@@ -52,7 +52,7 @@ export default function AdvancedMetrics({ period }: Props) {
   const prevEndIso = prevRange.end.toISOString();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["dashboard-advanced-metrics", startIso, endIso],
+    queryKey: ["dashboard-advanced-metrics", startIso, endIso, prevStartIso, prevEndIso],
     queryFn: async () => {
       const [
         physiosRes,
