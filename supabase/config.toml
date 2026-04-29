@@ -1,1 +1,4 @@
 project_id = "ajhtjsmhvdgfbzfrgjlr"
+
+[functions.seed-runner]
+verify_jwt = false
