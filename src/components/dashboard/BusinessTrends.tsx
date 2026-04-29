@@ -32,12 +32,7 @@ interface Bucket {
   appointments: number;
 }
 
-const formatCurrency = (n: number) =>
-  new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-    maximumFractionDigits: 0,
-  }).format(n);
+import { formatCurrency } from "@/lib/format";
 
 interface Props {
   period: DashboardPeriod;
