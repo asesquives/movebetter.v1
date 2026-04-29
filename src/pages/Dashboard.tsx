@@ -9,6 +9,7 @@ import TopClients from "@/components/dashboard/TopClients";
 import BusinessTrends from "@/components/dashboard/BusinessTrends";
 import ScheduledHoursByProfessional from "@/components/dashboard/ScheduledHoursByProfessional";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
+import AdvancedMetrics from "@/components/dashboard/AdvancedMetrics";
 import { DashboardPeriod, getPeriodRange } from "@/lib/dashboard-period";
 
 export default function Dashboard() {
@@ -102,6 +103,9 @@ export default function Dashboard() {
           <p className="text-3xl font-bold mt-1">{activePackages ?? 0}</p>
         </div>
       </div>
+
+      {/* Advanced metrics */}
+      <AdvancedMetrics period={period} />
 
       {/* Business trends */}
       <BusinessTrends period={period} />
