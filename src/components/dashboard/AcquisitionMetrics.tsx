@@ -1,7 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, Minus } from "lucide-react";
-import { format, startOfMonth } from "date-fns";
-import { es } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DashboardPeriod,
