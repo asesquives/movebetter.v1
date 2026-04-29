@@ -187,7 +187,7 @@ export default function ClientesPage() {
               {/* Pending balance */}
               <div className="bg-card rounded-lg border p-4">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Saldo pendiente de devengar</p>
-                <p className="text-2xl font-bold mt-1">S/ {pendingBalance.toFixed(2)}</p>
+                <p className="text-2xl font-bold mt-1">{formatCurrency(pendingBalance, { decimals: 2 })}</p>
               </div>
 
               {/* Active packages */}
