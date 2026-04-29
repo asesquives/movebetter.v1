@@ -15,7 +15,19 @@ interface Props {
   period: DashboardPeriod;
 }
 
-const DAY_NAMES = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+// Map weekday index (0=sun..6=sat) to a set of accepted tokens for schedule_days
+const DAY_TOKENS: string[][] = [
+  ["sun", "dom", "domingo"],
+  ["mon", "lun", "lunes"],
+  ["tue", "mar", "martes"],
+  ["wed", "mie", "mié", "miercoles", "miércoles"],
+  ["thu", "jue", "jueves"],
+  ["fri", "vie", "viernes"],
+  ["sat", "sab", "sáb", "sabado", "sábado"],
+];
+
+const normalizeDay = (s: string) =>
+  s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 
 const formatPEN = (n: number) =>
   new Intl.NumberFormat("es-PE", {
@@ -154,10 +166,10 @@ export default function AdvancedMetrics({ period }: Props) {
         if (!p.schedule_start || !p.schedule_end || !p.schedule_days?.length) continue;
         const dailyMin = timeToMinutes(p.schedule_end) - timeToMinutes(p.schedule_start);
         if (dailyMin <= 0) continue;
-        const scheduleDays = (p.schedule_days as string[]).map((d) => d.toLowerCase().slice(0, 3));
+        const scheduleDays = new Set((p.schedule_days as string[]).map(normalizeDay));
         for (const d of days) {
-          const dayName = DAY_NAMES[d.getDay()];
-          if (scheduleDays.includes(dayName)) {
+          const tokens = DAY_TOKENS[d.getDay()];
+          if (tokens.some((t) => scheduleDays.has(t))) {
             availableMinutes += dailyMin;
           }
         }
