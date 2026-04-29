@@ -10,6 +10,7 @@ import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import AdvancedMetrics from "@/components/dashboard/AdvancedMetrics";
 import DiffCard from "@/components/dashboard/DiffCard";
 import NoShowsSection from "@/components/dashboard/NoShowsSection";
+import AcquisitionMetrics from "@/components/dashboard/AcquisitionMetrics";
 import {
   DashboardPeriod,
   getPeriodRange,
