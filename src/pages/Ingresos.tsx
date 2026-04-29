@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Download } from "lucide-react";
 import { SESSION_TYPE_COLORS } from "@/lib/agenda-constants";
+import { formatCurrency } from "@/lib/format";
 
 type FilterType = "month" | "week" | "custom";
 
