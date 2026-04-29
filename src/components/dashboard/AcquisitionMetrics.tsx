@@ -21,8 +21,6 @@ const formatPEN = (n: number) =>
 
 const DIAGNOSIS_TYPES = ["medical_diagnosis", "physio_diagnosis"] as const;
 
-const COHORT_START = new Date("2025-12-01T00:00:00Z");
-
 async function computeConversion(startIso: string, endIso: string) {
   // Diagnosed clients: those with a 'done' diagnosis appointment in the period
   const { data: diags, error: e1 } = await supabase
