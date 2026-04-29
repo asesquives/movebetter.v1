@@ -1,7 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, Minus } from "lucide-react";
-import { format, startOfMonth } from "date-fns";
-import { es } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DashboardPeriod,
@@ -22,8 +20,6 @@ const formatPEN = (n: number) =>
   }).format(n);
 
 const DIAGNOSIS_TYPES = ["medical_diagnosis", "physio_diagnosis"] as const;
-
-const COHORT_START = new Date("2025-12-01T00:00:00Z");
 
 async function computeConversion(startIso: string, endIso: string) {
   // Diagnosed clients: those with a 'done' diagnosis appointment in the period
@@ -100,32 +96,25 @@ export default function AcquisitionMetrics({ period }: Props) {
   const { data: ltv } = useQuery({
     queryKey: ["acq-ltv", startIso, endIso],
     queryFn: async () => {
-      const [pkgsRes, soloRes, apptsActivityRes, allClientsRes] = await Promise.all([
-        supabase
-          .from("packages")
-          .select("client_id, total_paid, created_at"),
+      const [pkgsRes, soloRes, apptsActivityRes] = await Promise.all([
+        supabase.from("packages").select("client_id, total_paid"),
         // citas sueltas (sin package) realizadas
         supabase
           .from("appointments")
-          .select("client_id, revenue_amount, start_time, status, package_id")
+          .select("client_id, revenue_amount")
           .eq("status", "done")
           .is("package_id", null),
-        // actividad en el período (cualquier cita no cancelada o paquete creado)
+        // actividad en el período
         supabase
           .from("appointments")
-          .select("client_id, start_time")
+          .select("client_id")
           .gte("start_time", startIso)
           .lte("start_time", endIso)
           .neq("status", "cancelled"),
-        // todos los clientes con timestamp de creación
-        supabase
-          .from("clients")
-          .select("id, created_at"),
       ]);
       if (pkgsRes.error) throw pkgsRes.error;
       if (soloRes.error) throw soloRes.error;
       if (apptsActivityRes.error) throw apptsActivityRes.error;
-      if (allClientsRes.error) throw allClientsRes.error;
 
       // Sum LTV per client
       const ltvByClient = new Map<string, number>();
@@ -144,25 +133,6 @@ export default function AcquisitionMetrics({ period }: Props) {
         );
       });
 
-      // First-activity per client (cita o paquete) — define cohorte
-      const firstAct = new Map<string, number>();
-      const consider = (cid: string | null, ts: string | null) => {
-        if (!cid || !ts) return;
-        const t = new Date(ts).getTime();
-        const prev = firstAct.get(cid);
-        if (prev === undefined || t < prev) firstAct.set(cid, t);
-      };
-      // Use packages.created_at and a single read for all appointments (status non-cancelled)
-      // We already have packages above for paid amounts — reuse for date.
-      (pkgsRes.data ?? []).forEach((p) => consider(p.client_id, p.created_at));
-      // Need ALL appointments (not only the period ones) for first activity
-      const { data: allAppts, error: eAll } = await supabase
-        .from("appointments")
-        .select("client_id, start_time, status")
-        .neq("status", "cancelled");
-      if (eAll) throw eAll;
-      (allAppts ?? []).forEach((a) => consider(a.client_id, a.start_time));
-
       // LTV promedio general (clientes activos en el período)
       const activeInPeriod = new Set<string>();
       (apptsActivityRes.data ?? []).forEach(
@@ -180,38 +150,7 @@ export default function AcquisitionMetrics({ period }: Props) {
       });
       const avgLtv = activeLtvCount > 0 ? activeLtvSum / activeLtvCount : null;
 
-      // Tabla de cohortes desde diciembre 2025 hasta el mes actual
-      const cohortMap = new Map<string, { count: number; sum: number }>();
-      const now = new Date();
-      const currentMonthStart = startOfMonth(now);
-      // Inicializar todos los meses del rango
-      let cursor = new Date(COHORT_START);
-      while (cursor <= currentMonthStart) {
-        const key = format(cursor, "yyyy-MM");
-        cohortMap.set(key, { count: 0, sum: 0 });
-        cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
-      }
-
-      firstAct.forEach((ts, cid) => {
-        if (ts < COHORT_START.getTime()) return;
-        const d = new Date(ts);
-        const key = format(startOfMonth(d), "yyyy-MM");
-        const bucket = cohortMap.get(key);
-        if (!bucket) return;
-        bucket.count += 1;
-        bucket.sum += ltvByClient.get(cid) ?? 0;
-      });
-
-      const cohorts = Array.from(cohortMap.entries())
-        .map(([key, v]) => ({
-          key,
-          date: new Date(`${key}-01T00:00:00Z`),
-          count: v.count,
-          avg: v.count > 0 ? v.sum / v.count : null,
-        }))
-        .sort((a, b) => a.date.getTime() - b.date.getTime());
-
-      return { avgLtv, cohorts };
+      return { avgLtv };
     },
   });
 
@@ -279,51 +218,9 @@ export default function AcquisitionMetrics({ period }: Props) {
             {ltv?.avgLtv == null ? "—" : formatPEN(ltv.avgLtv)}
           </p>
 
-          <div className="mt-4">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-              LTV por cohorte mensual
-            </p>
-            <div className="overflow-hidden rounded-md border">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50 text-xs text-muted-foreground">
-                  <tr>
-                    <th className="px-3 py-1.5 text-left font-medium">Mes</th>
-                    <th className="px-3 py-1.5 text-right font-medium">
-                      Clientes
-                    </th>
-                    <th className="px-3 py-1.5 text-right font-medium">
-                      LTV promedio
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(ltv?.cohorts ?? []).map((c) => (
-                    <tr key={c.key} className="border-t">
-                      <td className="px-3 py-1.5 capitalize">
-                        {format(c.date, "MMMM yyyy", { locale: es })}
-                      </td>
-                      <td className="px-3 py-1.5 text-right tabular-nums">
-                        {c.count}
-                      </td>
-                      <td className="px-3 py-1.5 text-right tabular-nums">
-                        {c.avg == null ? "—" : formatPEN(c.avg)}
-                      </td>
-                    </tr>
-                  ))}
-                  {(!ltv?.cohorts || ltv.cohorts.length === 0) && (
-                    <tr>
-                      <td
-                        colSpan={3}
-                        className="px-3 py-3 text-center text-muted-foreground"
-                      >
-                        —
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            promedio de gasto total por cliente activo
+          </p>
         </div>
       </div>
     </div>
