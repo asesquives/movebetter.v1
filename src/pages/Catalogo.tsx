@@ -180,7 +180,7 @@ export default function CatalogoPage() {
               {!editing.is_monthly_pass && (
                 <div className="bg-muted/30 rounded-lg p-3 text-sm">
                   <span className="text-muted-foreground">Precio por sesión:</span>{" "}
-                  <span className="font-semibold">S/ {(computedPricePerSession ?? 0).toFixed(2)}</span>
+                  <span className="font-semibold">{formatCurrency(computedPricePerSession ?? 0, { decimals: 2 })}</span>
                 </div>
               )}
               <div className="flex items-center justify-between">
