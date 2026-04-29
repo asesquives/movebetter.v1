@@ -166,10 +166,10 @@ export default function AdvancedMetrics({ period }: Props) {
         if (!p.schedule_start || !p.schedule_end || !p.schedule_days?.length) continue;
         const dailyMin = timeToMinutes(p.schedule_end) - timeToMinutes(p.schedule_start);
         if (dailyMin <= 0) continue;
-        const scheduleDays = (p.schedule_days as string[]).map((d) => d.toLowerCase().slice(0, 3));
+        const scheduleDays = new Set((p.schedule_days as string[]).map(normalizeDay));
         for (const d of days) {
-          const dayName = DAY_NAMES[d.getDay()];
-          if (scheduleDays.includes(dayName)) {
+          const tokens = DAY_TOKENS[d.getDay()];
+          if (tokens.some((t) => scheduleDays.has(t))) {
             availableMinutes += dailyMin;
           }
         }
