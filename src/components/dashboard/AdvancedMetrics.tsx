@@ -309,7 +309,16 @@ export default function AdvancedMetrics({ period }: Props) {
         title="Ingresos vs período anterior"
         cur={data?.growth?.revenue?.cur}
         prev={data?.growth?.revenue?.prev}
-        formatter={formatPEN}
+        formatter={(n) =>
+          Number.isInteger(n)
+            ? new Intl.NumberFormat("es-PE", {
+                style: "currency",
+                currency: "PEN",
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              }).format(n)
+            : formatPEN(n)
+        }
         previousLabel={prevRange.shortLabel}
       />
 
