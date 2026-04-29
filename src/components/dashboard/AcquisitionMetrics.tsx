@@ -279,51 +279,9 @@ export default function AcquisitionMetrics({ period }: Props) {
             {ltv?.avgLtv == null ? "—" : formatPEN(ltv.avgLtv)}
           </p>
 
-          <div className="mt-4">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-              LTV por cohorte mensual
-            </p>
-            <div className="overflow-hidden rounded-md border">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50 text-xs text-muted-foreground">
-                  <tr>
-                    <th className="px-3 py-1.5 text-left font-medium">Mes</th>
-                    <th className="px-3 py-1.5 text-right font-medium">
-                      Clientes
-                    </th>
-                    <th className="px-3 py-1.5 text-right font-medium">
-                      LTV promedio
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(ltv?.cohorts ?? []).map((c) => (
-                    <tr key={c.key} className="border-t">
-                      <td className="px-3 py-1.5 capitalize">
-                        {format(c.date, "MMMM yyyy", { locale: es })}
-                      </td>
-                      <td className="px-3 py-1.5 text-right tabular-nums">
-                        {c.count}
-                      </td>
-                      <td className="px-3 py-1.5 text-right tabular-nums">
-                        {c.avg == null ? "—" : formatPEN(c.avg)}
-                      </td>
-                    </tr>
-                  ))}
-                  {(!ltv?.cohorts || ltv.cohorts.length === 0) && (
-                    <tr>
-                      <td
-                        colSpan={3}
-                        className="px-3 py-3 text-center text-muted-foreground"
-                      >
-                        —
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            promedio de gasto total por cliente activo
+          </p>
         </div>
       </div>
     </div>
