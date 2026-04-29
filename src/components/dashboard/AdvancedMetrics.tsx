@@ -353,14 +353,6 @@ export default function AdvancedMetrics({ period }: Props) {
         formatter={formatPEN}
       />
 
-      {/* 5. Clientes vs mes anterior */}
-      <GrowthCard
-        title="Clientes vs mes anterior"
-        cur={data?.growth?.clients?.cur ?? 0}
-        pct={data?.growth?.clients?.pct ?? null}
-        formatter={intFmt}
-      />
-
       {/* 6. Sesiones vs mes anterior */}
       <GrowthCard
         title="Sesiones vs mes anterior"
