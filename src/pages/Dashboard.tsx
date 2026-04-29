@@ -102,7 +102,7 @@ export default function Dashboard() {
       <ScheduledHoursByProfessional period={period} />
 
       {/* Top clients */}
-      <TopClients />
+      <TopClients period={period} />
 
       {/* Quick links */}
       <div>
