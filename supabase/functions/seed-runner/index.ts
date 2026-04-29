@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const token = req.headers.get("x-seed-token");
-  const expected = Deno.env.get("SEED_RUNNER_TOKEN");
+  const expected = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!expected || token !== expected) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {
       status: 401,
