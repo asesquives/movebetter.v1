@@ -161,7 +161,7 @@ export default function IngresosPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-card rounded-lg border p-5">
           <p className="text-sm text-muted-foreground">Cobrado</p>
-          <p className="text-2xl font-bold mt-1">S/ {cobrado.toFixed(2)}</p>
+          <p className="text-2xl font-bold mt-1">{formatCurrency(cobrado, { decimals: 2 })}</p>
           <p className="text-xs text-muted-foreground mt-1">Paquetes vendidos en el período</p>
         </div>
         <div className="bg-card rounded-lg border p-5">
