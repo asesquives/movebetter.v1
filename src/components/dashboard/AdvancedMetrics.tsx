@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Progress } from "@/components/ui/progress";
+
 import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import {
   eachDayOfInterval,
@@ -313,10 +313,6 @@ export default function AdvancedMetrics({ period }: Props) {
         <p className="text-3xl font-bold mt-1 tabular-nums">
           {data?.occupancy == null ? dash : `${Math.round(data.occupancy)}%`}
         </p>
-        <Progress
-          value={data?.occupancy == null ? 0 : Math.min(100, data.occupancy)}
-          className="h-2 mt-3"
-        />
       </Card>
 
       {/* 2. Retención */}
