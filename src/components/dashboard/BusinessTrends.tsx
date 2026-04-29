@@ -19,6 +19,8 @@ import {
   startOfWeek,
   endOfWeek,
   subWeeks,
+  eachMonthOfInterval,
+  eachWeekOfInterval,
 } from "date-fns";
 import { es } from "date-fns/locale";
 import { DashboardPeriod, getPeriodRange } from "@/lib/dashboard-period";
@@ -42,44 +44,68 @@ interface Props {
 }
 
 export default function BusinessTrends({ period }: Props) {
-  const { granularity } = getPeriodRange(period);
+  const { granularity, start: periodStart, end: periodEnd } = getPeriodRange(period);
 
-  // Anchor the trend window at the period's reference date (selected month or week).
+  // Anchor for relative (mes/semana) modes; for ytd/custom we use the actual range.
   const anchor = period.date;
+  const isRelative = period.mode === "month" || period.mode === "week";
 
   function buildBuckets(): Bucket[] {
-    if (granularity === "month") {
-      const baseMonth = startOfMonth(anchor);
-      return Array.from({ length: 6 }).map((_, i) => {
-        const d = subMonths(baseMonth, 5 - i);
+    if (isRelative) {
+      if (granularity === "month") {
+        const baseMonth = startOfMonth(anchor);
+        return Array.from({ length: 6 }).map((_, i) => {
+          const d = subMonths(baseMonth, 5 - i);
+          return {
+            key: format(d, "yyyy-MM"),
+            label: format(d, "MMM", { locale: es }),
+            revenue: 0,
+            appointments: 0,
+          };
+        });
+      }
+      const baseWeek = startOfWeek(anchor, { weekStartsOn: 1 });
+      return Array.from({ length: 8 }).map((_, i) => {
+        const d = subWeeks(baseWeek, 7 - i);
         return {
-          key: format(d, "yyyy-MM"),
-          label: format(d, "MMM", { locale: es }),
+          key: format(d, "yyyy-'W'II"),
+          label: format(d, "d MMM", { locale: es }),
           revenue: 0,
           appointments: 0,
         };
       });
     }
-    const baseWeek = startOfWeek(anchor, { weekStartsOn: 1 });
-    return Array.from({ length: 8 }).map((_, i) => {
-      const d = subWeeks(baseWeek, 7 - i);
-      return {
-        key: format(d, "yyyy-'W'II"),
-        label: format(d, "d MMM", { locale: es }),
+
+    // YTD / Custom: bucket across the actual period range
+    if (granularity === "month") {
+      return eachMonthOfInterval({ start: periodStart, end: periodEnd }).map((d) => ({
+        key: format(d, "yyyy-MM"),
+        label: format(d, "MMM", { locale: es }),
         revenue: 0,
         appointments: 0,
-      };
-    });
+      }));
+    }
+    return eachWeekOfInterval(
+      { start: periodStart, end: periodEnd },
+      { weekStartsOn: 1 }
+    ).map((d) => ({
+      key: format(d, "yyyy-'W'II"),
+      label: format(d, "d MMM", { locale: es }),
+      revenue: 0,
+      appointments: 0,
+    }));
   }
 
-  const rangeStart =
-    granularity === "month"
-      ? startOfMonth(subMonths(anchor, 5)).toISOString()
-      : startOfWeek(subWeeks(anchor, 7), { weekStartsOn: 1 }).toISOString();
-  const rangeEnd =
-    granularity === "month"
-      ? endOfMonth(anchor).toISOString()
-      : endOfWeek(anchor, { weekStartsOn: 1 }).toISOString();
+  const rangeStart = isRelative
+    ? (granularity === "month"
+        ? startOfMonth(subMonths(anchor, 5)).toISOString()
+        : startOfWeek(subWeeks(anchor, 7), { weekStartsOn: 1 }).toISOString())
+    : periodStart.toISOString();
+  const rangeEnd = isRelative
+    ? (granularity === "month"
+        ? endOfMonth(anchor).toISOString()
+        : endOfWeek(anchor, { weekStartsOn: 1 }).toISOString())
+    : periodEnd.toISOString();
 
   const { data, isLoading } = useQuery({
     queryKey: ["business-trends", granularity, rangeStart, rangeEnd],
@@ -124,8 +150,11 @@ export default function BusinessTrends({ period }: Props) {
   const totalRevenue = buckets.reduce((sum, b) => sum + b.revenue, 0);
   const totalAppts = buckets.reduce((sum, b) => sum + b.appointments, 0);
 
-  const subtitle =
-    granularity === "month" ? "Últimos 6 meses" : "Últimas 8 semanas";
+  const subtitle = isRelative
+    ? granularity === "month"
+      ? "Últimos 6 meses"
+      : "Últimas 8 semanas"
+    : getPeriodRange(period).label;
 
   return (
     <div className="space-y-4">
