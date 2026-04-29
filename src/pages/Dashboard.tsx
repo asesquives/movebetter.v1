@@ -94,11 +94,11 @@ export default function Dashboard() {
           <p className="text-3xl font-bold mt-1">{periodAppointments?.length ?? 0}</p>
         </div>
         <div className="bg-card rounded-lg border p-5">
-          <p className="text-sm text-muted-foreground">Clientes totales</p>
+          <p className="text-sm text-muted-foreground">Clientes nuevos del período</p>
           <p className="text-3xl font-bold mt-1">{clientCount ?? 0}</p>
         </div>
         <div className="bg-card rounded-lg border p-5">
-          <p className="text-sm text-muted-foreground">Paquetes activos</p>
+          <p className="text-sm text-muted-foreground">Paquetes vendidos del período</p>
           <p className="text-3xl font-bold mt-1">{activePackages ?? 0}</p>
         </div>
       </div>
