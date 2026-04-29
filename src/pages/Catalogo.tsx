@@ -136,8 +136,8 @@ export default function CatalogoPage() {
                       <TableRow key={pkg.id} className={!pkg.is_active ? "opacity-50" : ""}>
                         <TableCell className="font-medium">{pkg.name}</TableCell>
                         <TableCell>{pkg.is_monthly_pass ? "Pase mensual" : pkg.sessions}</TableCell>
-                        <TableCell>S/ {Number(pkg.price).toFixed(2)}</TableCell>
-                        <TableCell>{pkg.price_per_session ? `S/ ${Number(pkg.price_per_session).toFixed(2)}` : "—"}</TableCell>
+                        <TableCell>{formatCurrency(Number(pkg.price), { decimals: 2 })}</TableCell>
+                        <TableCell>{pkg.price_per_session ? formatCurrency(Number(pkg.price_per_session), { decimals: 2 }) : "—"}</TableCell>
                         <TableCell>
                           <span className={`text-xs px-2 py-1 rounded-full font-medium ${pkg.is_active ? "bg-green-100 text-green-700" : "bg-muted text-muted-foreground"}`}>
                             {pkg.is_active ? "Activo" : "Inactivo"}
