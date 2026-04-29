@@ -37,15 +37,41 @@ export default function Dashboard() {
   });
 
   const { data: clientCount } = useQuery({
-    queryKey: ["clients-period", rangeStartIso, rangeEndIso],
+    queryKey: ["clients-new-by-first-activity", rangeStartIso, rangeEndIso],
     queryFn: async () => {
-      const { count, error } = await supabase
-        .from("clients")
-        .select("*", { count: "exact", head: true })
-        .gte("created_at", rangeStartIso)
-        .lte("created_at", rangeEndIso);
-      if (error) throw error;
-      return count || 0;
+      // Un cliente es "nuevo en el período" si su primera cita o primer paquete
+      // ocurrió dentro del rango seleccionado.
+      const [apptsRes, pkgsRes] = await Promise.all([
+        supabase
+          .from("appointments")
+          .select("client_id, start_time")
+          .neq("status", "cancelled")
+          .order("start_time", { ascending: true }),
+        supabase
+          .from("packages")
+          .select("client_id, created_at")
+          .order("created_at", { ascending: true }),
+      ]);
+      if (apptsRes.error) throw apptsRes.error;
+      if (pkgsRes.error) throw pkgsRes.error;
+
+      const firstActivity = new Map<string, number>();
+      const consider = (clientId: string | null, ts: string | null) => {
+        if (!clientId || !ts) return;
+        const t = new Date(ts).getTime();
+        const prev = firstActivity.get(clientId);
+        if (prev === undefined || t < prev) firstActivity.set(clientId, t);
+      };
+      (apptsRes.data ?? []).forEach((a) => consider(a.client_id, a.start_time));
+      (pkgsRes.data ?? []).forEach((p) => consider(p.client_id, p.created_at));
+
+      const startMs = range.start.getTime();
+      const endMs = range.end.getTime();
+      let count = 0;
+      firstActivity.forEach((t) => {
+        if (t >= startMs && t <= endMs) count += 1;
+      });
+      return count;
     },
   });
 
