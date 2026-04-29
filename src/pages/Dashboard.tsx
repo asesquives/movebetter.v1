@@ -177,23 +177,8 @@ export default function Dashboard() {
       {/* Top clients */}
       <TopClients period={period} />
 
-      {/* Quick links */}
-      <div>
-        <h2 className="text-lg font-semibold mb-3">Acceso rápido</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {quickLinks.map((link) => (
-            <Link
-              key={link.href}
-              to={link.href}
-              className="bg-card rounded-lg border p-4 hover:border-primary/50 transition-colors group"
-            >
-              <link.icon className="h-5 w-5 text-primary mb-2" />
-              <p className="font-medium text-sm">{link.title}</p>
-              <p className="text-xs text-muted-foreground">{link.description}</p>
-            </Link>
-          ))}
-        </div>
-      </div>
+      {/* No-shows del período */}
+      <NoShowsSection period={period} />
     </div>
   );
 }
