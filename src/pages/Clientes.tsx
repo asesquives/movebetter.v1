@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { SESSION_TYPE_COLORS } from "@/lib/agenda-constants";
+import { formatCurrency } from "@/lib/format";
 
 export default function ClientesPage() {
   const queryClient = useQueryClient();
@@ -186,7 +187,7 @@ export default function ClientesPage() {
               {/* Pending balance */}
               <div className="bg-card rounded-lg border p-4">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Saldo pendiente de devengar</p>
-                <p className="text-2xl font-bold mt-1">S/ {pendingBalance.toFixed(2)}</p>
+                <p className="text-2xl font-bold mt-1">{formatCurrency(pendingBalance, { decimals: 2 })}</p>
               </div>
 
               {/* Active packages */}
@@ -207,7 +208,7 @@ export default function ClientesPage() {
                         </span>
                       </div>
                       <Progress value={(pkg.sessions_used / pkg.total_sessions) * 100} className="h-2" />
-                      <p className="text-xs text-muted-foreground">S/ {Number(pkg.total_paid).toFixed(2)} pagado · S/ {Number(pkg.price_per_session).toFixed(2)}/sesión</p>
+                      <p className="text-xs text-muted-foreground">{formatCurrency(Number(pkg.total_paid), { decimals: 2 })} pagado · {formatCurrency(Number(pkg.price_per_session), { decimals: 2 })}/sesión</p>
                     </div>
                   ))
                 )}

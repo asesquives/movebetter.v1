@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, CheckCircle2, Minus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { formatCurrency } from "@/lib/format";
 import {
   DashboardPeriod,
   getPeriodRange,
@@ -33,22 +34,6 @@ const TYPE_FALLBACK_PRICE: Record<ApptType, number> = {
   rehabilitation: 80,
   prehabilitation: 60,
 };
-
-const formatPEN = (n: number) =>
-  new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n);
-
-const formatPENNoDec = (n: number) =>
-  new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
 
 export default function NoShowsSection({ period }: Props) {
   const range = getPeriodRange(period);
@@ -201,7 +186,7 @@ export default function NoShowsSection({ period }: Props) {
         <div className="bg-card rounded-lg border p-5">
           <p className="text-sm text-muted-foreground">Ingreso perdido</p>
           <p className="text-3xl font-bold mt-1 tabular-nums text-red-600">
-            {formatPEN(data?.totalLost ?? 0)}
+            {formatCurrency(data?.totalLost ?? 0, { decimals: 2 })}
           </p>
           <p className="text-xs text-muted-foreground mt-2">
             por citas no-show del período
@@ -236,7 +221,7 @@ export default function NoShowsSection({ period }: Props) {
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-medium">{TYPE_LABEL[r.type]}</span>
                     <span className="text-muted-foreground tabular-nums">
-                      {r.count} · {formatPENNoDec(r.lost)}
+                      {r.count} · {formatCurrency(r.lost)}
                     </span>
                   </div>
                   <div className="h-2.5 w-full bg-muted rounded-full overflow-hidden">

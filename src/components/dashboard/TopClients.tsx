@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Trophy, Crown, Medal, Award } from "lucide-react";
 import { DashboardPeriod, getPeriodRange } from "@/lib/dashboard-period";
+import { formatCurrency } from "@/lib/format";
 
 interface ClientPayment {
   client_id: string;
@@ -15,13 +16,6 @@ const STANDALONE_PRICES: Record<string, number> = {
   physio_diagnosis: 150,
   recovery: 70,
 };
-
-const formatCurrency = (n: number) =>
-  new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-    maximumFractionDigits: 0,
-  }).format(n);
 
 /**
  * Ranks clients by money paid in the period:

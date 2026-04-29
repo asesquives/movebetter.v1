@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
+import { formatCurrency } from "@/lib/format";
 
 type CatalogProgram = Database["public"]["Enums"]["catalog_program"];
 type CatalogRow = Database["public"]["Tables"]["package_catalog"]["Row"];
@@ -135,8 +136,8 @@ export default function CatalogoPage() {
                       <TableRow key={pkg.id} className={!pkg.is_active ? "opacity-50" : ""}>
                         <TableCell className="font-medium">{pkg.name}</TableCell>
                         <TableCell>{pkg.is_monthly_pass ? "Pase mensual" : pkg.sessions}</TableCell>
-                        <TableCell>S/ {Number(pkg.price).toFixed(2)}</TableCell>
-                        <TableCell>{pkg.price_per_session ? `S/ ${Number(pkg.price_per_session).toFixed(2)}` : "—"}</TableCell>
+                        <TableCell>{formatCurrency(Number(pkg.price), { decimals: 2 })}</TableCell>
+                        <TableCell>{pkg.price_per_session ? formatCurrency(Number(pkg.price_per_session), { decimals: 2 }) : "—"}</TableCell>
                         <TableCell>
                           <span className={`text-xs px-2 py-1 rounded-full font-medium ${pkg.is_active ? "bg-green-100 text-green-700" : "bg-muted text-muted-foreground"}`}>
                             {pkg.is_active ? "Activo" : "Inactivo"}
@@ -179,7 +180,7 @@ export default function CatalogoPage() {
               {!editing.is_monthly_pass && (
                 <div className="bg-muted/30 rounded-lg p-3 text-sm">
                   <span className="text-muted-foreground">Precio por sesión:</span>{" "}
-                  <span className="font-semibold">S/ {(computedPricePerSession ?? 0).toFixed(2)}</span>
+                  <span className="font-semibold">{formatCurrency(computedPricePerSession ?? 0, { decimals: 2 })}</span>
                 </div>
               )}
               <div className="flex items-center justify-between">

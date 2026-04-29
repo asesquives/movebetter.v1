@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Download } from "lucide-react";
 import { SESSION_TYPE_COLORS } from "@/lib/agenda-constants";
+import { formatCurrency } from "@/lib/format";
 
 type FilterType = "month" | "week" | "custom";
 
@@ -160,17 +161,17 @@ export default function IngresosPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-card rounded-lg border p-5">
           <p className="text-sm text-muted-foreground">Cobrado</p>
-          <p className="text-2xl font-bold mt-1">S/ {cobrado.toFixed(2)}</p>
+          <p className="text-2xl font-bold mt-1">{formatCurrency(cobrado, { decimals: 2 })}</p>
           <p className="text-xs text-muted-foreground mt-1">Paquetes vendidos en el período</p>
         </div>
         <div className="bg-card rounded-lg border p-5">
           <p className="text-sm text-muted-foreground">Devengado</p>
-          <p className="text-2xl font-bold mt-1">S/ {devengado.toFixed(2)}</p>
+          <p className="text-2xl font-bold mt-1">{formatCurrency(devengado, { decimals: 2 })}</p>
           <p className="text-xs text-muted-foreground mt-1">Sesiones realizadas en el período</p>
         </div>
         <div className="bg-card rounded-lg border p-5">
           <p className="text-sm text-muted-foreground">Saldo diferido</p>
-          <p className="text-2xl font-bold mt-1">S/ {diferido.toFixed(2)}</p>
+          <p className="text-2xl font-bold mt-1">{formatCurrency(diferido, { decimals: 2 })}</p>
           <p className="text-xs text-muted-foreground mt-1">Cobrado − Devengado</p>
         </div>
       </div>
@@ -215,7 +216,7 @@ export default function IngresosPage() {
                     </TableCell>
                     <TableCell className="text-sm">{appt?.professionals?.name || "—"}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{pkg?.name || <span className="italic">Sesión suelta</span>}</TableCell>
-                    <TableCell className="text-right font-semibold text-sm">S/ {Number(e.amount).toFixed(2)}</TableCell>
+                    <TableCell className="text-right font-semibold text-sm">{formatCurrency(Number(e.amount), { decimals: 2 })}</TableCell>
                   </TableRow>
                 );
               })}

@@ -32,12 +32,7 @@ interface Bucket {
   appointments: number;
 }
 
-const formatCurrency = (n: number) =>
-  new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-    maximumFractionDigits: 0,
-  }).format(n);
+import { formatCurrency } from "@/lib/format";
 
 interface Props {
   period: DashboardPeriod;
@@ -211,7 +206,7 @@ export default function BusinessTrends({ period }: Props) {
                 <BarChart data={buckets} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                   <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => `S/${v}`} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => formatCurrency(Number(v))} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--popover))",

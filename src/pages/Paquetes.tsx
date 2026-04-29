@@ -13,6 +13,7 @@ import { Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { addDays, endOfMonth, format } from "date-fns";
 import { ClientSearchOrCreate } from "@/components/clients/ClientSearchOrCreate";
+import { formatCurrency } from "@/lib/format";
 import type { Database } from "@/integrations/supabase/types";
 
 type PackageType = Database["public"]["Enums"]["package_type"];
@@ -221,7 +222,7 @@ export default function PaquetesPage() {
                   <SelectContent>
                     {selectableCatalog.map((c) => (
                       <SelectItem key={c.id} value={c.id}>
-                        {c.name} — S/ {Number(c.price).toFixed(2)}
+                        {c.name} — {formatCurrency(Number(c.price), { decimals: 2 })}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -240,7 +241,7 @@ export default function PaquetesPage() {
                   </p>
                   <p>
                     <span className="text-muted-foreground">Precio por sesión:</span>{" "}
-                    <span className="font-semibold">S/ {pricePerSession.toFixed(2)}</span>
+                    <span className="font-semibold">{formatCurrency(pricePerSession, { decimals: 2 })}</span>
                   </p>
                 </div>
               )}
@@ -263,7 +264,7 @@ export default function PaquetesPage() {
                 />
                 {selectedCatalog && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    Sugerido: S/ {Number(selectedCatalog.price).toFixed(2)}. Edita si el cliente negoció otro precio.
+                    Sugerido: {formatCurrency(Number(selectedCatalog.price), { decimals: 2 })}. Edita si el cliente negoció otro precio.
                   </p>
                 )}
               </div>
@@ -328,7 +329,7 @@ export default function PaquetesPage() {
                   <div className="min-w-0">
                     <p className="font-medium truncate">{pkg.name}</p>
                     <p className="text-sm text-muted-foreground">
-                      {(pkg.clients as any)?.name} · {pkg.is_monthly_pass ? "Monthly pass" : `${pkg.sessions_used}/${pkg.total_sessions} sesiones`} · S/ {Number(pkg.total_paid).toFixed(2)}
+                      {(pkg.clients as any)?.name} · {pkg.is_monthly_pass ? "Monthly pass" : `${pkg.sessions_used}/${pkg.total_sessions} sesiones`} · {formatCurrency(Number(pkg.total_paid), { decimals: 2 })}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -403,11 +404,13 @@ export default function PaquetesPage() {
                   required
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Precio por sesión: S/{" "}
-                  {(editingPkg.total_sessions > 0
-                    ? (parseFloat(editForm.total_paid || "0") || 0) / editingPkg.total_sessions
-                    : 0
-                  ).toFixed(2)}
+                  Precio por sesión:{" "}
+                  {formatCurrency(
+                    editingPkg.total_sessions > 0
+                      ? (parseFloat(editForm.total_paid || "0") || 0) / editingPkg.total_sessions
+                      : 0,
+                    { decimals: 2 },
+                  )}
                 </p>
               </div>
 

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { formatCurrency } from "@/lib/format";
 import {
   DashboardPeriod,
   getPeriodRange,
@@ -11,13 +12,6 @@ interface Props {
   period: DashboardPeriod;
 }
 
-const formatPEN = (n: number) =>
-  new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
 
 const DIAGNOSIS_TYPES = ["medical_diagnosis", "physio_diagnosis"] as const;
 
@@ -215,7 +209,7 @@ export default function AcquisitionMetrics({ period }: Props) {
             LTV promedio (clientes activos del período)
           </p>
           <p className="text-3xl font-bold mt-1 tabular-nums">
-            {ltv?.avgLtv == null ? "—" : formatPEN(ltv.avgLtv)}
+            {ltv?.avgLtv == null ? "—" : formatCurrency(ltv.avgLtv)}
           </p>
 
           <p className="text-xs text-muted-foreground mt-2">

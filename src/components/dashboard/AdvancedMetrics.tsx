@@ -12,6 +12,7 @@ import {
 } from "@/lib/dashboard-period";
 import DiffCard from "./DiffCard";
 import { SESSION_TYPE_COLORS, type AppointmentType } from "@/lib/agenda-constants";
+import { formatCurrency } from "@/lib/format";
 
 interface Props {
   period: DashboardPeriod;
@@ -30,14 +31,6 @@ const DAY_TOKENS: string[][] = [
 
 const normalizeDay = (s: string) =>
   s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-
-const formatPEN = (n: number) =>
-  new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n);
 
 function timeToMinutes(t: string): number {
   const [h, m] = t.split(":").map(Number);
@@ -332,7 +325,7 @@ export default function AdvancedMetrics({ period }: Props) {
       <Card>
         <p className="text-sm text-muted-foreground">Ingreso promedio por cliente</p>
         <p className="text-3xl font-bold mt-1 tabular-nums">
-          {data?.avgRevenuePerClient == null ? dash : formatPEN(data.avgRevenuePerClient)}
+          {data?.avgRevenuePerClient == null ? dash : formatCurrency(data.avgRevenuePerClient, { decimals: 2 })}
         </p>
         <p className="text-xs text-muted-foreground mt-2">clientes con actividad</p>
       </Card>
@@ -379,16 +372,7 @@ export default function AdvancedMetrics({ period }: Props) {
         title="Ingresos vs período anterior"
         cur={data?.growth?.revenue?.cur}
         prev={data?.growth?.revenue?.prev}
-        formatter={(n) =>
-          Number.isInteger(n)
-            ? new Intl.NumberFormat("es-PE", {
-                style: "currency",
-                currency: "PEN",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }).format(n)
-            : formatPEN(n)
-        }
+        formatter={(n) => formatCurrency(n)}
         previousLabel={prevRange.shortLabel}
       />
 
