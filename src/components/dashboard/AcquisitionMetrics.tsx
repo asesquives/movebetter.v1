@@ -62,8 +62,7 @@ async function computeConversion(startIso: string, endIso: string) {
     const has = (pkgs ?? []).some(
       (p) =>
         p.client_id === cid &&
-        p.type !== "medical_diagnosis" &&
-        p.type !== "physio_diagnosis" &&
+        p.type !== "diagnosis" &&
         new Date(p.created_at).getTime() >= diagTs,
     );
     if (has) converted += 1;
