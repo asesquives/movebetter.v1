@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
+import { formatCurrency } from "@/lib/format";
 
 type CatalogProgram = Database["public"]["Enums"]["catalog_program"];
 type CatalogRow = Database["public"]["Tables"]["package_catalog"]["Row"];
