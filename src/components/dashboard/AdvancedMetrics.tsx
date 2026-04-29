@@ -325,7 +325,7 @@ export default function AdvancedMetrics({ period }: Props) {
       <Card>
         <p className="text-sm text-muted-foreground">Ingreso promedio por cliente</p>
         <p className="text-3xl font-bold mt-1 tabular-nums">
-          {data?.avgRevenuePerClient == null ? dash : formatPEN(data.avgRevenuePerClient)}
+          {data?.avgRevenuePerClient == null ? dash : formatCurrency(data.avgRevenuePerClient, { decimals: 2 })}
         </p>
         <p className="text-xs text-muted-foreground mt-2">clientes con actividad</p>
       </Card>
