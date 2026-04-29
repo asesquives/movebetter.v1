@@ -179,6 +179,9 @@ export default function Dashboard() {
 
       {/* No-shows del período */}
       <NoShowsSection period={period} />
+
+      {/* Adquisición de clientes */}
+      <AcquisitionMetrics period={period} />
     </div>
   );
 }
