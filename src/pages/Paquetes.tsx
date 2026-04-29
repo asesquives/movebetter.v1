@@ -316,17 +316,33 @@ export default function PaquetesPage() {
           {packages.map((pkg) => {
             const progress = pkg.total_sessions > 0 ? (pkg.sessions_used / pkg.total_sessions) * 100 : 0;
             return (
-              <div key={pkg.id} className="bg-card rounded-lg border p-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{pkg.name}</p>
+              <div
+                key={pkg.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => openEdit(pkg)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openEdit(pkg); } }}
+                className="bg-card rounded-lg border p-4 space-y-2 cursor-pointer hover:bg-accent/30 transition-colors"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-medium truncate">{pkg.name}</p>
                     <p className="text-sm text-muted-foreground">
                       {(pkg.clients as any)?.name} · {pkg.is_monthly_pass ? "Monthly pass" : `${pkg.sessions_used}/${pkg.total_sessions} sesiones`} · S/ {Number(pkg.total_paid).toFixed(2)}
                     </p>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusColors[pkg.status] || ""}`}>
-                    {statusLabels[pkg.status] || pkg.status}
-                  </span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusColors[pkg.status] || ""}`}>
+                      {statusLabels[pkg.status] || pkg.status}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => { e.stopPropagation(); openEdit(pkg); }}
+                    >
+                      <Pencil className="h-4 w-4 mr-1" /> Editar
+                    </Button>
+                  </div>
                 </div>
                 <Progress value={progress} className="h-1.5" />
                 {pkg.expires_at && (
