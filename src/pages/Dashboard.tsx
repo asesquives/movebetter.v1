@@ -122,14 +122,6 @@ export default function Dashboard() {
     },
   });
 
-  const quickLinks = [
-    { title: "Agenda", icon: Calendar, href: "/agenda", description: "Ver citas del día" },
-    { title: "Clientes", icon: Users, href: "/clientes", description: "Gestionar pacientes" },
-    { title: "Paquetes", icon: Package, href: "/paquetes", description: "Planes activos" },
-    { title: "Ingresos", icon: DollarSign, href: "/ingresos", description: "Resumen financiero" },
-    { title: "Disponibilidad", icon: Clock, href: "/disponibilidad", description: "Horarios del equipo" },
-    { title: "Equipo", icon: UserCog, href: "/equipo", description: "Profesionales" },
-  ];
 
   return (
     <div className="space-y-8">
