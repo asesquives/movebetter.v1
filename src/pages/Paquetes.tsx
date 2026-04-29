@@ -404,11 +404,13 @@ export default function PaquetesPage() {
                   required
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Precio por sesión: S/{" "}
-                  {(editingPkg.total_sessions > 0
-                    ? (parseFloat(editForm.total_paid || "0") || 0) / editingPkg.total_sessions
-                    : 0
-                  ).toFixed(2)}
+                  Precio por sesión:{" "}
+                  {formatCurrency(
+                    editingPkg.total_sessions > 0
+                      ? (parseFloat(editForm.total_paid || "0") || 0) / editingPkg.total_sessions
+                      : 0,
+                    { decimals: 2 },
+                  )}
                 </p>
               </div>
 
