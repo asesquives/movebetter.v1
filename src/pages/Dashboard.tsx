@@ -36,18 +36,26 @@ export default function Dashboard() {
   });
 
   const { data: clientCount } = useQuery({
-    queryKey: ["client-count"],
+    queryKey: ["clients-period", rangeStartIso, rangeEndIso],
     queryFn: async () => {
-      const { count, error } = await supabase.from("clients").select("*", { count: "exact", head: true });
+      const { count, error } = await supabase
+        .from("clients")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", rangeStartIso)
+        .lte("created_at", rangeEndIso);
       if (error) throw error;
       return count || 0;
     },
   });
 
   const { data: activePackages } = useQuery({
-    queryKey: ["active-packages-count"],
+    queryKey: ["packages-period", rangeStartIso, rangeEndIso],
     queryFn: async () => {
-      const { count, error } = await supabase.from("packages").select("*", { count: "exact", head: true }).eq("status", "active");
+      const { count, error } = await supabase
+        .from("packages")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", rangeStartIso)
+        .lte("created_at", rangeEndIso);
       if (error) throw error;
       return count || 0;
     },
