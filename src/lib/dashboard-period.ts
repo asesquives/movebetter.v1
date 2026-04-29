@@ -4,7 +4,6 @@ import {
   startOfWeek,
   endOfWeek,
   startOfYear,
-  endOfYear,
   endOfDay,
   format,
   subMonths,
