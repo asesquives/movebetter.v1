@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, Users, Package, DollarSign, Clock, UserCog } from "lucide-react";
+import { Calendar, Users, Package, Clock, UserCog, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -10,7 +10,12 @@ import BusinessTrends from "@/components/dashboard/BusinessTrends";
 import OccupancyAndExpiringPackages from "@/components/dashboard/OccupancyAndExpiringPackages";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import AdvancedMetrics from "@/components/dashboard/AdvancedMetrics";
-import { DashboardPeriod, getPeriodRange } from "@/lib/dashboard-period";
+import DiffCard from "@/components/dashboard/DiffCard";
+import {
+  DashboardPeriod,
+  getPeriodRange,
+  getPreviousPeriodRange,
+} from "@/lib/dashboard-period";
 
 export default function Dashboard() {
   const today = new Date();
@@ -19,28 +24,45 @@ export default function Dashboard() {
     date: new Date(),
   });
   const range = getPeriodRange(period);
+  const prevRange = getPreviousPeriodRange(period);
   const rangeStartIso = range.start.toISOString();
   const rangeEndIso = range.end.toISOString();
+  const prevStartIso = prevRange.start.toISOString();
+  const prevEndIso = prevRange.end.toISOString();
 
-  const { data: periodAppointments } = useQuery({
-    queryKey: ["appointments-period", rangeStartIso, rangeEndIso],
+  const { data: apptsCounts } = useQuery({
+    queryKey: ["appointments-diff", rangeStartIso, rangeEndIso, prevStartIso, prevEndIso],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("appointments")
-        .select("id")
-        .gte("start_time", rangeStartIso)
-        .lte("start_time", rangeEndIso)
-        .neq("status", "cancelled");
-      if (error) throw error;
-      return data;
+      const [curRes, prevRes] = await Promise.all([
+        supabase
+          .from("appointments")
+          .select("id", { count: "exact", head: true })
+          .gte("start_time", rangeStartIso)
+          .lte("start_time", rangeEndIso)
+          .neq("status", "cancelled"),
+        supabase
+          .from("appointments")
+          .select("id", { count: "exact", head: true })
+          .gte("start_time", prevStartIso)
+          .lte("start_time", prevEndIso)
+          .neq("status", "cancelled"),
+      ]);
+      if (curRes.error) throw curRes.error;
+      if (prevRes.error) throw prevRes.error;
+      return { cur: curRes.count ?? 0, prev: prevRes.count ?? 0 };
     },
   });
 
-  const { data: clientCount } = useQuery({
-    queryKey: ["clients-new-by-first-activity", rangeStartIso, rangeEndIso],
+  const { data: clientsCounts } = useQuery({
+    queryKey: [
+      "clients-new-diff",
+      rangeStartIso,
+      rangeEndIso,
+      prevStartIso,
+      prevEndIso,
+    ],
     queryFn: async () => {
-      // Un cliente es "nuevo en el período" si su primera cita o primer paquete
-      // ocurrió dentro del rango seleccionado.
+      // Cliente "nuevo en período X" = primera actividad (cita o paquete) cae dentro de X.
       const [apptsRes, pkgsRes] = await Promise.all([
         supabase
           .from("appointments")
@@ -65,26 +87,38 @@ export default function Dashboard() {
       (apptsRes.data ?? []).forEach((a) => consider(a.client_id, a.start_time));
       (pkgsRes.data ?? []).forEach((p) => consider(p.client_id, p.created_at));
 
-      const startMs = range.start.getTime();
-      const endMs = range.end.getTime();
-      let count = 0;
+      const curStart = range.start.getTime();
+      const curEnd = range.end.getTime();
+      const prevStart = prevRange.start.getTime();
+      const prevEnd = prevRange.end.getTime();
+      let cur = 0;
+      let prev = 0;
       firstActivity.forEach((t) => {
-        if (t >= startMs && t <= endMs) count += 1;
+        if (t >= curStart && t <= curEnd) cur += 1;
+        if (t >= prevStart && t <= prevEnd) prev += 1;
       });
-      return count;
+      return { cur, prev };
     },
   });
 
-  const { data: activePackages } = useQuery({
-    queryKey: ["packages-period", rangeStartIso, rangeEndIso],
+  const { data: pkgCounts } = useQuery({
+    queryKey: ["packages-diff", rangeStartIso, rangeEndIso, prevStartIso, prevEndIso],
     queryFn: async () => {
-      const { count, error } = await supabase
-        .from("packages")
-        .select("*", { count: "exact", head: true })
-        .gte("created_at", rangeStartIso)
-        .lte("created_at", rangeEndIso);
-      if (error) throw error;
-      return count || 0;
+      const [curRes, prevRes] = await Promise.all([
+        supabase
+          .from("packages")
+          .select("*", { count: "exact", head: true })
+          .gte("created_at", rangeStartIso)
+          .lte("created_at", rangeEndIso),
+        supabase
+          .from("packages")
+          .select("*", { count: "exact", head: true })
+          .gte("created_at", prevStartIso)
+          .lte("created_at", prevEndIso),
+      ]);
+      if (curRes.error) throw curRes.error;
+      if (prevRes.error) throw prevRes.error;
+      return { cur: curRes.count ?? 0, prev: prevRes.count ?? 0 };
     },
   });
 
@@ -114,20 +148,29 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats — diferencia vs período anterior */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-card rounded-lg border p-5">
-          <p className="text-sm text-muted-foreground">Citas del período</p>
-          <p className="text-3xl font-bold mt-1">{periodAppointments?.length ?? 0}</p>
-        </div>
-        <div className="bg-card rounded-lg border p-5">
-          <p className="text-sm text-muted-foreground">Clientes nuevos del período</p>
-          <p className="text-3xl font-bold mt-1">{clientCount ?? 0}</p>
-        </div>
-        <div className="bg-card rounded-lg border p-5">
-          <p className="text-sm text-muted-foreground">Paquetes vendidos del período</p>
-          <p className="text-3xl font-bold mt-1">{activePackages ?? 0}</p>
-        </div>
+        <DiffCard
+          title="Citas vs período anterior"
+          cur={apptsCounts?.cur}
+          prev={apptsCounts?.prev}
+          unit={{ singular: "cita", plural: "citas" }}
+          previousLabel={prevRange.shortLabel}
+        />
+        <DiffCard
+          title="Clientes vs período anterior"
+          cur={clientsCounts?.cur}
+          prev={clientsCounts?.prev}
+          unit={{ singular: "cliente", plural: "clientes" }}
+          previousLabel={prevRange.shortLabel}
+        />
+        <DiffCard
+          title="Paquetes vs período anterior"
+          cur={pkgCounts?.cur}
+          prev={pkgCounts?.prev}
+          unit={{ singular: "paquete", plural: "paquetes" }}
+          previousLabel={prevRange.shortLabel}
+        />
       </div>
 
       {/* Advanced metrics */}
