@@ -252,6 +252,38 @@ export default function AdvancedMetrics({ period }: Props) {
     },
   });
 
+  // ===== Sesión más agendada (separate, lighter query) =====
+  const { data: topType } = useQuery({
+    queryKey: ["dashboard-top-session-type", startIso, endIso],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("appointments")
+        .select("type, revenue_amount, status")
+        .gte("start_time", startIso)
+        .lte("start_time", endIso)
+        .neq("status", "cancelled");
+      if (error) throw error;
+
+      const counts = new Map<AppointmentType, { count: number; revenue: number }>();
+      (data ?? []).forEach((a) => {
+        const t = a.type as AppointmentType;
+        const cur = counts.get(t) ?? { count: 0, revenue: 0 };
+        cur.count += 1;
+        cur.revenue += Number(a.revenue_amount ?? 0);
+        counts.set(t, cur);
+      });
+
+      const ranking = Array.from(counts.entries())
+        .map(([type, v]) => ({ type, ...v }))
+        .sort((a, b) => {
+          if (b.count !== a.count) return b.count - a.count;
+          return b.revenue - a.revenue;
+        });
+
+      return ranking;
+    },
+  });
+
   const dash = "—";
 
   const retentionColor =
