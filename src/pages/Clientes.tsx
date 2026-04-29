@@ -208,7 +208,7 @@ export default function ClientesPage() {
                         </span>
                       </div>
                       <Progress value={(pkg.sessions_used / pkg.total_sessions) * 100} className="h-2" />
-                      <p className="text-xs text-muted-foreground">S/ {Number(pkg.total_paid).toFixed(2)} pagado · S/ {Number(pkg.price_per_session).toFixed(2)}/sesión</p>
+                      <p className="text-xs text-muted-foreground">{formatCurrency(Number(pkg.total_paid), { decimals: 2 })} pagado · {formatCurrency(Number(pkg.price_per_session), { decimals: 2 })}/sesión</p>
                     </div>
                   ))
                 )}
