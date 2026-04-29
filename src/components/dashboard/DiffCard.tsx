@@ -42,9 +42,6 @@ export default function DiffCard({
     const abs = Math.abs(n);
     const body = formatter ? formatter(abs) : intFmt.format(abs);
     const prefix = n > 0 ? "+" : n < 0 ? "−" : "";
-    if (unit && !formatter) {
-      return `${prefix}${body} ${abs === 1 ? unit.singular : unit.plural}`;
-    }
     return `${prefix}${body}`;
   };
 
