@@ -351,18 +351,6 @@ export default function AdvancedMetrics({ period }: Props) {
                 {SESSION_TYPE_COLORS[topType[0].type].label}
               </span>
             </div>
-            <ol className="mt-3 space-y-0.5 text-xs text-muted-foreground">
-              {topType.slice(0, 3).map((r, i) => (
-                <li key={r.type} className="flex items-center gap-1.5">
-                  <span className="tabular-nums">{i + 1}.</span>
-                  <span
-                    className={`inline-block h-1.5 w-1.5 rounded-full ${SESSION_TYPE_COLORS[r.type].bg}`}
-                  />
-                  <span>{SESSION_TYPE_COLORS[r.type].label}</span>
-                  <span className="ml-auto tabular-nums">{r.count}</span>
-                </li>
-              ))}
-            </ol>
           </>
         )}
       </Card>
