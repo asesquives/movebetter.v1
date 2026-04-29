@@ -329,7 +329,7 @@ export default function PaquetesPage() {
                   <div className="min-w-0">
                     <p className="font-medium truncate">{pkg.name}</p>
                     <p className="text-sm text-muted-foreground">
-                      {(pkg.clients as any)?.name} · {pkg.is_monthly_pass ? "Monthly pass" : `${pkg.sessions_used}/${pkg.total_sessions} sesiones`} · S/ {Number(pkg.total_paid).toFixed(2)}
+                      {(pkg.clients as any)?.name} · {pkg.is_monthly_pass ? "Monthly pass" : `${pkg.sessions_used}/${pkg.total_sessions} sesiones`} · {formatCurrency(Number(pkg.total_paid), { decimals: 2 })}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
