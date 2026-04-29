@@ -35,22 +35,6 @@ const TYPE_FALLBACK_PRICE: Record<ApptType, number> = {
   prehabilitation: 60,
 };
 
-const formatPEN = (n: number) =>
-  new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n);
-
-const formatPENNoDec = (n: number) =>
-  new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-
 export default function NoShowsSection({ period }: Props) {
   const range = getPeriodRange(period);
   const prevRange = getPreviousPeriodRange(period);
