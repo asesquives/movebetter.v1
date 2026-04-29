@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowUp, Minus } from "lucide-react";
+import { formatNumber } from "@/lib/format";
 
 interface Props {
   title: string;
@@ -11,8 +12,6 @@ interface Props {
   /** Short label for the previous period (e.g. "marzo 2026", "semana anterior"). */
   previousLabel: string;
 }
-
-const intFmt = new Intl.NumberFormat("es-PE");
 
 export default function DiffCard({
   title,
