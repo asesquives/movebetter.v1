@@ -9,6 +9,7 @@ import TopClients from "@/components/dashboard/TopClients";
 import BusinessTrends from "@/components/dashboard/BusinessTrends";
 import ScheduledHoursByProfessional from "@/components/dashboard/ScheduledHoursByProfessional";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
+import AdvancedMetrics from "@/components/dashboard/AdvancedMetrics";
 import { DashboardPeriod, getPeriodRange } from "@/lib/dashboard-period";
 
 export default function Dashboard() {
