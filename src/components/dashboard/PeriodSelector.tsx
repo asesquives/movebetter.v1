@@ -6,14 +6,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   DashboardPeriod,
   PeriodMode,
   buildMonthOptions,
   buildWeekOptions,
 } from "@/lib/dashboard-period";
-import { format, startOfMonth, startOfWeek } from "date-fns";
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  startOfYear,
+} from "date-fns";
+import { es } from "date-fns/locale";
 import { useMemo } from "react";
+import type { DateRange } from "react-day-picker";
 
 interface Props {
   value: DashboardPeriod;
@@ -33,13 +46,32 @@ export default function PeriodSelector({ value, onChange }: Props) {
   const handleMode = (mode: PeriodMode) => {
     if (mode === "month") {
       onChange({ mode: "month", date: startOfMonth(new Date()) });
-    } else {
+    } else if (mode === "week") {
       onChange({
         mode: "week",
         date: startOfWeek(new Date(), { weekStartsOn: 1 }),
       });
+    } else if (mode === "ytd") {
+      onChange({ mode: "ytd", date: startOfYear(new Date()) });
+    } else {
+      onChange({
+        mode: "custom",
+        date: new Date(),
+        customStart: startOfMonth(new Date()),
+        customEnd: endOfMonth(new Date()),
+      });
     }
   };
+
+  const dateRange: DateRange | undefined =
+    value.mode === "custom" && value.customStart
+      ? { from: value.customStart, to: value.customEnd }
+      : undefined;
+
+  const customLabel =
+    value.mode === "custom" && value.customStart && value.customEnd
+      ? `${format(value.customStart, "d MMM yyyy", { locale: es })} - ${format(value.customEnd, "d MMM yyyy", { locale: es })}`
+      : "Selecciona un rango";
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -47,6 +79,8 @@ export default function PeriodSelector({ value, onChange }: Props) {
         <TabsList className="h-9">
           <TabsTrigger value="month" className="text-xs">Mes</TabsTrigger>
           <TabsTrigger value="week" className="text-xs">Semana</TabsTrigger>
+          <TabsTrigger value="ytd" className="text-xs">YTD</TabsTrigger>
+          <TabsTrigger value="custom" className="text-xs">Personalizado</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -90,6 +124,42 @@ export default function PeriodSelector({ value, onChange }: Props) {
             ))}
           </SelectContent>
         </Select>
+      )}
+
+      {value.mode === "custom" && (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "h-9 justify-start text-left font-normal min-w-[260px]",
+                !dateRange && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {customLabel}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="end">
+            <Calendar
+              mode="range"
+              selected={dateRange}
+              onSelect={(range) => {
+                if (range?.from) {
+                  onChange({
+                    mode: "custom",
+                    date: range.from,
+                    customStart: range.from,
+                    customEnd: range.to ?? range.from,
+                  });
+                }
+              }}
+              numberOfMonths={2}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
       )}
     </div>
   );

@@ -3,17 +3,24 @@ import {
   endOfMonth,
   startOfWeek,
   endOfWeek,
+  startOfYear,
+  endOfDay,
   format,
   subMonths,
   subWeeks,
 } from "date-fns";
 import { es } from "date-fns/locale";
 
-export type PeriodMode = "month" | "week";
+export type PeriodMode = "month" | "week" | "ytd" | "custom";
 
 export interface DashboardPeriod {
   mode: PeriodMode;
+  /** Reference date for month/week modes; ignored for ytd/custom. */
   date: Date;
+  /** Required when mode === "custom" */
+  customStart?: Date;
+  /** Required when mode === "custom" */
+  customEnd?: Date;
 }
 
 export interface PeriodRange {
@@ -26,6 +33,7 @@ export interface PeriodRange {
 
 export function getPeriodRange(period: DashboardPeriod): PeriodRange {
   const { mode, date } = period;
+
   if (mode === "week") {
     const start = startOfWeek(date, { weekStartsOn: 1 });
     const end = endOfWeek(date, { weekStartsOn: 1 });
@@ -36,6 +44,36 @@ export function getPeriodRange(period: DashboardPeriod): PeriodRange {
       granularity: "week",
     };
   }
+
+  if (mode === "ytd") {
+    const now = new Date();
+    const start = startOfYear(now);
+    const end = endOfDay(now);
+    return {
+      start,
+      end,
+      label: `YTD ${format(now, "yyyy")} (1 ene - ${format(end, "d MMM", { locale: es })})`,
+      granularity: "month",
+    };
+  }
+
+  if (mode === "custom") {
+    const start = period.customStart ?? startOfMonth(new Date());
+    const end = period.customEnd ?? endOfMonth(new Date());
+    const startEod = new Date(start);
+    startEod.setHours(0, 0, 0, 0);
+    const endEod = endOfDay(end);
+    const days =
+      (endEod.getTime() - startEod.getTime()) / (1000 * 60 * 60 * 24);
+    return {
+      start: startEod,
+      end: endEod,
+      label: `${format(startEod, "d MMM yyyy", { locale: es })} - ${format(endEod, "d MMM yyyy", { locale: es })}`,
+      // weekly granularity for short ranges, monthly for long
+      granularity: days <= 70 ? "week" : "month",
+    };
+  }
+
   // month mode bound to a calendar month
   const start = startOfMonth(date);
   const end = endOfMonth(date);
