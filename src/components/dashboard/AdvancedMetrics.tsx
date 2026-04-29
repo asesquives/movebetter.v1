@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Progress } from "@/components/ui/progress";
+
 import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import {
   eachDayOfInterval,
