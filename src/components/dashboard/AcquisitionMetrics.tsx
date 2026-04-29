@@ -178,38 +178,7 @@ export default function AcquisitionMetrics({ period }: Props) {
       });
       const avgLtv = activeLtvCount > 0 ? activeLtvSum / activeLtvCount : null;
 
-      // Tabla de cohortes desde diciembre 2025 hasta el mes actual
-      const cohortMap = new Map<string, { count: number; sum: number }>();
-      const now = new Date();
-      const currentMonthStart = startOfMonth(now);
-      // Inicializar todos los meses del rango
-      let cursor = new Date(COHORT_START);
-      while (cursor <= currentMonthStart) {
-        const key = format(cursor, "yyyy-MM");
-        cohortMap.set(key, { count: 0, sum: 0 });
-        cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
-      }
-
-      firstAct.forEach((ts, cid) => {
-        if (ts < COHORT_START.getTime()) return;
-        const d = new Date(ts);
-        const key = format(startOfMonth(d), "yyyy-MM");
-        const bucket = cohortMap.get(key);
-        if (!bucket) return;
-        bucket.count += 1;
-        bucket.sum += ltvByClient.get(cid) ?? 0;
-      });
-
-      const cohorts = Array.from(cohortMap.entries())
-        .map(([key, v]) => ({
-          key,
-          date: new Date(`${key}-01T00:00:00Z`),
-          count: v.count,
-          avg: v.count > 0 ? v.sum / v.count : null,
-        }))
-        .sort((a, b) => a.date.getTime() - b.date.getTime());
-
-      return { avgLtv, cohorts };
+      return { avgLtv };
     },
   });
 
