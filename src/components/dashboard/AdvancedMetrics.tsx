@@ -8,7 +8,6 @@ import {
   startOfMonth,
   endOfMonth,
   subMonths,
-  format,
 } from "date-fns";
 import { DashboardPeriod, getPeriodRange } from "@/lib/dashboard-period";
 
@@ -26,13 +25,6 @@ const formatPEN = (n: number) =>
     maximumFractionDigits: 2,
   }).format(n);
 
-const formatPEN0 = (n: number) =>
-  new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-    maximumFractionDigits: 0,
-  }).format(n);
-
 function timeToMinutes(t: string): number {
   const [h, m] = t.split(":").map(Number);
   return h * 60 + (m ?? 0);
@@ -43,7 +35,6 @@ export default function AdvancedMetrics({ period }: Props) {
   const startIso = range.start.toISOString();
   const endIso = range.end.toISOString();
 
-  // Previous period (mes anterior) for retention & growth
   const prevStart = startOfMonth(subMonths(range.start, 1));
   const prevEnd = endOfMonth(subMonths(range.start, 1));
   const curMonthStart = startOfMonth(range.start);
@@ -59,7 +50,6 @@ export default function AdvancedMetrics({ period }: Props) {
         curMonthApptsRes,
         packagesPeriodRes,
         soloApptsPeriodRes,
-        activePackagesRes,
         revenuePeriodRes,
         revenuePrevRes,
         clientsPeriodRes,
@@ -67,6 +57,7 @@ export default function AdvancedMetrics({ period }: Props) {
         sessionsPeriodRes,
         sessionsPrevRes,
         apptsPeriodAllRes,
+        pkgsActivityPeriodRes,
       ] = await Promise.all([
         supabase
           .from("professionals")
@@ -79,7 +70,6 @@ export default function AdvancedMetrics({ period }: Props) {
           .gte("start_time", startIso)
           .lte("start_time", endIso)
           .neq("status", "cancelled"),
-        // Retention: previous month appointments (any status != cancelled)
         supabase
           .from("appointments")
           .select("client_id")
@@ -92,13 +82,11 @@ export default function AdvancedMetrics({ period }: Props) {
           .gte("start_time", curMonthStart.toISOString())
           .lte("start_time", curMonthEnd.toISOString())
           .neq("status", "cancelled"),
-        // Ticket promedio: paquetes comprados en el período
         supabase
           .from("packages")
-          .select("client_id, total_paid, total_sessions, sessions_used, price_per_session, status")
+          .select("client_id, total_paid, created_at")
           .gte("created_at", startIso)
           .lte("created_at", endIso),
-        // Citas sueltas done sin package_id
         supabase
           .from("appointments")
           .select("client_id, revenue_amount, package_id, status")
@@ -106,12 +94,6 @@ export default function AdvancedMetrics({ period }: Props) {
           .lte("start_time", endIso)
           .eq("status", "done")
           .is("package_id", null),
-        // Pipeline: todos los paquetes activos
-        supabase
-          .from("packages")
-          .select("total_sessions, sessions_used, price_per_session, status")
-          .eq("status", "active"),
-        // Crecimiento - ingresos
         supabase
           .from("revenue_entries")
           .select("amount")
@@ -122,7 +104,6 @@ export default function AdvancedMetrics({ period }: Props) {
           .select("amount")
           .gte("recognized_at", prevStart.toISOString())
           .lte("recognized_at", prevEnd.toISOString()),
-        // Crecimiento - clientes nuevos
         supabase
           .from("clients")
           .select("id", { count: "exact", head: true })
@@ -133,7 +114,6 @@ export default function AdvancedMetrics({ period }: Props) {
           .select("id", { count: "exact", head: true })
           .gte("created_at", prevStart.toISOString())
           .lte("created_at", prevEnd.toISOString()),
-        // Crecimiento - sesiones realizadas (status = done)
         supabase
           .from("appointments")
           .select("id", { count: "exact", head: true })
@@ -146,13 +126,22 @@ export default function AdvancedMetrics({ period }: Props) {
           .gte("start_time", prevStart.toISOString())
           .lte("start_time", prevEnd.toISOString())
           .eq("status", "done"),
-        // Ingreso promedio: clientes únicos con actividad en período
+        // Activity in period: any non-cancelled appointment
         supabase
           .from("appointments")
           .select("client_id")
           .gte("start_time", startIso)
           .lte("start_time", endIso)
           .neq("status", "cancelled"),
+        // Activity in period: package with sessions consumed in the period
+        // (proxied via appointments with package_id done in period)
+        supabase
+          .from("appointments")
+          .select("client_id, package_id")
+          .gte("start_time", startIso)
+          .lte("start_time", endIso)
+          .not("package_id", "is", null)
+          .eq("status", "done"),
       ]);
 
       // ===== Métrica 1: Tasa de ocupación =====
@@ -183,7 +172,7 @@ export default function AdvancedMetrics({ period }: Props) {
 
       const occupancy = availableMinutes > 0 ? (bookedMinutes / availableMinutes) * 100 : null;
 
-      // ===== Métrica 2: Retención =====
+      // ===== Retención =====
       const prevClients = new Set((prevApptsRes.data ?? []).map((a) => a.client_id));
       const curClients = new Set((curMonthApptsRes.data ?? []).map((a) => a.client_id));
       let retained = 0;
@@ -192,7 +181,7 @@ export default function AdvancedMetrics({ period }: Props) {
       });
       const retention = prevClients.size > 0 ? (retained / prevClients.size) * 100 : null;
 
-      // ===== Métrica 3 & 6: Ticket promedio / Ingreso promedio =====
+      // ===== Ingreso promedio por cliente =====
       const packagesPeriod = packagesPeriodRes.data ?? [];
       const soloAppts = soloApptsPeriodRes.data ?? [];
 
@@ -200,31 +189,18 @@ export default function AdvancedMetrics({ period }: Props) {
       const totalSoloRevenue = soloAppts.reduce((s, a) => s + Number(a.revenue_amount ?? 0), 0);
       const totalRevenueAll = totalPackagesPaid + totalSoloRevenue;
 
-      const payingClients = new Set<string>();
-      packagesPeriod.forEach((p) => p.client_id && payingClients.add(p.client_id));
-      soloAppts.forEach((a) => a.client_id && payingClients.add(a.client_id));
-
-      const ticketAvg = payingClients.size > 0 ? totalRevenueAll / payingClients.size : null;
-
-      // Ingreso promedio: clientes únicos con actividad (cita o compra)
-      const activeClients = new Set<string>(payingClients);
+      const activeClients = new Set<string>();
       (apptsPeriodAllRes.data ?? []).forEach((a) => a.client_id && activeClients.add(a.client_id));
+      (pkgsActivityPeriodRes.data ?? []).forEach(
+        (a) => a.client_id && activeClients.add(a.client_id),
+      );
+      // also include clients who bought a package within the period
+      packagesPeriod.forEach((p) => p.client_id && activeClients.add(p.client_id));
+
       const avgRevenuePerClient =
         activeClients.size > 0 ? totalRevenueAll / activeClients.size : null;
 
-      // ===== Métrica 4: Pipeline =====
-      const activePkgs = activePackagesRes.data ?? [];
-      let pendingSessions = 0;
-      let guaranteedRevenue = 0;
-      for (const p of activePkgs) {
-        const remaining = (p.total_sessions ?? 0) - (p.sessions_used ?? 0);
-        if (remaining > 0) {
-          pendingSessions += remaining;
-          guaranteedRevenue += remaining * Number(p.price_per_session ?? 0);
-        }
-      }
-
-      // ===== Métrica 5: Crecimiento =====
+      // ===== Crecimiento =====
       const curRevenue = (revenuePeriodRes.data ?? []).reduce(
         (s, r) => s + Number(r.amount ?? 0),
         0,
@@ -246,17 +222,20 @@ export default function AdvancedMetrics({ period }: Props) {
       return {
         occupancy,
         retention,
-        ticketAvg,
-        pendingSessions,
-        guaranteedRevenue,
         avgRevenuePerClient,
         growth: {
-          revenue: growthOf(curRevenue, prevRevenue),
-          clients: growthOf(curNewClients, prevNewClients),
-          sessions: growthOf(curSessions, prevSessions),
-          hasPrevData: prevRevenue > 0 || prevNewClients > 0 || prevSessions > 0,
+          revenue: { cur: curRevenue, prev: prevRevenue, pct: growthOf(curRevenue, prevRevenue) },
+          clients: {
+            cur: curNewClients,
+            prev: prevNewClients,
+            pct: growthOf(curNewClients, prevNewClients),
+          },
+          sessions: {
+            cur: curSessions,
+            prev: prevSessions,
+            pct: growthOf(curSessions, prevSessions),
+          },
         },
-        prevMonthLabel: format(prevStart, "MMM yyyy"),
       };
     },
   });
@@ -272,33 +251,47 @@ export default function AdvancedMetrics({ period }: Props) {
           ? "text-amber-600"
           : "text-red-600";
 
-  const GrowthRow = ({ label, value }: { label: string; value: number | null }) => {
-    if (value == null) {
-      return (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">{label}</span>
-          <span className="text-muted-foreground">—</span>
-        </div>
-      );
-    }
-    const up = value > 0;
-    const flat = value === 0;
-    const Icon = flat ? Minus : up ? ArrowUp : ArrowDown;
-    const color = flat ? "text-muted-foreground" : up ? "text-emerald-600" : "text-red-600";
-    return (
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-muted-foreground">{label}</span>
-        <span className={`flex items-center gap-1 font-semibold tabular-nums ${color}`}>
-          <Icon className="h-3.5 w-3.5" />
-          {Math.abs(value).toFixed(1)}%
-        </span>
-      </div>
-    );
-  };
-
   const Card = ({ children }: { children: React.ReactNode }) => (
     <div className="bg-card rounded-lg border p-5">{children}</div>
   );
+
+  const GrowthCard = ({
+    title,
+    cur,
+    pct,
+    formatter,
+  }: {
+    title: string;
+    cur: number;
+    pct: number | null;
+    formatter: (n: number) => string;
+  }) => {
+    const hasPrev = pct !== null;
+    const flat = pct === 0;
+    const up = (pct ?? 0) > 0;
+    const Icon = !hasPrev ? Minus : flat ? Minus : up ? ArrowUp : ArrowDown;
+    const color = !hasPrev
+      ? "text-muted-foreground"
+      : flat
+        ? "text-muted-foreground"
+        : up
+          ? "text-emerald-600"
+          : "text-red-600";
+    return (
+      <Card>
+        <p className="text-sm text-muted-foreground">{title}</p>
+        <p className="text-3xl font-bold mt-1 tabular-nums">{formatter(cur)}</p>
+        {hasPrev ? (
+          <p className={`text-xs mt-2 flex items-center gap-1 font-medium ${color}`}>
+            <Icon className="h-3.5 w-3.5" />
+            {Math.abs(pct!).toFixed(1)}% vs mes anterior
+          </p>
+        ) : (
+          <p className="text-xs text-muted-foreground mt-2">Sin datos previos</p>
+        )}
+      </Card>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -310,13 +303,15 @@ export default function AdvancedMetrics({ period }: Props) {
     );
   }
 
+  const intFmt = (n: number) => new Intl.NumberFormat("es-PE").format(n);
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {/* 1. Tasa de ocupación */}
       <Card>
         <p className="text-sm text-muted-foreground">Tasa de ocupación · Solo fisios</p>
         <p className="text-3xl font-bold mt-1 tabular-nums">
-          {data?.occupancy == null ? dash : `${data.occupancy.toFixed(1)}%`}
+          {data?.occupancy == null ? dash : `${Math.round(data.occupancy)}%`}
         </p>
         <Progress
           value={data?.occupancy == null ? 0 : Math.min(100, data.occupancy)}
@@ -333,46 +328,7 @@ export default function AdvancedMetrics({ period }: Props) {
         <p className="text-xs text-muted-foreground mt-2">vs mes anterior</p>
       </Card>
 
-      {/* 3. Ticket promedio */}
-      <Card>
-        <p className="text-sm text-muted-foreground">Ticket promedio</p>
-        <p className="text-3xl font-bold mt-1 tabular-nums">
-          {data?.ticketAvg == null ? dash : formatPEN(data.ticketAvg)}
-        </p>
-        <p className="text-xs text-muted-foreground mt-2">por cliente que pagó</p>
-      </Card>
-
-      {/* 4. Pipeline */}
-      <Card>
-        <p className="text-sm text-muted-foreground">Pipeline de sesiones</p>
-        <p className="text-3xl font-bold mt-1 tabular-nums">
-          {data && data.pendingSessions > 0 ? `${data.pendingSessions} sesiones` : dash}
-        </p>
-        <p className="text-xs text-muted-foreground mt-2">
-          {data && data.pendingSessions > 0
-            ? `${formatPEN0(data.guaranteedRevenue)} garantizados`
-            : "sin paquetes activos"}
-        </p>
-      </Card>
-
-      {/* 5. Crecimiento */}
-      <Card>
-        <p className="text-sm text-muted-foreground">Crecimiento vs mes anterior</p>
-        {data?.growth.hasPrevData ? (
-          <div className="mt-2 space-y-1.5">
-            <GrowthRow label="Ingresos" value={data.growth.revenue} />
-            <GrowthRow label="Clientes nuevos" value={data.growth.clients} />
-            <GrowthRow label="Sesiones realizadas" value={data.growth.sessions} />
-          </div>
-        ) : (
-          <p className="text-3xl font-bold mt-1">{dash}</p>
-        )}
-        {!data?.growth.hasPrevData && (
-          <p className="text-xs text-muted-foreground mt-2">Sin datos previos</p>
-        )}
-      </Card>
-
-      {/* 6. Ingreso promedio por cliente */}
+      {/* 3. Ingreso promedio por cliente */}
       <Card>
         <p className="text-sm text-muted-foreground">Ingreso promedio por cliente</p>
         <p className="text-3xl font-bold mt-1 tabular-nums">
@@ -380,6 +336,30 @@ export default function AdvancedMetrics({ period }: Props) {
         </p>
         <p className="text-xs text-muted-foreground mt-2">clientes con actividad</p>
       </Card>
+
+      {/* 4. Ingresos vs mes anterior */}
+      <GrowthCard
+        title="Ingresos vs mes anterior"
+        cur={data?.growth.revenue.cur ?? 0}
+        pct={data?.growth.revenue.pct ?? null}
+        formatter={formatPEN}
+      />
+
+      {/* 5. Clientes vs mes anterior */}
+      <GrowthCard
+        title="Clientes vs mes anterior"
+        cur={data?.growth.clients.cur ?? 0}
+        pct={data?.growth.clients.pct ?? null}
+        formatter={intFmt}
+      />
+
+      {/* 6. Sesiones vs mes anterior */}
+      <GrowthCard
+        title="Sesiones vs mes anterior"
+        cur={data?.growth.sessions.cur ?? 0}
+        pct={data?.growth.sessions.pct ?? null}
+        formatter={intFmt}
+      />
     </div>
   );
 }
