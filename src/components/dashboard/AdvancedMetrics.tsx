@@ -15,7 +15,19 @@ interface Props {
   period: DashboardPeriod;
 }
 
-const DAY_NAMES = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+// Map weekday index (0=sun..6=sat) to a set of accepted tokens for schedule_days
+const DAY_TOKENS: string[][] = [
+  ["sun", "dom", "domingo"],
+  ["mon", "lun", "lunes"],
+  ["tue", "mar", "martes"],
+  ["wed", "mie", "mié", "miercoles", "miércoles"],
+  ["thu", "jue", "jueves"],
+  ["fri", "vie", "viernes"],
+  ["sat", "sab", "sáb", "sabado", "sábado"],
+];
+
+const normalizeDay = (s: string) =>
+  s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 
 const formatPEN = (n: number) =>
   new Intl.NumberFormat("es-PE", {
