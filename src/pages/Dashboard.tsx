@@ -104,6 +104,9 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Advanced metrics */}
+      <AdvancedMetrics period={period} />
+
       {/* Business trends */}
       <BusinessTrends period={period} />
 
