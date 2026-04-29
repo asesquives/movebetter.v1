@@ -216,7 +216,7 @@ export default function IngresosPage() {
                     </TableCell>
                     <TableCell className="text-sm">{appt?.professionals?.name || "—"}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{pkg?.name || <span className="italic">Sesión suelta</span>}</TableCell>
-                    <TableCell className="text-right font-semibold text-sm">S/ {Number(e.amount).toFixed(2)}</TableCell>
+                    <TableCell className="text-right font-semibold text-sm">{formatCurrency(Number(e.amount), { decimals: 2 })}</TableCell>
                   </TableRow>
                 );
               })}
