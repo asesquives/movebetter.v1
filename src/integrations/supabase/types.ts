@@ -334,7 +334,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      exec_seed_sql: { Args: { p_sql: string }; Returns: undefined }
     }
     Enums: {
       appointment_status:
