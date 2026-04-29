@@ -1,15 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import {
   eachDayOfInterval,
   differenceInMinutes,
-  startOfMonth,
-  endOfMonth,
-  subMonths,
 } from "date-fns";
-import { DashboardPeriod, getPeriodRange } from "@/lib/dashboard-period";
+import {
+  DashboardPeriod,
+  getPeriodRange,
+  getPreviousPeriodRange,
+} from "@/lib/dashboard-period";
+import DiffCard from "./DiffCard";
 
 interface Props {
   period: DashboardPeriod;
@@ -44,13 +45,11 @@ function timeToMinutes(t: string): number {
 
 export default function AdvancedMetrics({ period }: Props) {
   const range = getPeriodRange(period);
+  const prevRange = getPreviousPeriodRange(period);
   const startIso = range.start.toISOString();
   const endIso = range.end.toISOString();
-
-  const prevStart = startOfMonth(subMonths(range.start, 1));
-  const prevEnd = endOfMonth(subMonths(range.start, 1));
-  const curMonthStart = startOfMonth(range.start);
-  const curMonthEnd = endOfMonth(range.start);
+  const prevStartIso = prevRange.start.toISOString();
+  const prevEndIso = prevRange.end.toISOString();
 
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard-advanced-metrics", startIso, endIso],
