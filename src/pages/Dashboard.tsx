@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import TopClients from "@/components/dashboard/TopClients";
 import BusinessTrends from "@/components/dashboard/BusinessTrends";
-import ScheduledHoursByProfessional from "@/components/dashboard/ScheduledHoursByProfessional";
+import OccupancyAndExpiringPackages from "@/components/dashboard/OccupancyAndExpiringPackages";
 import PeriodSelector from "@/components/dashboard/PeriodSelector";
 import AdvancedMetrics from "@/components/dashboard/AdvancedMetrics";
 import { DashboardPeriod, getPeriodRange } from "@/lib/dashboard-period";
@@ -136,8 +136,8 @@ export default function Dashboard() {
       {/* Business trends */}
       <BusinessTrends period={period} />
 
-      {/* Scheduled hours by professional */}
-      <ScheduledHoursByProfessional period={period} />
+      {/* Occupancy + expiring packages */}
+      <OccupancyAndExpiringPackages period={period} />
 
       {/* Top clients */}
       <TopClients period={period} />
