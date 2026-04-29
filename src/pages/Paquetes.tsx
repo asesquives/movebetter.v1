@@ -154,6 +154,46 @@ export default function PaquetesPage() {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const openEdit = (pkg: any) => {
+    setEditingPkg(pkg);
+    setEditForm({
+      name: pkg.name ?? "",
+      total_paid: String(pkg.total_paid ?? 0),
+      payment_method: pkg.payment_method as PaymentMethod,
+      receipt_type: pkg.receipt_type as ReceiptType,
+      notes: pkg.notes ?? "",
+    });
+  };
+
+  const updatePackage = useMutation({
+    mutationFn: async () => {
+      if (!editingPkg) throw new Error("No hay paquete seleccionado");
+      const totalPaid = parseFloat(editForm.total_paid);
+      if (isNaN(totalPaid) || totalPaid < 0) throw new Error("Total pagado inválido");
+      const sessions = editingPkg.total_sessions || 0;
+      const pps = sessions > 0 ? totalPaid / sessions : 0;
+
+      const { error } = await supabase
+        .from("packages")
+        .update({
+          name: editForm.name,
+          total_paid: totalPaid,
+          price_per_session: pps,
+          payment_method: editForm.payment_method,
+          receipt_type: editForm.receipt_type,
+          notes: editForm.notes || null,
+        })
+        .eq("id", editingPkg.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["packages"] });
+      setEditingPkg(null);
+      toast.success("Paquete actualizado correctamente");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
   const statusLabels: Record<string, string> = { active: "Activo", expired: "Expirado", completed: "Completado" };
   const statusColors: Record<string, string> = { active: "bg-green-100 text-green-700", expired: "bg-red-100 text-red-700", completed: "bg-muted text-muted-foreground" };
 
