@@ -19,24 +19,40 @@ export default function IngresosPage() {
   const [customEnd, setCustomEnd] = useState(format(new Date(), "yyyy-MM-dd"));
 
   const { start, end } = useMemo(() => {
+    const LIMA_OFFSET = "-05:00";
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const toLimaIso = (d: Date, endOfDay = false) => {
+      const y = d.getFullYear();
+      const m = pad(d.getMonth() + 1);
+      const day = pad(d.getDate());
+      const time = endOfDay ? "23:59:59.999" : "00:00:00.000";
+      return `${y}-${m}-${day}T${time}${LIMA_OFFSET}`;
+    };
+
     const fallback = new Date();
-    const safeIso = (d: Date) => (isNaN(d.getTime()) ? fallback.toISOString() : d.toISOString());
 
     if (filterType === "month") {
-      const d = month ? new Date(month + "-01") : fallback;
-      const base = isNaN(d.getTime()) ? fallback : d;
-      return { start: safeIso(startOfMonth(base)), end: safeIso(endOfMonth(base)) };
-    } else if (filterType === "week") {
-      const d = month ? new Date(month + "-01") : fallback;
-      const base = isNaN(d.getTime()) ? fallback : d;
+      // Anchor month at noon Lima to avoid TZ drift in date-fns calculations
+      const base = month ? new Date(`${month}-01T12:00:00${LIMA_OFFSET}`) : fallback;
+      const safeBase = isNaN(base.getTime()) ? fallback : base;
       return {
-        start: safeIso(startOfWeek(base, { weekStartsOn: 1 })),
-        end: safeIso(endOfWeek(base, { weekStartsOn: 1 })),
+        start: toLimaIso(startOfMonth(safeBase), false),
+        end: toLimaIso(endOfMonth(safeBase), true),
+      };
+    } else if (filterType === "week") {
+      const base = month ? new Date(`${month}-01T12:00:00${LIMA_OFFSET}`) : fallback;
+      const safeBase = isNaN(base.getTime()) ? fallback : base;
+      return {
+        start: toLimaIso(startOfWeek(safeBase, { weekStartsOn: 1 }), false),
+        end: toLimaIso(endOfWeek(safeBase, { weekStartsOn: 1 }), true),
       };
     }
-    const s = customStart ? new Date(customStart) : fallback;
-    const e = customEnd ? new Date(customEnd + "T23:59:59") : fallback;
-    return { start: safeIso(s), end: safeIso(e) };
+    const s = customStart ? new Date(`${customStart}T12:00:00${LIMA_OFFSET}`) : fallback;
+    const e = customEnd ? new Date(`${customEnd}T12:00:00${LIMA_OFFSET}`) : fallback;
+    return {
+      start: toLimaIso(isNaN(s.getTime()) ? fallback : s, false),
+      end: toLimaIso(isNaN(e.getTime()) ? fallback : e, true),
+    };
   }, [filterType, month, customStart, customEnd]);
 
   // Revenue entries (devengado)
