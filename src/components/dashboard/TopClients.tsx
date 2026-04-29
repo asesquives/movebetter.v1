@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Trophy, Crown, Medal, Award } from "lucide-react";
 import { DashboardPeriod, getPeriodRange } from "@/lib/dashboard-period";
+import { formatCurrency } from "@/lib/format";
 
 interface ClientPayment {
   client_id: string;
