@@ -149,31 +149,38 @@ export default function BusinessTrends({ period }: Props) {
   const buckets = data ?? buildBuckets();
 
   // Totals shown in headers must reflect ONLY the selected period,
-  // not the full chart window (which can extend further back for trend context).
-  const periodStartMs = periodStart.getTime();
-  const periodEndMs = periodEnd.getTime();
-  const inPeriod = (key: string) => {
-    // Parse bucket key back to a date to test against the selected period.
-    if (granularity === "month") {
-      const [y, m] = key.split("-").map(Number);
-      const d = new Date(y, m - 1, 1).getTime();
-      // include month if it intersects the period
-      const monthEnd = new Date(y, m, 0, 23, 59, 59).getTime();
-      return monthEnd >= periodStartMs && d <= periodEndMs;
-    }
-    // week key like "2026-W17": find the bucket's date via its label is not reliable,
-    // so we re-derive from the original buckets array via index lookup below.
-    return true;
-  };
+  // not the full chart window (which extends further back for trend context).
+  const periodStartIso = periodStart.toISOString();
+  const periodEndIso = periodEnd.toISOString();
 
-  const totalRevenue = buckets.reduce(
-    (sum, b) => sum + (inPeriod(b.key) ? b.revenue : 0),
-    0
-  );
-  const totalAppts = buckets.reduce(
-    (sum, b) => sum + (inPeriod(b.key) ? b.appointments : 0),
-    0
-  );
+  const { data: periodTotals } = useQuery({
+    queryKey: ["business-trends-period-totals", periodStartIso, periodEndIso],
+    queryFn: async () => {
+      const [revRes, apptRes] = await Promise.all([
+        supabase
+          .from("revenue_entries")
+          .select("amount")
+          .gte("recognized_at", periodStartIso)
+          .lte("recognized_at", periodEndIso),
+        supabase
+          .from("appointments")
+          .select("id", { count: "exact", head: true })
+          .gte("start_time", periodStartIso)
+          .lte("start_time", periodEndIso)
+          .neq("status", "cancelled"),
+      ]);
+      if (revRes.error) throw revRes.error;
+      if (apptRes.error) throw apptRes.error;
+      const revenue = (revRes.data ?? []).reduce(
+        (s, r) => s + Number(r.amount ?? 0),
+        0
+      );
+      return { revenue, appointments: apptRes.count ?? 0 };
+    },
+  });
+
+  const totalRevenue = periodTotals?.revenue ?? 0;
+  const totalAppts = periodTotals?.appointments ?? 0;
 
   const subtitle = isRelative
     ? granularity === "month"
