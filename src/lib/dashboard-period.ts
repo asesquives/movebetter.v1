@@ -4,10 +4,13 @@ import {
   startOfWeek,
   endOfWeek,
   startOfYear,
+  endOfYear,
   endOfDay,
   format,
   subMonths,
   subWeeks,
+  subYears,
+  differenceInCalendarDays,
 } from "date-fns";
 import { es } from "date-fns/locale";
 
