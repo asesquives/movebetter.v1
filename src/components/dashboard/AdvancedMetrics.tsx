@@ -266,44 +266,6 @@ export default function AdvancedMetrics({ period }: Props) {
     <div className="bg-card rounded-lg border p-5">{children}</div>
   );
 
-  const GrowthCard = ({
-    title,
-    cur,
-    pct,
-    formatter,
-  }: {
-    title: string;
-    cur: number;
-    pct: number | null;
-    formatter: (n: number) => string;
-  }) => {
-    const hasPrev = pct !== null;
-    const flat = pct === 0;
-    const up = (pct ?? 0) > 0;
-    const Icon = !hasPrev ? Minus : flat ? Minus : up ? ArrowUp : ArrowDown;
-    const color = !hasPrev
-      ? "text-muted-foreground"
-      : flat
-        ? "text-muted-foreground"
-        : up
-          ? "text-emerald-600"
-          : "text-red-600";
-    return (
-      <Card>
-        <p className="text-sm text-muted-foreground">{title}</p>
-        <p className="text-3xl font-bold mt-1 tabular-nums">{formatter(cur)}</p>
-        {hasPrev ? (
-          <p className={`text-xs mt-2 flex items-center gap-1 font-medium ${color}`}>
-            <Icon className="h-3.5 w-3.5" />
-            {Math.abs(pct!).toFixed(1)}% vs mes anterior
-          </p>
-        ) : (
-          <p className="text-xs text-muted-foreground mt-2">Sin datos previos</p>
-        )}
-      </Card>
-    );
-  };
-
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -313,8 +275,6 @@ export default function AdvancedMetrics({ period }: Props) {
       </div>
     );
   }
-
-  const intFmt = (n: number) => new Intl.NumberFormat("es-PE").format(n);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -332,7 +292,7 @@ export default function AdvancedMetrics({ period }: Props) {
         <p className={`text-3xl font-bold mt-1 tabular-nums ${retentionColor}`}>
           {data?.retention == null ? dash : `${data.retention.toFixed(1)}%`}
         </p>
-        <p className="text-xs text-muted-foreground mt-2">vs mes anterior</p>
+        <p className="text-xs text-muted-foreground mt-2">vs {prevRange.shortLabel}</p>
       </Card>
 
       {/* 3. Ingreso promedio por cliente */}
@@ -344,20 +304,22 @@ export default function AdvancedMetrics({ period }: Props) {
         <p className="text-xs text-muted-foreground mt-2">clientes con actividad</p>
       </Card>
 
-      {/* 4. Ingresos vs mes anterior */}
-      <GrowthCard
-        title="Ingresos vs mes anterior"
-        cur={data?.growth?.revenue?.cur ?? 0}
-        pct={data?.growth?.revenue?.pct ?? null}
+      {/* 4. Ingresos vs período anterior */}
+      <DiffCard
+        title="Ingresos vs período anterior"
+        cur={data?.growth?.revenue?.cur}
+        prev={data?.growth?.revenue?.prev}
         formatter={formatPEN}
+        previousLabel={prevRange.shortLabel}
       />
 
-      {/* 6. Sesiones vs mes anterior */}
-      <GrowthCard
-        title="Sesiones vs mes anterior"
-        cur={data?.growth?.sessions?.cur ?? 0}
-        pct={data?.growth?.sessions?.pct ?? null}
-        formatter={intFmt}
+      {/* 5. Sesiones vs período anterior */}
+      <DiffCard
+        title="Sesiones vs período anterior"
+        cur={data?.growth?.sessions?.cur}
+        prev={data?.growth?.sessions?.prev}
+        unit={{ singular: "sesión", plural: "sesiones" }}
+        previousLabel={prevRange.shortLabel}
       />
     </div>
   );
