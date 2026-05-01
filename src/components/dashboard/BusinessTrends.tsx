@@ -8,8 +8,8 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
-  LineChart,
-  Line,
+  Area,
+  AreaChart,
 } from "recharts";
 import {
   format,
@@ -205,8 +205,8 @@ export default function BusinessTrends({ period }: Props) {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={buckets} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => formatCurrency(Number(v))} />
+                  <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => formatCurrency(Number(v))} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--popover))",
@@ -216,7 +216,7 @@ export default function BusinessTrends({ period }: Props) {
                     }}
                     formatter={(v: number) => [formatCurrency(v), "Ingresos"]}
                   />
-                  <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="revenue" fill="var(--mictio-accent)" fillOpacity={0.85} radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -235,10 +235,16 @@ export default function BusinessTrends({ period }: Props) {
               <p className="text-sm text-muted-foreground">Cargando...</p>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={buckets} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                <AreaChart data={buckets} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="mictioAreaFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--mictio-accent)" stopOpacity={0.2} />
+                      <stop offset="100%" stopColor="var(--mictio-accent)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
+                  <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} allowDecimals={false} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--popover))",
@@ -248,15 +254,16 @@ export default function BusinessTrends({ period }: Props) {
                     }}
                     formatter={(v: number) => [v, "Citas"]}
                   />
-                  <Line
+                  <Area
                     type="monotone"
                     dataKey="appointments"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2.5}
-                    dot={{ r: 4, fill: "hsl(var(--primary))" }}
-                    activeDot={{ r: 6 }}
+                    stroke="var(--mictio-accent)"
+                    strokeWidth={2}
+                    fill="url(#mictioAreaFill)"
+                    activeDot={{ r: 4, fill: "var(--mictio-accent)", stroke: "var(--mictio-bg)", strokeWidth: 2 }}
+                    dot={false}
                   />
-                </LineChart>
+                </AreaChart>
               </ResponsiveContainer>
             )}
           </div>
