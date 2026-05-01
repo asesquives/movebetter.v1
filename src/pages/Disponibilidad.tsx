@@ -239,7 +239,7 @@ export default function DisponibilidadPage() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Disponibilidad</h1>
+          <h1 className="t-h1">Disponibilidad</h1>
           <p className="text-sm text-muted-foreground capitalize">
             {format(weekDays[0], "d MMM", { locale: es })} – {format(weekDays[5], "d MMM yyyy", { locale: es })}
           </p>

@@ -132,7 +132,7 @@ export default function IngresosPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-2xl font-bold">Ingresos</h1>
+        <h1 className="t-h1">Ingresos</h1>
         <div className="flex items-center gap-2 flex-wrap">
           <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}>
             <SelectTrigger className="w-[130px]"><SelectValue /></SelectTrigger>

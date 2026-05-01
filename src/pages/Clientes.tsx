@@ -118,7 +118,7 @@ export default function ClientesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Clientes</h1>
+        <h1 className="t-h1">Clientes</h1>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button size="sm"><Plus className="h-4 w-4 mr-1" /> Nuevo cliente</Button>
