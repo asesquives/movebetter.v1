@@ -159,27 +159,27 @@ export default function IngresosPage() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-card rounded-lg border p-5">
-          <p className="text-sm text-muted-foreground">Cobrado</p>
-          <p className="text-2xl font-bold mt-1">{formatCurrency(cobrado, { decimals: 2 })}</p>
-          <p className="text-xs text-muted-foreground mt-1">Paquetes vendidos en el período</p>
+        <div className="mictio-card">
+          <p className="mictio-card-label">Cobrado</p>
+          <p className="mictio-card-value mt-2 tabular-nums">{formatCurrency(cobrado, { decimals: 2 })}</p>
+          <p className="text-[12px] text-[color:var(--mictio-text-sec)] mt-3">Paquetes vendidos en el período</p>
         </div>
-        <div className="bg-card rounded-lg border p-5">
-          <p className="text-sm text-muted-foreground">Devengado</p>
-          <p className="text-2xl font-bold mt-1">{formatCurrency(devengado, { decimals: 2 })}</p>
-          <p className="text-xs text-muted-foreground mt-1">Sesiones realizadas en el período</p>
+        <div className="mictio-card">
+          <p className="mictio-card-label">Devengado</p>
+          <p className="mictio-card-value mt-2 tabular-nums">{formatCurrency(devengado, { decimals: 2 })}</p>
+          <p className="text-[12px] text-[color:var(--mictio-text-sec)] mt-3">Sesiones realizadas en el período</p>
         </div>
-        <div className="bg-card rounded-lg border p-5">
-          <p className="text-sm text-muted-foreground">Saldo diferido</p>
-          <p className="text-2xl font-bold mt-1">{formatCurrency(diferido, { decimals: 2 })}</p>
-          <p className="text-xs text-muted-foreground mt-1">Cobrado − Devengado</p>
+        <div className="mictio-card">
+          <p className="mictio-card-label">Saldo diferido</p>
+          <p className="mictio-card-value mt-2 tabular-nums">{formatCurrency(diferido, { decimals: 2 })}</p>
+          <p className="text-[12px] text-[color:var(--mictio-text-sec)] mt-3">Cobrado − Devengado</p>
         </div>
       </div>
 
       {/* Detail table */}
-      <div className="bg-card rounded-lg border">
-        <div className="p-4 border-b">
-          <h2 className="font-semibold">Devengo por sesión</h2>
+      <div className="mictio-card !p-0 overflow-hidden">
+        <div className="p-4 border-b border-[color:var(--mictio-border)]">
+          <h2 className="t-h2">Devengo por sesión</h2>
         </div>
         {entriesLoading ? (
           <div className="p-8 text-center text-muted-foreground">Cargando...</div>
