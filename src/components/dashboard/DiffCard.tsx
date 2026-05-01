@@ -1,5 +1,6 @@
 import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import { formatNumber } from "@/lib/format";
+import MetricCard from "./MetricCard";
 
 interface Props {
   title: string;
@@ -40,24 +41,24 @@ export default function DiffCard({
   };
 
   return (
-    <div className="mictio-card bg-card border border-border rounded-[10px]" style={{ padding: "20px 22px" }}>
-      <p className="mictio-card-label">{title}</p>
-      <p className="mictio-card-value mt-2 tabular-nums">
-        {!hasData ? "—" : formatDiff(diff as number)}
-      </p>
-      {!hasData ? (
-        <p className="text-[12px] text-[color:var(--mictio-muted)] mt-3">Sin datos previos</p>
-      ) : (
-        <div className="mt-3 flex items-center gap-2">
-          <span className={deltaClass}>
-            <Icon className="h-3 w-3" />
-            {pct == null ? "—" : `${Math.abs(pct).toFixed(1)}%`}
-          </span>
-          <span className="text-[12px] text-[color:var(--mictio-text-sec)]">
-            vs {previousLabel}
-          </span>
-        </div>
-      )}
-    </div>
+    <MetricCard
+      label={title}
+      value={!hasData ? "—" : formatDiff(diff as number)}
+      footer={
+        !hasData ? (
+          <p className="text-[12px] text-[color:var(--mictio-muted)]">Sin datos previos</p>
+        ) : (
+          <div className="flex items-center gap-2">
+            <span className={deltaClass}>
+              <Icon className="h-3 w-3" />
+              {pct == null ? "—" : `${Math.abs(pct).toFixed(1)}%`}
+            </span>
+            <span className="text-[12px] text-[color:var(--mictio-text-sec)]">
+              vs {previousLabel}
+            </span>
+          </div>
+        )
+      }
+    />
   );
 }
