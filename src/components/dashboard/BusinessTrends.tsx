@@ -10,6 +10,8 @@ import {
   CartesianGrid,
   LineChart,
   Line,
+  Area,
+  AreaChart,
 } from "recharts";
 import {
   format,
