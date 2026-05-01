@@ -218,7 +218,7 @@ export default function BusinessTrends({ period }: Props) {
                     }}
                     formatter={(v: number) => [formatCurrency(v), "Ingresos"]}
                   />
-                  <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="revenue" fill="var(--mictio-accent)" fillOpacity={0.85} radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
