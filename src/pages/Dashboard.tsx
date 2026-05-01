@@ -127,14 +127,16 @@ export default function Dashboard() {
     <div className="space-y-8">
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         <div>
-          <h1 className="t-h1">Dashboard</h1>
-          <p className="text-muted-foreground capitalize">
+          <h1 style={{ fontSize: '32px', fontWeight: 700, letterSpacing: '-0.02em', fontFamily: 'Inter, sans-serif', color: 'var(--mictio-text)', lineHeight: 1.15, margin: 0 }}>
+            Dashboard
+          </h1>
+          <p className="capitalize" style={{ fontSize: '14px', fontWeight: 400, color: 'var(--mictio-text-sec)', fontFamily: 'Inter, sans-serif', marginTop: '4px' }}>
             {format(today, "EEEE, d 'de' MMMM yyyy", { locale: es })}
           </p>
         </div>
         <div className="flex flex-col items-start lg:items-end gap-1">
           <PeriodSelector value={period} onChange={setPeriod} />
-          <p className="text-xs text-muted-foreground capitalize">
+          <p className="capitalize" style={{ fontSize: '12px', fontWeight: 400, color: 'var(--mictio-text-sec)', fontFamily: 'Inter, sans-serif' }}>
             Período: {range.label}
           </p>
         </div>
