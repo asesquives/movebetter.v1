@@ -40,7 +40,7 @@ export default function DiffCard({
   };
 
   return (
-    <div className="mictio-card">
+    <div className="mictio-card bg-card border border-border rounded-[10px]" style={{ padding: "20px 22px" }}>
       <p className="mictio-card-label">{title}</p>
       <p className="mictio-card-value mt-2 tabular-nums">
         {!hasData ? "—" : formatDiff(diff as number)}
