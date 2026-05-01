@@ -17,7 +17,6 @@ export default function DiffCard({
   title,
   cur,
   prev,
-  unit,
   formatter,
   previousLabel,
 }: Props) {
@@ -28,14 +27,10 @@ export default function DiffCard({
 
   const sign = diff == null ? 0 : diff > 0 ? 1 : diff < 0 ? -1 : 0;
   const Icon = sign > 0 ? ArrowUp : sign < 0 ? ArrowDown : Minus;
-  const color =
-    !hasData
-      ? "text-muted-foreground"
-      : sign > 0
-        ? "text-emerald-600"
-        : sign < 0
-          ? "text-red-600"
-          : "text-muted-foreground";
+  const deltaClass =
+    sign > 0 ? "mictio-delta mictio-delta--pos"
+    : sign < 0 ? "mictio-delta mictio-delta--neg"
+    : "mictio-delta mictio-delta--neu";
 
   const formatDiff = (n: number) => {
     const abs = Math.abs(n);
@@ -45,18 +40,23 @@ export default function DiffCard({
   };
 
   return (
-    <div className="bg-card rounded-lg border p-5">
-      <p className="text-sm text-muted-foreground">{title}</p>
-      <p className={`text-3xl font-bold mt-1 tabular-nums ${color}`}>
+    <div className="mictio-card">
+      <p className="mictio-card-label">{title}</p>
+      <p className="mictio-card-value mt-2 tabular-nums">
         {!hasData ? "—" : formatDiff(diff as number)}
       </p>
       {!hasData ? (
-        <p className="text-xs text-muted-foreground mt-2">Sin datos previos</p>
+        <p className="text-[12px] text-[color:var(--mictio-muted)] mt-3">Sin datos previos</p>
       ) : (
-        <p className={`text-xs mt-2 flex items-center gap-1 font-medium ${color}`}>
-          <Icon className="h-3.5 w-3.5" />
-          {pct == null ? "—" : `${Math.abs(pct).toFixed(1)}%`} vs {previousLabel}
-        </p>
+        <div className="mt-3 flex items-center gap-2">
+          <span className={deltaClass}>
+            <Icon className="h-3 w-3" />
+            {pct == null ? "—" : `${Math.abs(pct).toFixed(1)}%`}
+          </span>
+          <span className="text-[12px] text-[color:var(--mictio-text-sec)]">
+            vs {previousLabel}
+          </span>
+        </div>
       )}
     </div>
   );
