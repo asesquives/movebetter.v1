@@ -8,6 +8,8 @@ interface Props {
   footer?: ReactNode;
   /** Optional override for the main value color (e.g. retention thresholds). */
   valueStyle?: CSSProperties;
+  /** Optional class on the value (e.g. text-red-500 for state colors). */
+  valueClassName?: string;
   className?: string;
 }
 
