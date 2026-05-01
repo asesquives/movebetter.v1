@@ -12,6 +12,7 @@ export function MictioBrandIcon({ size = 28, className }: Props) {
       width={size}
       height={size}
       className={className}
+      style={{ border: "none", flexShrink: 0, display: "block" }}
       aria-label="Mictio"
       role="img"
     >
