@@ -8,8 +8,6 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
-  LineChart,
-  Line,
   Area,
   AreaChart,
 } from "recharts";
