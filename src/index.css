@@ -1,9 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import './styles/tokens.css';
+
+/* Force Inter as the only UI font across the entire app */
+body, body * {
+  font-family: 'Inter', sans-serif !important;
+}
 
 /* ============================================================
    Semantic shadcn tokens — mapped to the Mictio palette in HSL.
