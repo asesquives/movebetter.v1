@@ -1,0 +1,196 @@
+/* ============================================================
+   Mictio Design System — Design Tokens
+   Single source of truth. Reference colors are listed as comments;
+   the values consumed by Tailwind/shadcn live as HSL channels in
+   src/index.css under the semantic token names.
+   ============================================================ */
+
+/* DARK MODE — Obsidian
+   --color-bg:        #0E0E0E
+   --color-surface:   #1C1C1C
+   --color-border:    #2A2A2A
+   --color-text:      #F7F8F8
+   --color-text-sec:  #95A2B3
+   --color-muted:     #555555
+   --color-accent:    #7B61FF
+   --color-accent-dim: rgba(123, 97, 255, 0.12)
+
+   LIGHT MODE — Marble
+   --color-bg:        #FFFFFF
+   --color-surface:   #F7F7F7
+   --color-border:    #E8E8E8
+   --color-text:      #111111
+   --color-text-sec:  #666666
+   --color-muted:     #AAAAAA
+   --color-accent:    #7B61FF
+   --color-accent-dim: rgba(123, 97, 255, 0.10)
+
+   STATE — same in both modes
+   --color-red:    #EF4444   --color-red-dim:   rgba(239, 68, 68, 0.10)
+   --color-green:  #22C55E   --color-green-dim: rgba(34, 197, 94, 0.10)
+   --color-amber:  #F59E0B   --color-amber-dim: rgba(245, 158, 11, 0.10)
+*/
+
+:root,
+.light {
+  /* Mictio raw tokens (rgba versions, useful where HSL is awkward) */
+  --mictio-bg: #FFFFFF;
+  --mictio-surface: #F7F7F7;
+  --mictio-border: #E8E8E8;
+  --mictio-text: #111111;
+  --mictio-text-sec: #666666;
+  --mictio-muted: #AAAAAA;
+  --mictio-accent: #7B61FF;
+  --mictio-accent-dim: rgba(123, 97, 255, 0.10);
+}
+
+.dark {
+  --mictio-bg: #0E0E0E;
+  --mictio-surface: #1C1C1C;
+  --mictio-border: #2A2A2A;
+  --mictio-text: #F7F8F8;
+  --mictio-text-sec: #95A2B3;
+  --mictio-muted: #555555;
+  --mictio-accent: #7B61FF;
+  --mictio-accent-dim: rgba(123, 97, 255, 0.12);
+}
+
+:root {
+  --mictio-red: #EF4444;
+  --mictio-red-dim: rgba(239, 68, 68, 0.10);
+  --mictio-green: #22C55E;
+  --mictio-green-dim: rgba(34, 197, 94, 0.10);
+  --mictio-amber: #F59E0B;
+  --mictio-amber-dim: rgba(245, 158, 11, 0.10);
+}
+
+/* ============================================================
+   Typography scale
+   ============================================================ */
+.t-hero    { font-size: 48px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
+.t-h1      { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+.t-h2      { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+.t-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.10em; text-transform: uppercase; }
+.t-body    { font-size: 14px; font-weight: 400; line-height: 1.65; }
+.t-caption { font-size: 12px; font-weight: 400; }
+.t-metric  { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.t-metric-lg { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+
+/* ============================================================
+   Mictio metric card
+   ============================================================ */
+.mictio-card {
+  background: var(--mictio-surface);
+  border: 1px solid var(--mictio-border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  box-shadow: none !important;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.mictio-card-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--mictio-muted);
+}
+
+.mictio-card-value {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--mictio-text);
+  line-height: 1.1;
+}
+
+.mictio-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.mictio-delta--pos { background: var(--mictio-green-dim); color: var(--mictio-green); }
+.mictio-delta--neg { background: var(--mictio-red-dim); color: var(--mictio-red); }
+.mictio-delta--neu { background: var(--mictio-accent-dim); color: var(--mictio-accent); }
+
+/* Badges */
+.mictio-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+}
+.mictio-badge--pos { background: var(--mictio-green-dim); color: var(--mictio-green); }
+.mictio-badge--neg { background: var(--mictio-red-dim); color: var(--mictio-red); }
+.mictio-badge--neu { background: var(--mictio-accent-dim); color: var(--mictio-accent); }
+
+/* Buttons */
+.mictio-btn-primary {
+  background: var(--mictio-text); color: var(--mictio-bg);
+  font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14px;
+  padding: 10px 20px; border-radius: 6px; border: none;
+  transition: opacity 0.15s ease;
+}
+.mictio-btn-primary:hover { opacity: 0.9; }
+
+.mictio-btn-secondary {
+  background: var(--mictio-surface);
+  border: 1px solid var(--mictio-border);
+  color: var(--mictio-text-sec);
+  font-family: 'Inter', sans-serif; font-weight: 500; font-size: 13px;
+  padding: 8px 16px; border-radius: 6px;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.mictio-btn-secondary:hover {
+  border-color: var(--mictio-accent);
+  color: var(--mictio-text);
+}
+
+/* Progress bar */
+.mictio-progress {
+  width: 100%;
+  height: 5px;
+  background: var(--mictio-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.mictio-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--mictio-accent);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* ============================================================
+   Card load animation — staggered fadeUp
+   ============================================================ */
+@keyframes mictioFadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mictio-stagger > * {
+  opacity: 0;
+  animation: mictioFadeUp 0.45s ease-out forwards;
+}
+.mictio-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.mictio-stagger > *:nth-child(2) { animation-delay: 0.10s; }
+.mictio-stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.mictio-stagger > *:nth-child(4) { animation-delay: 0.20s; }
+.mictio-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.mictio-stagger > *:nth-child(6) { animation-delay: 0.30s; }
+.mictio-stagger > *:nth-child(7) { animation-delay: 0.35s; }
+.mictio-stagger > *:nth-child(8) { animation-delay: 0.40s; }
+.mictio-stagger > *:nth-child(9) { animation-delay: 0.45s; }
+
+/* Global smooth theme transition for color + border surfaces */
+:root, :root * {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
