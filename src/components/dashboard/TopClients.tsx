@@ -161,7 +161,7 @@ export default function TopClients({ period }: TopClientsProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">Mejores clientes</h2>
+      <h2 className="t-h2">Mejores clientes</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Featured card — #1 of selected period */}
@@ -194,7 +194,7 @@ export default function TopClients({ period }: TopClientsProps) {
 
         {/* All-time top 3 */}
         <div className="bg-card border rounded-lg p-5">
-          <h3 className="text-sm font-semibold mb-3">Top 3 histórico</h3>
+          <h3 className="t-eyebrow mb-3">Top 3 histórico</h3>
           <RankingList
             data={allTime}
             loading={loadingAll}
@@ -204,7 +204,7 @@ export default function TopClients({ period }: TopClientsProps) {
 
         {/* Last 30 days */}
         <div className="bg-card border rounded-lg p-5">
-          <h3 className="text-sm font-semibold mb-3">Top 3 últimos 30 días</h3>
+          <h3 className="t-eyebrow mb-3">Top 3 últimos 30 días</h3>
           <RankingList
             data={monthly}
             loading={loadingMonthly}

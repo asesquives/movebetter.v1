@@ -186,14 +186,14 @@ export default function BusinessTrends({ period }: Props) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h2 className="text-lg font-semibold">Tendencias del negocio</h2>
+        <h2 className="t-h2">Tendencias del negocio</h2>
         <p className="text-xs text-muted-foreground">{subtitle}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-card border rounded-lg p-5">
           <div className="flex items-baseline justify-between mb-4">
-            <h3 className="text-sm font-semibold">
+            <h3 className="t-eyebrow">
               Ingresos por {granularity === "month" ? "mes" : "semana"}
             </h3>
             <span className="text-sm font-bold tabular-nums">{formatCurrency(totalRevenue)}</span>
@@ -225,7 +225,7 @@ export default function BusinessTrends({ period }: Props) {
 
         <div className="bg-card border rounded-lg p-5">
           <div className="flex items-baseline justify-between mb-4">
-            <h3 className="text-sm font-semibold">
+            <h3 className="t-eyebrow">
               Citas por {granularity === "month" ? "mes" : "semana"}
             </h3>
             <span className="text-sm font-bold tabular-nums">{totalAppts} citas</span>
