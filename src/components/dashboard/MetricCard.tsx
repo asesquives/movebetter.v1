@@ -59,12 +59,13 @@ export default function MetricCard({
   value,
   footer,
   valueStyle,
+  valueClassName,
   className,
 }: Props) {
   return (
     <div className={cn(className)} style={cardStyle}>
       <p style={labelStyle}>{label}</p>
-      <p style={{ ...valueStyleBase, ...valueStyle }}>{value}</p>
+      <p className={valueClassName} style={{ ...valueStyleBase, ...valueStyle }}>{value}</p>
       {footer != null && <div style={footerStyle}>{footer}</div>}
     </div>
   );
