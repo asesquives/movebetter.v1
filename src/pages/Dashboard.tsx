@@ -127,7 +127,7 @@ export default function Dashboard() {
     <div className="space-y-8">
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <h1 className="t-h1">Dashboard</h1>
           <p className="text-muted-foreground capitalize">
             {format(today, "EEEE, d 'de' MMMM yyyy", { locale: es })}
           </p>
