@@ -40,10 +40,16 @@ export default function DiffCard({
     return `${prefix}${body}`;
   };
 
+  const valueColor =
+    sign > 0 ? "var(--mictio-green)"
+    : sign < 0 ? "var(--mictio-red)"
+    : "var(--mictio-text-sec)";
+
   return (
     <MetricCard
       label={title}
       value={!hasData ? "—" : formatDiff(diff as number)}
+      valueStyle={hasData ? { color: valueColor } : undefined}
       footer={
         !hasData ? (
           <p className="text-[12px] text-[color:var(--mictio-muted)]">Sin datos previos</p>
