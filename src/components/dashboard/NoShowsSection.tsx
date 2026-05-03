@@ -127,10 +127,10 @@ export default function NoShowsSection({ period }: Props) {
         <h2 className="text-lg font-semibold">No-shows del período</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="bg-card rounded-lg border p-5 h-[110px] animate-pulse" />
+            <div key={i} className="mictio-card h-[110px] animate-pulse" />
           ))}
         </div>
-        <div className="bg-card rounded-lg border p-5 h-[180px] animate-pulse" />
+        <div className="mictio-card h-[180px] animate-pulse" />
       </div>
     );
   }
@@ -169,7 +169,7 @@ export default function NoShowsSection({ period }: Props) {
 
       {/* Top metric cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-card rounded-lg border p-5">
+        <div className="mictio-card">
           <p className="text-sm text-muted-foreground">No-shows del período</p>
           <p className="text-3xl font-bold mt-1 tabular-nums">{cur}</p>
           {prev === 0 && cur === 0 ? (
@@ -183,7 +183,7 @@ export default function NoShowsSection({ period }: Props) {
           )}
         </div>
 
-        <div className="bg-card rounded-lg border p-5">
+        <div className="mictio-card">
           <p className="text-sm text-muted-foreground">Ingreso perdido</p>
           <p className="text-3xl font-bold mt-1 tabular-nums text-red-600">
             {formatCurrency(data?.totalLost ?? 0, { decimals: 2 })}
@@ -193,7 +193,7 @@ export default function NoShowsSection({ period }: Props) {
           </p>
         </div>
 
-        <div className="bg-card rounded-lg border p-5">
+        <div className="mictio-card">
           <p className="text-sm text-muted-foreground">Tasa de no-show</p>
           <p className={`text-3xl font-bold mt-1 tabular-nums ${rateColor}`}>
             {rate == null ? "—" : `${rate.toFixed(1)}%`}
@@ -205,7 +205,7 @@ export default function NoShowsSection({ period }: Props) {
       </div>
 
       {/* Breakdown by type */}
-      <div className="bg-card rounded-lg border p-5">
+      <div className="mictio-card">
         <h3 className="text-sm font-semibold mb-4">Ingreso perdido por tipo de sesión</h3>
         {!data?.rows || data.rows.length === 0 ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">

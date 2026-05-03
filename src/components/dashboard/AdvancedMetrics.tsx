@@ -289,14 +289,14 @@ export default function AdvancedMetrics({ period }: Props) {
           : "text-red-600";
 
   const Card = ({ children }: { children: React.ReactNode }) => (
-    <div className="bg-card rounded-lg border p-5">{children}</div>
+    <div className="mictio-card">{children}</div>
   );
 
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="bg-card rounded-lg border p-5 h-[110px] animate-pulse" />
+          <div key={i} className="mictio-card h-[110px] animate-pulse" />
         ))}
       </div>
     );

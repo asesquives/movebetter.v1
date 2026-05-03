@@ -179,7 +179,7 @@ export default function AcquisitionMetrics({ period }: Props) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Métrica 1: Conversión diagnóstico → paquete */}
-        <div className="bg-card rounded-lg border p-5">
+        <div className="mictio-card">
           <p className="text-sm text-muted-foreground">
             Conversión diagnóstico → paquete
           </p>
@@ -204,7 +204,7 @@ export default function AcquisitionMetrics({ period }: Props) {
         </div>
 
         {/* Métrica 2: LTV promedio + cohortes */}
-        <div className="bg-card rounded-lg border p-5">
+        <div className="mictio-card">
           <p className="text-sm text-muted-foreground">
             LTV promedio (clientes activos del período)
           </p>
