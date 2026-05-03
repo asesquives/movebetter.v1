@@ -39,10 +39,23 @@ export default function DiffCard({
     return `${prefix}${body}`;
   };
 
+  const valueColor =
+    sign > 0 ? 'var(--mictio-green)'
+    : sign < 0 ? 'var(--mictio-red)'
+    : 'var(--mictio-text)';
+
   return (
-    <div className="mictio-card">
+    <div
+      className="mictio-card"
+      style={{
+        background: 'var(--mictio-surface)',
+        border: '1px solid var(--mictio-border)',
+        borderRadius: '10px',
+        padding: '20px 22px',
+      }}
+    >
       <p className="mictio-card-label">{title}</p>
-      <p className="mictio-card-value mt-2 tabular-nums">
+      <p className="mictio-card-value mt-2 tabular-nums" style={{ color: valueColor }}>
         {!hasData ? "—" : formatDiff(diff as number)}
       </p>
       {!hasData ? (
