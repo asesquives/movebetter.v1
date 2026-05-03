@@ -8,8 +8,7 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
-  LineChart,
-  Line,
+  // (LineChart/Line replaced by AreaChart for Mictio styling)
 } from "recharts";
 import {
   format,
