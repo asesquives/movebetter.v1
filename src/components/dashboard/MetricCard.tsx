@@ -63,10 +63,12 @@ export default function MetricCard({
   valueClassName,
   className,
 }: Props) {
+  // Merge while letting valueStyle.color win even against utility classes.
+  const mergedValueStyle: CSSProperties = { ...valueStyleBase, ...valueStyle };
   return (
     <div className={cn(className)} style={cardStyle}>
       <p style={labelStyle}>{label}</p>
-      <p className={valueClassName} style={{ ...valueStyleBase, ...valueStyle }}>{value}</p>
+      <p className={valueClassName} style={mergedValueStyle}>{value}</p>
       {footer != null && <div style={footerStyle}>{footer}</div>}
     </div>
   );
