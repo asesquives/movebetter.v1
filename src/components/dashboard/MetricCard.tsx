@@ -19,6 +19,7 @@ const cardStyle: CSSProperties = {
   borderRadius: "10px",
   padding: "20px 22px",
   boxShadow: "none",
+  display: "block",
 };
 
 const labelStyle: CSSProperties = {
