@@ -217,9 +217,9 @@ export default function BusinessTrends({ period }: Props) {
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={buckets} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => formatCurrency(Number(v))} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
+                  <XAxis dataKey="label" stroke={axisColor} fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis stroke={axisColor} fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => formatCurrency(Number(v))} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--popover))",
@@ -229,7 +229,11 @@ export default function BusinessTrends({ period }: Props) {
                     }}
                     formatter={(v: number) => [formatCurrency(v), "Ingresos"]}
                   />
-                  <Bar dataKey="revenue" fill="var(--mictio-accent)" fillOpacity={0.85} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
+                    {buckets.map((_, i) => (
+                      <Cell key={i} fill={i === buckets.length - 1 ? barColorActive : barColor} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             )}
