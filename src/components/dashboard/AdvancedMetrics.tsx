@@ -281,69 +281,72 @@ export default function AdvancedMetrics({ period }: Props) {
 
   const retentionColor =
     data?.retention == null
-      ? "text-foreground"
+      ? undefined
       : data.retention > 70
-        ? "text-emerald-600"
+        ? "var(--mictio-green)"
         : data.retention >= 50
-          ? "text-amber-600"
-          : "text-red-600";
-
-  const Card = ({ children }: { children: React.ReactNode }) => (
-    <div className="bg-card rounded-lg border p-5">{children}</div>
-  );
+          ? "var(--mictio-amber)"
+          : "var(--mictio-red)";
 
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="bg-card rounded-lg border p-5 h-[110px] animate-pulse" />
+          <div key={i} className="mictio-card h-[110px] animate-pulse" />
         ))}
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mictio-stagger">
       {/* 1. Tasa de ocupación */}
-      <Card>
-        <p className="text-sm text-muted-foreground">Tasa de ocupación · Solo fisios</p>
-        <p className="text-3xl font-bold mt-1 tabular-nums">
+      <div className="mictio-card">
+        <p className="mictio-card-label">Tasa de ocupación · Solo fisios</p>
+        <p className="mictio-card-value mt-2 tabular-nums">
           {data?.occupancy == null ? dash : `${Math.round(data.occupancy)}%`}
         </p>
-      </Card>
+      </div>
 
       {/* 2. Retención */}
-      <Card>
-        <p className="text-sm text-muted-foreground">Retención de clientes</p>
-        <p className={`text-3xl font-bold mt-1 tabular-nums ${retentionColor}`}>
+      <div className="mictio-card">
+        <p className="mictio-card-label">Retención de clientes</p>
+        <p
+          className="mictio-card-value mt-2 tabular-nums"
+          style={{ color: retentionColor }}
+        >
           {data?.retention == null ? dash : `${data.retention.toFixed(1)}%`}
         </p>
-        <p className="text-xs text-muted-foreground mt-2">vs {prevRange.shortLabel}</p>
-      </Card>
+        <p className="text-[12px] text-[color:var(--mictio-text-sec)] mt-3">
+          vs {prevRange.shortLabel}
+        </p>
+      </div>
 
       {/* 3. Ingreso promedio por cliente */}
-      <Card>
-        <p className="text-sm text-muted-foreground">Ingreso promedio por cliente</p>
-        <p className="text-3xl font-bold mt-1 tabular-nums">
+      <div className="mictio-card">
+        <p className="mictio-card-label">Ingreso promedio por cliente</p>
+        <p className="mictio-card-value mt-2 tabular-nums">
           {data?.avgRevenuePerClient == null ? dash : formatCurrency(data.avgRevenuePerClient, { decimals: 2 })}
         </p>
-        <p className="text-xs text-muted-foreground mt-2">clientes con actividad</p>
-      </Card>
+        <p className="text-[12px] text-[color:var(--mictio-text-sec)] mt-3">
+          clientes con actividad
+        </p>
+      </div>
 
       {/* 4. Sesión más agendada */}
-      <Card>
-        <p className="text-sm text-muted-foreground">Sesión más agendada</p>
+      <div className="mictio-card">
+        <p className="mictio-card-label">Sesión más agendada</p>
         {!topType || topType.length === 0 ? (
           <>
-            <p className="text-3xl font-bold mt-1 tabular-nums">{dash}</p>
-            <p className="text-xs text-muted-foreground mt-2">Sin citas en el período</p>
+            <p className="mictio-card-value mt-2 tabular-nums">{dash}</p>
+            <p className="text-[12px] text-[color:var(--mictio-text-sec)] mt-3">Sin citas en el período</p>
           </>
         ) : (
           <>
-            <p className="text-3xl font-bold mt-1 tabular-nums">{topType[0].count}</p>
-            <div className="mt-1">
+            <p className="mictio-card-value mt-2 tabular-nums">{topType[0].count}</p>
+            <div className="mt-3">
               <span
-                className={`inline-flex items-center gap-1.5 text-xs font-medium ${SESSION_TYPE_COLORS[topType[0].type].text}`}
+                className={`inline-flex items-center gap-1.5 text-[12px] font-medium ${SESSION_TYPE_COLORS[topType[0].type].text}`}
               >
                 <span
                   className={`inline-block h-2 w-2 rounded-full ${SESSION_TYPE_COLORS[topType[0].type].bg}`}
@@ -353,9 +356,9 @@ export default function AdvancedMetrics({ period }: Props) {
             </div>
           </>
         )}
-      </Card>
+      </div>
 
-      {/* 4. Ingresos vs período anterior */}
+      {/* 5. Ingresos vs período anterior */}
       <DiffCard
         title="Ingresos vs período anterior"
         cur={data?.growth?.revenue?.cur}
@@ -364,7 +367,7 @@ export default function AdvancedMetrics({ period }: Props) {
         previousLabel={prevRange.shortLabel}
       />
 
-      {/* 5. Sesiones vs período anterior */}
+      {/* 6. Sesiones vs período anterior */}
       <DiffCard
         title="Sesiones vs período anterior"
         cur={data?.growth?.sessions?.cur}
