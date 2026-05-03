@@ -24,6 +24,8 @@ import {
 } from "date-fns";
 import { es } from "date-fns/locale";
 import { DashboardPeriod, getPeriodRange } from "@/lib/dashboard-period";
+import { Cell } from "recharts";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface Bucket {
   key: string;
@@ -39,6 +41,17 @@ interface Props {
 }
 
 export default function BusinessTrends({ period }: Props) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const barColor = isDark ? "rgba(255,255,255,0.25)" : "#111111";
+  const barColorActive = isDark ? "rgba(255,255,255,0.55)" : "#111111";
+  const lineColor = isDark ? "rgba(255,255,255,0.70)" : "#111111";
+  const areaStopColor = isDark ? "rgba(255,255,255,1)" : "rgba(0,0,0,1)";
+  const areaTopOpacity = isDark ? 0.15 : 0.12;
+  const activeDotFill = isDark ? "rgba(255,255,255,0.90)" : "#111111";
+  const activeDotStroke = isDark ? "#0E0E0E" : "#FFFFFF";
+  const axisColor = isDark ? "rgba(255,255,255,0.30)" : "#AAAAAA";
+  const gridColor = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
   const { granularity, start: periodStart, end: periodEnd } = getPeriodRange(period);
 
   // Anchor for relative (mes/semana) modes; for ytd/custom we use the actual range.
@@ -204,9 +217,9 @@ export default function BusinessTrends({ period }: Props) {
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={buckets} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => formatCurrency(Number(v))} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
+                  <XAxis dataKey="label" stroke={axisColor} fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis stroke={axisColor} fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => formatCurrency(Number(v))} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--popover))",
@@ -216,7 +229,11 @@ export default function BusinessTrends({ period }: Props) {
                     }}
                     formatter={(v: number) => [formatCurrency(v), "Ingresos"]}
                   />
-                  <Bar dataKey="revenue" fill="var(--mictio-accent)" fillOpacity={0.85} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
+                    {buckets.map((_, i) => (
+                      <Cell key={i} fill={i === buckets.length - 1 ? barColorActive : barColor} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -238,13 +255,13 @@ export default function BusinessTrends({ period }: Props) {
                 <AreaChart data={buckets} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="mictioAreaFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--mictio-accent)" stopOpacity={0.2} />
-                      <stop offset="100%" stopColor="var(--mictio-accent)" stopOpacity={0} />
+                      <stop offset="0%" stopColor={areaStopColor} stopOpacity={areaTopOpacity} />
+                      <stop offset="100%" stopColor={areaStopColor} stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} allowDecimals={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
+                  <XAxis dataKey="label" stroke={axisColor} fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis stroke={axisColor} fontSize={10} tickLine={false} axisLine={false} allowDecimals={false} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--popover))",
@@ -257,10 +274,10 @@ export default function BusinessTrends({ period }: Props) {
                   <Area
                     type="monotone"
                     dataKey="appointments"
-                    stroke="var(--mictio-accent)"
+                    stroke={lineColor}
                     strokeWidth={2}
                     fill="url(#mictioAreaFill)"
-                    activeDot={{ r: 4, fill: "var(--mictio-accent)", stroke: "var(--mictio-bg)", strokeWidth: 2 }}
+                    activeDot={{ r: 4, fill: activeDotFill, stroke: activeDotStroke, strokeWidth: 2 }}
                     dot={false}
                   />
                 </AreaChart>
