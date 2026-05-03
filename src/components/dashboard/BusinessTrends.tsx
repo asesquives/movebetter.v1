@@ -41,6 +41,17 @@ interface Props {
 }
 
 export default function BusinessTrends({ period }: Props) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const barColor = isDark ? "rgba(255,255,255,0.25)" : "#111111";
+  const barColorActive = isDark ? "rgba(255,255,255,0.55)" : "#111111";
+  const lineColor = isDark ? "rgba(255,255,255,0.70)" : "#111111";
+  const areaStopColor = isDark ? "rgba(255,255,255,1)" : "rgba(0,0,0,1)";
+  const areaTopOpacity = isDark ? 0.15 : 0.12;
+  const activeDotFill = isDark ? "rgba(255,255,255,0.90)" : "#111111";
+  const activeDotStroke = isDark ? "#0E0E0E" : "#FFFFFF";
+  const axisColor = isDark ? "rgba(255,255,255,0.30)" : "#AAAAAA";
+  const gridColor = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
   const { granularity, start: periodStart, end: periodEnd } = getPeriodRange(period);
 
   // Anchor for relative (mes/semana) modes; for ytd/custom we use the actual range.
