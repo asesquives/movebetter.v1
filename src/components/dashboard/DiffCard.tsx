@@ -48,16 +48,20 @@ export default function DiffCard({
   return (
     <MetricCard
       label={title}
-      value={!hasData ? "—" : formatDiff(diff as number)}
-      valueStyle={hasData ? { color: valueColor } : undefined}
+      value={!hasData ? "—" : formatNumber(cur as number)}
       footer={
         !hasData ? (
           <p className="text-[12px] text-[color:var(--mictio-muted)]">Sin datos previos</p>
         ) : (
           <div className="flex items-center gap-2">
             <span className={deltaClass}>
-              <Icon className="h-3 w-3" />
-              {pct == null ? "—" : `${Math.abs(pct).toFixed(1)}%`}
+              {formatDiff(diff as number)}
+              {pct != null && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  {`${diff! < 0 ? "−" : diff! > 0 ? "+" : ""}${Math.abs(pct).toFixed(0)}%`}
+                </>
+              )}
             </span>
             <span className="text-[12px] text-[color:var(--mictio-text-sec)]">
               vs {previousLabel}
