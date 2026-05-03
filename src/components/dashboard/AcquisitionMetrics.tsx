@@ -153,66 +153,63 @@ export default function AcquisitionMetrics({ period }: Props) {
   const prevPct = conv?.prevPct ?? null;
   const convColor =
     curPct == null
-      ? "text-foreground"
+      ? undefined
       : curPct > 60
-        ? "text-emerald-600"
+        ? "var(--mictio-green)"
         : curPct >= 40
-          ? "text-amber-600"
-          : "text-red-600";
+          ? "var(--mictio-amber)"
+          : "var(--mictio-red)";
 
   const diff =
     curPct != null && prevPct != null ? curPct - prevPct : null;
   const sign = diff == null ? 0 : diff > 0 ? 1 : diff < 0 ? -1 : 0;
   const Icon = sign > 0 ? ArrowUp : sign < 0 ? ArrowDown : Minus;
-  const diffColor =
-    diff == null
-      ? "text-muted-foreground"
-      : sign > 0
-        ? "text-emerald-600"
-        : sign < 0
-          ? "text-red-600"
-          : "text-muted-foreground";
+  const deltaClass =
+    sign > 0 ? "mictio-delta mictio-delta--pos"
+    : sign < 0 ? "mictio-delta mictio-delta--neg"
+    : "mictio-delta mictio-delta--neu";
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">Adquisición de clientes</h2>
+      <h2 className="text-[18px] font-semibold tracking-tight">Adquisición de clientes</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mictio-stagger">
         {/* Métrica 1: Conversión diagnóstico → paquete */}
-        <div className="bg-card rounded-lg border p-5">
-          <p className="text-sm text-muted-foreground">
-            Conversión diagnóstico → paquete
-          </p>
-          <p className={`text-3xl font-bold mt-1 tabular-nums ${convColor}`}>
+        <div className="mictio-card">
+          <p className="mictio-card-label">Conversión diagnóstico → paquete</p>
+          <p
+            className="mictio-card-value mt-2 tabular-nums"
+            style={{ color: convColor }}
+          >
             {curPct == null ? "—" : `${curPct.toFixed(1)}%`}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-[12px] text-[color:var(--mictio-text-sec)] mt-2">
             {conv == null
               ? "—"
               : `${conv.cur.numerator} de ${conv.cur.denominator} clientes evaluados compraron un paquete`}
           </p>
           {diff == null ? (
-            <p className="text-xs text-muted-foreground mt-2">Sin datos previos</p>
+            <p className="text-[12px] text-[color:var(--mictio-muted)] mt-3">Sin datos previos</p>
           ) : (
-            <p
-              className={`text-xs mt-2 flex items-center gap-1 font-medium ${diffColor}`}
-            >
-              <Icon className="h-3.5 w-3.5" />
-              {Math.abs(diff).toFixed(1)} pts vs {prevRange.shortLabel}
-            </p>
+            <div className="mt-3 flex items-center gap-2">
+              <span className={deltaClass}>
+                <Icon className="h-3 w-3" />
+                {Math.abs(diff).toFixed(1)} pts
+              </span>
+              <span className="text-[12px] text-[color:var(--mictio-text-sec)]">
+                vs {prevRange.shortLabel}
+              </span>
+            </div>
           )}
         </div>
 
-        {/* Métrica 2: LTV promedio + cohortes */}
-        <div className="bg-card rounded-lg border p-5">
-          <p className="text-sm text-muted-foreground">
-            LTV promedio (clientes activos del período)
-          </p>
-          <p className="text-3xl font-bold mt-1 tabular-nums">
+        {/* Métrica 2: LTV promedio */}
+        <div className="mictio-card">
+          <p className="mictio-card-label">LTV promedio (clientes activos del período)</p>
+          <p className="mictio-card-value mt-2 tabular-nums">
             {ltv?.avgLtv == null ? "—" : formatCurrency(ltv.avgLtv)}
           </p>
-
-          <p className="text-xs text-muted-foreground mt-2">
+          <p className="text-[12px] text-[color:var(--mictio-text-sec)] mt-3">
             promedio de gasto total por cliente activo
           </p>
         </div>
