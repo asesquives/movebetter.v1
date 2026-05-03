@@ -1,4 +1,3 @@
-import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import { formatNumber } from "@/lib/format";
 import MetricCard from "./MetricCard";
 
@@ -27,7 +26,6 @@ export default function DiffCard({
     hasData && (prev as number) !== 0 ? ((diff as number) / (prev as number)) * 100 : null;
 
   const sign = diff == null ? 0 : diff > 0 ? 1 : diff < 0 ? -1 : 0;
-  const Icon = sign > 0 ? ArrowUp : sign < 0 ? ArrowDown : Minus;
   const deltaClass =
     sign > 0 ? "mictio-delta mictio-delta--pos"
     : sign < 0 ? "mictio-delta mictio-delta--neg"
@@ -39,11 +37,6 @@ export default function DiffCard({
     const prefix = n > 0 ? "+" : n < 0 ? "−" : "";
     return `${prefix}${body}`;
   };
-
-  const valueColor =
-    sign > 0 ? "var(--mictio-green)"
-    : sign < 0 ? "var(--mictio-red)"
-    : "var(--mictio-text-sec)";
 
   return (
     <MetricCard
