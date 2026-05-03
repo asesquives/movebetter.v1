@@ -8,13 +8,13 @@
 @layer base {
   /* LIGHT — Marble */
   :root {
-    --background: 0 0% 92%;             /* #EBEBEB */
+    --background: 0 0% 100%;            /* #FFFFFF */
     --foreground: 0 0% 7%;              /* #111111 */
 
-    --card: 0 0% 100%;                  /* #FFFFFF */
+    --card: 0 0% 94%;                   /* #F0F0F0 */
     --card-foreground: 0 0% 7%;
 
-    --popover: 0 0% 100%;
+    --popover: 0 0% 94%;
     --popover-foreground: 0 0% 7%;
 
 
@@ -24,7 +24,7 @@
     --secondary: 0 0% 7%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 100%;
+    --muted: 0 0% 94%;
     --muted-foreground: 0 0% 40%;       /* #666666 */
 
     --accent: 251 100% 69%;
@@ -39,11 +39,11 @@
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 92%;
+    --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 0 0% 40%;
     --sidebar-primary: 251 100% 69%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 100%;
+    --sidebar-accent: 0 0% 94%;
     --sidebar-accent-foreground: 0 0% 7%;
     --sidebar-border: 0 0% 83%;
     --sidebar-ring: 251 100% 69%;
