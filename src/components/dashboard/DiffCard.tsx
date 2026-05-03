@@ -30,6 +30,10 @@ export default function DiffCard({
     sign > 0 ? "mictio-delta mictio-delta--pos"
     : sign < 0 ? "mictio-delta mictio-delta--neg"
     : "mictio-delta mictio-delta--neu";
+  const valueColor =
+    sign > 0 ? "var(--mictio-green)"
+    : sign < 0 ? "var(--mictio-red)"
+    : "var(--mictio-text-sec)";
 
   const formatDiff = (n: number) => {
     const abs = Math.abs(n);
@@ -41,7 +45,8 @@ export default function DiffCard({
   return (
     <MetricCard
       label={title}
-      value={!hasData ? "—" : formatNumber(cur as number)}
+      value={!hasData ? "—" : formatDiff(diff as number)}
+      valueStyle={{ color: valueColor }}
       footer={
         !hasData ? (
           <p className="text-[12px] text-[color:var(--mictio-muted)]">Sin datos previos</p>
