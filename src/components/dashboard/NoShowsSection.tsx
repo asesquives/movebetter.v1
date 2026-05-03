@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, CheckCircle2, Minus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/lib/format";
-import MetricCard from "./MetricCard";
 import {
   DashboardPeriod,
   getPeriodRange,
@@ -125,13 +124,13 @@ export default function NoShowsSection({ period }: Props) {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <h2 className="t-h2">No-shows del período</h2>
+        <h2 className="text-lg font-semibold">No-shows del período</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="mictio-card h-[110px] animate-pulse" />
+            <div key={i} className="bg-card rounded-lg border p-5 h-[110px] animate-pulse" />
           ))}
         </div>
-        <div className="mictio-card h-[180px] animate-pulse" />
+        <div className="bg-card rounded-lg border p-5 h-[180px] animate-pulse" />
       </div>
     );
   }
@@ -145,73 +144,69 @@ export default function NoShowsSection({ period }: Props) {
   const Icon = sign > 0 ? ArrowUp : sign < 0 ? ArrowDown : Minus;
   const diffColor =
     prev === 0 && cur === 0
-      ? "text-[color:var(--mictio-text-sec)]"
+      ? "text-muted-foreground"
       : sign > 0
-        ? "text-red-500"
+        ? "text-red-600"
         : sign < 0
-          ? "text-emerald-500"
-          : "text-[color:var(--mictio-text-sec)]";
+          ? "text-emerald-600"
+          : "text-muted-foreground";
 
   const rate = data?.noShowRate;
   const rateColor =
     rate == null
-      ? ""
+      ? "text-foreground"
       : rate < 5
-        ? "text-emerald-500"
+        ? "text-emerald-600"
         : rate <= 10
-          ? "text-amber-500"
-          : "text-red-500";
+          ? "text-amber-600"
+          : "text-red-600";
 
   const maxLost = data?.rows?.[0]?.lost ?? 0;
 
   return (
     <div className="space-y-4">
-      <h2 className="t-h2">No-shows del período</h2>
+      <h2 className="text-lg font-semibold">No-shows del período</h2>
 
       {/* Top metric cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <MetricCard
-          label="No-shows del período"
-          value={cur}
-          footer={
-            prev === 0 && cur === 0 ? (
-              <p className="text-[12px] text-[color:var(--mictio-text-sec)]">Sin datos previos</p>
-            ) : (
-              <p className={`text-[12px] flex items-center gap-1 ${diffColor}`}>
-                <Icon className="h-3.5 w-3.5" />
-                {pct == null ? `${diff > 0 ? "+" : ""}${diff}` : `${Math.abs(pct).toFixed(1)}%`}{" "}
-                vs {prevRange.shortLabel}
-              </p>
-            )
-          }
-        />
-
-        <MetricCard
-          label="Ingreso perdido"
-          value={formatCurrency(data?.totalLost ?? 0, { decimals: 2 })}
-          valueClassName="text-red-500"
-          footer={
-            <p className="text-[12px] text-[color:var(--mictio-text-sec)]">
-              por citas no-show del período
+        <div className="bg-card rounded-lg border p-5">
+          <p className="text-sm text-muted-foreground">No-shows del período</p>
+          <p className="text-3xl font-bold mt-1 tabular-nums">{cur}</p>
+          {prev === 0 && cur === 0 ? (
+            <p className="text-xs text-muted-foreground mt-2">Sin datos previos</p>
+          ) : (
+            <p className={`text-xs mt-2 flex items-center gap-1 font-medium ${diffColor}`}>
+              <Icon className="h-3.5 w-3.5" />
+              {pct == null ? `${diff > 0 ? "+" : ""}${diff}` : `${Math.abs(pct).toFixed(1)}%`}{" "}
+              vs {prevRange.shortLabel}
             </p>
-          }
-        />
+          )}
+        </div>
 
-        <MetricCard
-          label="Tasa de no-show"
-          value={rate == null ? "—" : `${rate.toFixed(1)}%`}
-          valueClassName={rateColor}
-          footer={
-            <p className="text-[12px] text-[color:var(--mictio-text-sec)]">
-              no-shows / citas del período
-            </p>
-          }
-        />
+        <div className="bg-card rounded-lg border p-5">
+          <p className="text-sm text-muted-foreground">Ingreso perdido</p>
+          <p className="text-3xl font-bold mt-1 tabular-nums text-red-600">
+            {formatCurrency(data?.totalLost ?? 0, { decimals: 2 })}
+          </p>
+          <p className="text-xs text-muted-foreground mt-2">
+            por citas no-show del período
+          </p>
+        </div>
+
+        <div className="bg-card rounded-lg border p-5">
+          <p className="text-sm text-muted-foreground">Tasa de no-show</p>
+          <p className={`text-3xl font-bold mt-1 tabular-nums ${rateColor}`}>
+            {rate == null ? "—" : `${rate.toFixed(1)}%`}
+          </p>
+          <p className="text-xs text-muted-foreground mt-2">
+            no-shows / citas del período
+          </p>
+        </div>
       </div>
 
       {/* Breakdown by type */}
-      <div className="mictio-card">
-        <h3 className="t-eyebrow mb-4">Ingreso perdido por tipo de sesión</h3>
+      <div className="bg-card rounded-lg border p-5">
+        <h3 className="text-sm font-semibold mb-4">Ingreso perdido por tipo de sesión</h3>
         {!data?.rows || data.rows.length === 0 ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
             <CheckCircle2 className="h-4 w-4 text-emerald-600" />

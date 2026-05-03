@@ -43,7 +43,7 @@ export default function AgendaPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="t-h1">Agenda</h1>
+          <h1 className="text-2xl font-bold">Agenda</h1>
           <p className="text-sm text-muted-foreground capitalize">
             {format(weekDays[0], "d MMM", { locale: es })} – {format(weekDays[5], "d MMM yyyy", { locale: es })}
           </p>

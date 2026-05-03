@@ -135,7 +135,7 @@ export default function OccupancyAndExpiringPackages({ period }: Props) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {/* Ocupación fisios */}
-      <div className="mictio-card">
+      <div className="bg-card rounded-lg border p-4">
         <p className="text-sm text-muted-foreground mb-3">Ocupación fisios</p>
         {!occupancy || occupancy.length === 0 ? (
           <p className="text-sm text-muted-foreground py-6 text-center">
@@ -165,7 +165,7 @@ export default function OccupancyAndExpiringPackages({ period }: Props) {
       </div>
 
       {/* Paquetes por vencer */}
-      <div className="mictio-card">
+      <div className="bg-card rounded-lg border p-4">
         <p className="text-sm text-muted-foreground mb-3">Paquetes por vencer</p>
         {!expiring || expiring.length === 0 ? (
           <p className="text-sm text-muted-foreground py-6 text-center">

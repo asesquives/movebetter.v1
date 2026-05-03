@@ -92,12 +92,12 @@ export default function ScheduledHoursByProfessional({ period }: Props) {
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h2 className="t-h2 capitalize">
+        <h2 className="text-lg font-semibold capitalize">
           Horas agendadas — {periodLabel}
         </h2>
       </div>
 
-      <div className="mictio-card space-y-6">
+      <div className="bg-card border rounded-lg p-5 space-y-6">
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Cargando...</p>
         ) : !data || data.length === 0 ? (

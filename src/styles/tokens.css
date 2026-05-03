@@ -42,14 +42,6 @@
   --mictio-muted: #AAAAAA;
   --mictio-accent: #7B61FF;
   --mictio-accent-dim: rgba(123, 97, 255, 0.10);
-
-  /* Status — darker tones for AA contrast on white surfaces */
-  --mictio-red: #DC2626;
-  --mictio-red-dim: rgba(220, 38, 38, 0.10);
-  --mictio-green: #15803D;
-  --mictio-green-dim: rgba(21, 128, 61, 0.10);
-  --mictio-amber: #B45309;
-  --mictio-amber-dim: rgba(180, 83, 9, 0.10);
 }
 
 .dark {
@@ -61,14 +53,15 @@
   --mictio-muted: #555555;
   --mictio-accent: #7B61FF;
   --mictio-accent-dim: rgba(123, 97, 255, 0.12);
+}
 
-  /* Status — brighter tones for AA contrast on dark surfaces */
-  --mictio-red: #F87171;
-  --mictio-red-dim: rgba(248, 113, 113, 0.14);
-  --mictio-green: #4ADE80;
-  --mictio-green-dim: rgba(74, 222, 128, 0.14);
-  --mictio-amber: #FBBF24;
-  --mictio-amber-dim: rgba(251, 191, 36, 0.14);
+:root {
+  --mictio-red: #EF4444;
+  --mictio-red-dim: rgba(239, 68, 68, 0.10);
+  --mictio-green: #22C55E;
+  --mictio-green-dim: rgba(34, 197, 94, 0.10);
+  --mictio-amber: #F59E0B;
+  --mictio-amber-dim: rgba(245, 158, 11, 0.10);
 }
 
 /* ============================================================
@@ -87,8 +80,8 @@
    Mictio metric card
    ============================================================ */
 .mictio-card {
-  background: hsl(var(--surface));
-  border: 1px solid hsl(var(--border));
+  background: var(--mictio-surface);
+  border: 1px solid var(--mictio-border);
   border-radius: 10px;
   padding: 20px 22px;
   box-shadow: none !important;

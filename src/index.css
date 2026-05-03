@@ -1,15 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import './styles/tokens.css';
-
-/* Force Inter as the only UI font across the entire app */
-body, body * {
-  font-family: 'Inter', sans-serif !important;
-}
 
 /* ============================================================
    Semantic shadcn tokens — mapped to the Mictio palette in HSL.
@@ -44,9 +38,8 @@ body, body * {
     --destructive: 0 84% 60%;           /* #EF4444 */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 16.5%;               /* spec */
-    --input: 0 0% 16.5%;
-    --surface: 0 0% 11%;                /* spec */
+    --border: 0 0% 16%;                 /* #2A2A2A */
+    --input: 0 0% 16%;
     --ring: 250 100% 69%;
 
     --radius: 0.625rem;                 /* 10px */
@@ -58,7 +51,7 @@ body, body * {
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 11%;
     --sidebar-accent-foreground: 210 14% 97%;
-    --sidebar-border: 0 0% 25%;
+    --sidebar-border: 0 0% 16%;
     --sidebar-ring: 250 100% 69%;
     --sidebar-muted: 215 18% 65%;
   }
@@ -89,9 +82,8 @@ body, body * {
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90.9%;               /* spec */
-    --input: 0 0% 90.9%;
-    --surface: 0 0% 96.9%;              /* spec */
+    --border: 0 0% 91%;                 /* #E8E8E8 */
+    --input: 0 0% 91%;
     --ring: 250 100% 69%;
 
     --sidebar-background: 0 0% 100%;
@@ -100,7 +92,7 @@ body, body * {
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 97%;
     --sidebar-accent-foreground: 0 0% 7%;
-    --sidebar-border: 0 0% 83%;
+    --sidebar-border: 0 0% 91%;
     --sidebar-ring: 250 100% 69%;
     --sidebar-muted: 0 0% 40%;
   }
