@@ -87,8 +87,8 @@
    Mictio metric card
    ============================================================ */
 .mictio-card {
-  background: var(--mictio-surface);
-  border: 1px solid var(--mictio-border);
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--border));
   border-radius: 10px;
   padding: 20px 22px;
   box-shadow: none !important;
