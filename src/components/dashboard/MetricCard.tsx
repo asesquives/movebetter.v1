@@ -14,8 +14,10 @@ interface Props {
 }
 
 const cardStyle: CSSProperties = {
-  background: "var(--mictio-surface)",
-  border: "1px solid var(--mictio-border)",
+  backgroundColor: "var(--mictio-surface)",
+  borderWidth: "1px",
+  borderStyle: "solid",
+  borderColor: "var(--mictio-border)",
   borderRadius: "10px",
   padding: "20px 22px",
   boxShadow: "none",
@@ -66,7 +68,7 @@ export default function MetricCard({
   // Merge while letting valueStyle.color win even against utility classes.
   const mergedValueStyle: CSSProperties = { ...valueStyleBase, ...valueStyle };
   return (
-    <div className={cn(className)} style={cardStyle}>
+    <div className={cn("mictio-card", className)} style={cardStyle}>
       <p style={labelStyle}>{label}</p>
       <p className={valueClassName} style={mergedValueStyle}>{value}</p>
       {footer != null && <div style={footerStyle}>{footer}</div>}
