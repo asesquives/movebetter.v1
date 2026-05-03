@@ -1,4 +1,3 @@
-import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import { formatNumber } from "@/lib/format";
 import MetricCard from "./MetricCard";
 
@@ -27,7 +26,6 @@ export default function DiffCard({
     hasData && (prev as number) !== 0 ? ((diff as number) / (prev as number)) * 100 : null;
 
   const sign = diff == null ? 0 : diff > 0 ? 1 : diff < 0 ? -1 : 0;
-  const Icon = sign > 0 ? ArrowUp : sign < 0 ? ArrowDown : Minus;
   const deltaClass =
     sign > 0 ? "mictio-delta mictio-delta--pos"
     : sign < 0 ? "mictio-delta mictio-delta--neg"
@@ -40,24 +38,23 @@ export default function DiffCard({
     return `${prefix}${body}`;
   };
 
-  const valueColor =
-    sign > 0 ? "var(--mictio-green)"
-    : sign < 0 ? "var(--mictio-red)"
-    : "var(--mictio-text-sec)";
-
   return (
     <MetricCard
       label={title}
-      value={!hasData ? "—" : formatDiff(diff as number)}
-      valueStyle={hasData ? { color: valueColor } : undefined}
+      value={!hasData ? "—" : formatNumber(cur as number)}
       footer={
         !hasData ? (
           <p className="text-[12px] text-[color:var(--mictio-muted)]">Sin datos previos</p>
         ) : (
           <div className="flex items-center gap-2">
             <span className={deltaClass}>
-              <Icon className="h-3 w-3" />
-              {pct == null ? "—" : `${Math.abs(pct).toFixed(1)}%`}
+              {formatDiff(diff as number)}
+              {pct != null && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  {`${diff! < 0 ? "−" : diff! > 0 ? "+" : ""}${Math.abs(pct).toFixed(0)}%`}
+                </>
+              )}
             </span>
             <span className="text-[12px] text-[color:var(--mictio-text-sec)]">
               vs {previousLabel}
