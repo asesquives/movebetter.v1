@@ -141,7 +141,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats — diferencia vs período anterior */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mictio-stagger">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <DiffCard
           title="Citas vs período anterior"
           cur={apptsCounts?.cur}
