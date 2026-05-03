@@ -24,6 +24,8 @@ import {
 } from "date-fns";
 import { es } from "date-fns/locale";
 import { DashboardPeriod, getPeriodRange } from "@/lib/dashboard-period";
+import { Cell } from "recharts";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface Bucket {
   key: string;
