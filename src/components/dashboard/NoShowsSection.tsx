@@ -171,11 +171,15 @@ export default function NoShowsSection({ period }: Props) {
           {prev === 0 && cur === 0 ? (
             <p className="text-xs text-muted-foreground mt-2">Sin datos previos</p>
           ) : (
-            <p className={`text-xs mt-2 flex items-center gap-1 font-medium ${diffColor}`}>
-              <Icon className="h-3.5 w-3.5" />
-              {pct == null ? `${diff > 0 ? "+" : ""}${diff}` : `${Math.abs(pct).toFixed(1)}%`}{" "}
-              vs {prevRange.shortLabel}
-            </p>
+            <div className="mt-3 flex items-center gap-2">
+              <span className={deltaClass}>
+                <Icon className="h-3 w-3" />
+                {pct == null ? `${diff > 0 ? "+" : ""}${diff}` : `${Math.abs(pct).toFixed(1)}%`}
+              </span>
+              <span className="text-[12px] text-[color:var(--mictio-text-sec)]">
+                vs {prevRange.shortLabel}
+              </span>
+            </div>
           )}
         </div>
 
