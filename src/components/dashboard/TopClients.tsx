@@ -165,7 +165,7 @@ export default function TopClients({ period }: TopClientsProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Featured card — #1 of selected period */}
-        <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border rounded-lg p-5 flex flex-col justify-between">
+        <div className="mictio-card flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 text-primary">
               <Trophy className="h-5 w-5" />
@@ -193,7 +193,7 @@ export default function TopClients({ period }: TopClientsProps) {
         </div>
 
         {/* All-time top 3 */}
-        <div className="bg-card border rounded-lg p-5">
+        <div className="mictio-card">
           <h3 className="t-eyebrow mb-3">Top 3 histórico</h3>
           <RankingList
             data={allTime}
@@ -203,7 +203,7 @@ export default function TopClients({ period }: TopClientsProps) {
         </div>
 
         {/* Last 30 days */}
-        <div className="bg-card border rounded-lg p-5">
+        <div className="mictio-card">
           <h3 className="t-eyebrow mb-3">Top 3 últimos 30 días</h3>
           <RankingList
             data={monthly}
