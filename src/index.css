@@ -44,8 +44,8 @@ body, body * {
     --destructive: 0 84% 60%;           /* #EF4444 */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 16%;                 /* #2A2A2A */
-    --input: 0 0% 16%;
+    --border: 0 0% 22%;                 /* #383838 */
+    --input: 0 0% 22%;
     --ring: 250 100% 69%;
 
     --radius: 0.625rem;                 /* 10px */
