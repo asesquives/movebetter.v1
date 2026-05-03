@@ -36,7 +36,7 @@
   /* Mictio raw tokens (rgba versions, useful where HSL is awkward) */
   --mictio-bg: #FFFFFF;
   --mictio-surface: #F7F7F7;
-  --mictio-border: #D4D4D4;
+  --mictio-border: #E8E8E8;
   --mictio-text: #111111;
   --mictio-text-sec: #666666;
   --mictio-muted: #AAAAAA;
@@ -55,7 +55,7 @@
 .dark {
   --mictio-bg: #0E0E0E;
   --mictio-surface: #1C1C1C;
-  --mictio-border: #404040;
+  --mictio-border: #2A2A2A;
   --mictio-text: #F7F8F8;
   --mictio-text-sec: #95A2B3;
   --mictio-muted: #555555;
@@ -87,8 +87,8 @@
    Mictio metric card
    ============================================================ */
 .mictio-card {
-  background: var(--mictio-surface);
-  border: 1px solid var(--mictio-border);
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--border));
   border-radius: 10px;
   padding: 20px 22px;
   box-shadow: none !important;
