@@ -124,13 +124,13 @@ export default function NoShowsSection({ period }: Props) {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold">No-shows del período</h2>
+        <h2 className="text-[18px] font-semibold tracking-tight">No-shows del período</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="bg-card rounded-lg border p-5 h-[110px] animate-pulse" />
+            <div key={i} className="mictio-card h-[110px] animate-pulse" />
           ))}
         </div>
-        <div className="bg-card rounded-lg border p-5 h-[180px] animate-pulse" />
+        <div className="mictio-card h-[180px] animate-pulse" />
       </div>
     );
   }
