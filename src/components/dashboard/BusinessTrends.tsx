@@ -24,6 +24,8 @@ import {
 } from "date-fns";
 import { es } from "date-fns/locale";
 import { DashboardPeriod, getPeriodRange } from "@/lib/dashboard-period";
+import { useTheme } from "@/hooks/useTheme";
+import { Cell, Area, AreaChart } from "recharts";
 
 interface Bucket {
   key: string;
@@ -39,6 +41,14 @@ interface Props {
 }
 
 export default function BusinessTrends({ period }: Props) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const barColor = isDark ? "rgba(255,255,255,0.25)" : "#111111";
+  const barColorActive = isDark ? "rgba(255,255,255,0.55)" : "#111111";
+  const lineColor = isDark ? "rgba(255,255,255,0.70)" : "#111111";
+  const areaColor = isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)";
+  const axisColor = isDark ? "rgba(255,255,255,0.30)" : "#AAAAAA";
+  const gridColor = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
   const { granularity, start: periodStart, end: periodEnd } = getPeriodRange(period);
 
   // Anchor for relative (mes/semana) modes; for ytd/custom we use the actual range.
@@ -190,8 +200,8 @@ export default function BusinessTrends({ period }: Props) {
         <p className="text-xs text-muted-foreground">{subtitle}</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-card border rounded-lg p-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mictio-stagger">
+        <div className="mictio-card">
           <div className="flex items-baseline justify-between mb-4">
             <h3 className="text-sm font-semibold">
               Ingresos por {granularity === "month" ? "mes" : "semana"}
@@ -204,26 +214,31 @@ export default function BusinessTrends({ period }: Props) {
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={buckets} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => formatCurrency(Number(v))} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
+                  <XAxis dataKey="label" stroke={axisColor} fontSize={10} tickLine={false} axisLine={false} tick={{ fill: axisColor }} />
+                  <YAxis stroke={axisColor} fontSize={10} tickLine={false} axisLine={false} tick={{ fill: axisColor }} tickFormatter={(v) => formatCurrency(Number(v))} />
                   <Tooltip
+                    cursor={{ fill: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)" }}
                     contentStyle={{
                       backgroundColor: "hsl(var(--popover))",
                       border: "1px solid hsl(var(--border))",
-                      borderRadius: "0.5rem",
-                      fontSize: "0.875rem",
+                      borderRadius: "8px",
+                      fontSize: "12px",
                     }}
                     formatter={(v: number) => [formatCurrency(v), "Ingresos"]}
                   />
-                  <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
+                    {buckets.map((_, i) => (
+                      <Cell key={i} fill={i === buckets.length - 1 ? barColorActive : barColor} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             )}
           </div>
         </div>
 
-        <div className="bg-card border rounded-lg p-5">
+        <div className="mictio-card">
           <div className="flex items-baseline justify-between mb-4">
             <h3 className="text-sm font-semibold">
               Citas por {granularity === "month" ? "mes" : "semana"}
@@ -235,28 +250,40 @@ export default function BusinessTrends({ period }: Props) {
               <p className="text-sm text-muted-foreground">Cargando...</p>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={buckets} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
+                <AreaChart data={buckets} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="mictioAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={isDark ? "rgba(255,255,255,1)" : "rgba(0,0,0,1)"} stopOpacity={isDark ? 0.15 : 0.10} />
+                      <stop offset="100%" stopColor={isDark ? "rgba(255,255,255,1)" : "rgba(0,0,0,1)"} stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
+                  <XAxis dataKey="label" stroke={axisColor} fontSize={10} tickLine={false} axisLine={false} tick={{ fill: axisColor }} />
+                  <YAxis stroke={axisColor} fontSize={10} tickLine={false} axisLine={false} tick={{ fill: axisColor }} allowDecimals={false} />
                   <Tooltip
+                    cursor={{ stroke: axisColor, strokeWidth: 1 }}
                     contentStyle={{
                       backgroundColor: "hsl(var(--popover))",
                       border: "1px solid hsl(var(--border))",
-                      borderRadius: "0.5rem",
-                      fontSize: "0.875rem",
+                      borderRadius: "8px",
+                      fontSize: "12px",
                     }}
                     formatter={(v: number) => [v, "Citas"]}
                   />
-                  <Line
+                  <Area
                     type="monotone"
                     dataKey="appointments"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2.5}
-                    dot={{ r: 4, fill: "hsl(var(--primary))" }}
-                    activeDot={{ r: 6 }}
+                    stroke={lineColor}
+                    strokeWidth={2}
+                    fill="url(#mictioAreaGrad)"
+                    activeDot={{
+                      r: 4,
+                      fill: isDark ? "rgba(255,255,255,0.90)" : "#111111",
+                      stroke: isDark ? "#0E0E0E" : "#FFFFFF",
+                      strokeWidth: 2,
+                    }}
                   />
-                </LineChart>
+                </AreaChart>
               </ResponsiveContainer>
             )}
           </div>
