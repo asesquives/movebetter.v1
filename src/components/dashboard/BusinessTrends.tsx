@@ -204,7 +204,7 @@ export default function BusinessTrends({ period }: Props) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-card border rounded-lg p-5">
+        <div className="mictio-card">
           <div className="flex items-baseline justify-between mb-4">
             <h3 className="t-eyebrow">
               Ingresos por {granularity === "month" ? "mes" : "semana"}
@@ -240,7 +240,7 @@ export default function BusinessTrends({ period }: Props) {
           </div>
         </div>
 
-        <div className="bg-card border rounded-lg p-5">
+        <div className="mictio-card">
           <div className="flex items-baseline justify-between mb-4">
             <h3 className="t-eyebrow">
               Citas por {granularity === "month" ? "mes" : "semana"}
