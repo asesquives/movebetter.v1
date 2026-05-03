@@ -161,15 +161,15 @@ export default function NoShowsSection({ period }: Props) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">No-shows del período</h2>
+      <h2 className="text-[18px] font-semibold tracking-tight">No-shows del período</h2>
 
       {/* Top metric cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-card rounded-lg border p-5">
-          <p className="text-sm text-muted-foreground">No-shows del período</p>
-          <p className="text-3xl font-bold mt-1 tabular-nums">{cur}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mictio-stagger">
+        <div className="mictio-card">
+          <p className="mictio-card-label">No-shows del período</p>
+          <p className="mictio-card-value mt-2 tabular-nums">{cur}</p>
           {prev === 0 && cur === 0 ? (
-            <p className="text-xs text-muted-foreground mt-2">Sin datos previos</p>
+            <p className="text-[12px] text-[color:var(--mictio-muted)] mt-3">Sin datos previos</p>
           ) : (
             <div className="mt-3 flex items-center gap-2">
               <span className={deltaClass}>
@@ -183,33 +183,48 @@ export default function NoShowsSection({ period }: Props) {
           )}
         </div>
 
-        <div className="bg-card rounded-lg border p-5">
-          <p className="text-sm text-muted-foreground">Ingreso perdido</p>
-          <p className="text-3xl font-bold mt-1 tabular-nums text-red-600">
+        <div className="mictio-card">
+          <p className="mictio-card-label">Ingreso perdido</p>
+          <p
+            className="mictio-card-value mt-2 tabular-nums"
+            style={{ color: "var(--mictio-red)" }}
+          >
             {formatCurrency(data?.totalLost ?? 0, { decimals: 2 })}
           </p>
-          <p className="text-xs text-muted-foreground mt-2">
+          <p className="text-[12px] text-[color:var(--mictio-text-sec)] mt-3">
             por citas no-show del período
           </p>
         </div>
 
-        <div className="bg-card rounded-lg border p-5">
-          <p className="text-sm text-muted-foreground">Tasa de no-show</p>
-          <p className={`text-3xl font-bold mt-1 tabular-nums ${rateColor}`}>
+        <div className="mictio-card">
+          <p className="mictio-card-label">Tasa de no-show</p>
+          <p
+            className="mictio-card-value mt-2 tabular-nums"
+            style={{
+              color:
+                rate == null
+                  ? undefined
+                  : rate < 5
+                    ? "var(--mictio-green)"
+                    : rate <= 10
+                      ? "var(--mictio-amber)"
+                      : "var(--mictio-red)",
+            }}
+          >
             {rate == null ? "—" : `${rate.toFixed(1)}%`}
           </p>
-          <p className="text-xs text-muted-foreground mt-2">
+          <p className="text-[12px] text-[color:var(--mictio-text-sec)] mt-3">
             no-shows / citas del período
           </p>
         </div>
       </div>
 
       {/* Breakdown by type */}
-      <div className="bg-card rounded-lg border p-5">
-        <h3 className="text-sm font-semibold mb-4">Ingreso perdido por tipo de sesión</h3>
+      <div className="mictio-card">
+        <h3 className="mictio-card-label mb-4">Ingreso perdido por tipo de sesión</h3>
         {!data?.rows || data.rows.length === 0 ? (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+          <div className="flex items-center gap-2 text-[13px] text-[color:var(--mictio-text-sec)] py-2">
+            <CheckCircle2 className="h-4 w-4" style={{ color: "var(--mictio-green)" }} />
             Sin no-shows en este período
           </div>
         ) : (
@@ -218,18 +233,21 @@ export default function NoShowsSection({ period }: Props) {
               const widthPct = maxLost > 0 ? (r.lost / maxLost) * 100 : 0;
               return (
                 <div key={r.type} className="space-y-1">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium">{TYPE_LABEL[r.type]}</span>
-                    <span className="text-muted-foreground tabular-nums">
+                  <div className="flex items-center justify-between text-[13px]">
+                    <span className="font-medium text-[color:var(--mictio-text)]">{TYPE_LABEL[r.type]}</span>
+                    <span className="text-[color:var(--mictio-text-sec)] tabular-nums">
                       {r.count} · {formatCurrency(r.lost)}
                     </span>
                   </div>
-                  <div className="h-2.5 w-full bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-1.5 w-full rounded-full overflow-hidden"
+                    style={{ background: "var(--mictio-border)" }}
+                  >
                     <div
                       className="h-full rounded-full"
                       style={{
                         width: `${widthPct}%`,
-                        backgroundColor: "#CC2222",
+                        background: "var(--mictio-red)",
                       }}
                     />
                   </div>
