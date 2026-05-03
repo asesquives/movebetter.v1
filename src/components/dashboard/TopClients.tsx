@@ -193,7 +193,7 @@ export default function TopClients({ period }: TopClientsProps) {
         </div>
 
         {/* All-time top 3 */}
-        <div className="bg-card border rounded-lg p-5">
+        <div className="mictio-card">
           <h3 className="text-sm font-semibold mb-3">Top 3 histórico</h3>
           <RankingList
             data={allTime}
@@ -203,7 +203,7 @@ export default function TopClients({ period }: TopClientsProps) {
         </div>
 
         {/* Last 30 days */}
-        <div className="bg-card border rounded-lg p-5">
+        <div className="mictio-card">
           <h3 className="text-sm font-semibold mb-3">Top 3 últimos 30 días</h3>
           <RankingList
             data={monthly}

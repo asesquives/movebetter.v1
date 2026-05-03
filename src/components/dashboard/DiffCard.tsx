@@ -5,11 +5,8 @@ interface Props {
   title: string;
   cur: number | null | undefined;
   prev: number | null | undefined;
-  /** Singular/plural unit suffix for the absolute diff (e.g. "cita" / "citas"). Optional. */
   unit?: { singular: string; plural: string };
-  /** Formatter for the absolute diff. Defaults to integer with sign. */
   formatter?: (n: number) => string;
-  /** Short label for the previous period (e.g. "marzo 2026", "semana anterior"). */
   previousLabel: string;
 }
 
@@ -17,7 +14,6 @@ export default function DiffCard({
   title,
   cur,
   prev,
-  unit,
   formatter,
   previousLabel,
 }: Props) {
@@ -28,14 +24,23 @@ export default function DiffCard({
 
   const sign = diff == null ? 0 : diff > 0 ? 1 : diff < 0 ? -1 : 0;
   const Icon = sign > 0 ? ArrowUp : sign < 0 ? ArrowDown : Minus;
-  const color =
+
+  // Mictio: principal value coloured by delta sign
+  const valueColor =
     !hasData
       ? "text-muted-foreground"
       : sign > 0
-        ? "text-emerald-600"
+        ? "text-[#22C55E]"
         : sign < 0
-          ? "text-red-600"
-          : "text-muted-foreground";
+          ? "text-[#EF4444]"
+          : "text-foreground";
+
+  const pillClass =
+    sign > 0
+      ? "mictio-delta mictio-delta-pos"
+      : sign < 0
+        ? "mictio-delta mictio-delta-neg"
+        : "mictio-delta mictio-delta-neu";
 
   const formatDiff = (n: number) => {
     const abs = Math.abs(n);
@@ -45,18 +50,23 @@ export default function DiffCard({
   };
 
   return (
-    <div className="bg-card rounded-lg border p-5">
-      <p className="text-sm text-muted-foreground">{title}</p>
-      <p className={`text-3xl font-bold mt-1 tabular-nums ${color}`}>
+    <div className="mictio-card">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.10em] text-muted-foreground">
+        {title}
+      </p>
+      <p className={`text-[28px] font-extrabold mt-2 tabular-nums tracking-[-0.03em] ${valueColor}`}>
         {!hasData ? "—" : formatDiff(diff as number)}
       </p>
       {!hasData ? (
         <p className="text-xs text-muted-foreground mt-2">Sin datos previos</p>
       ) : (
-        <p className={`text-xs mt-2 flex items-center gap-1 font-medium ${color}`}>
-          <Icon className="h-3.5 w-3.5" />
-          {pct == null ? "—" : `${Math.abs(pct).toFixed(1)}%`} vs {previousLabel}
-        </p>
+        <div className="mt-3 flex items-center gap-2">
+          <span className={pillClass}>
+            <Icon className="h-3 w-3" />
+            {pct == null ? "—" : `${Math.abs(pct).toFixed(1)}%`}
+          </span>
+          <span className="text-[12px] text-muted-foreground">vs {previousLabel}</span>
+        </div>
       )}
     </div>
   );

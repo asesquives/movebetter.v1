@@ -1,4 +1,4 @@
-import { Calendar, Users, Package, DollarSign, Clock, UserCog, LayoutDashboard, LogOut, Tag } from "lucide-react";
+import { Calendar, Users, Package, DollarSign, Clock, UserCog, LayoutDashboard, LogOut, Tag, Sun, Moon } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -12,7 +12,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import { useLocation } from "react-router-dom";
+import { MictioLogo } from "@/components/MictioLogo";
 
 const navItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -29,20 +31,23 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const { signOut } = useAuth();
+  const { theme, setTheme } = useTheme();
   const location = useLocation();
 
   return (
-    <Sidebar collapsible="icon" className="border-r-0">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <div className="p-4 border-b border-sidebar-border">
-        {!collapsed && (
-          <div>
-            <h2 className="text-lg font-bold text-sidebar-primary-foreground">Move Better</h2>
-            <p className="text-xs text-sidebar-muted">Fisioterapia</p>
+        {!collapsed ? (
+          <div className="flex items-center gap-2">
+            <MictioLogo size={28} />
+            <div>
+              <h2 className="text-sm font-bold text-sidebar-accent-foreground tracking-tight">Move Better</h2>
+              <p className="text-[11px] text-sidebar-muted">Fisioterapia</p>
+            </div>
           </div>
-        )}
-        {collapsed && (
+        ) : (
           <div className="flex justify-center">
-            <span className="text-lg font-bold text-sidebar-primary-foreground">M</span>
+            <MictioLogo size={24} />
           </div>
         )}
       </div>
@@ -51,16 +56,24 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={location.pathname === item.url}>
-                    <NavLink to={item.url} end className="hover:bg-sidebar-accent" activeClassName="bg-sidebar-accent text-sidebar-accent-foreground font-medium">
-                      <item.icon className="h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {navItems.map((item) => {
+                const active = location.pathname === item.url;
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={active}>
+                      <NavLink
+                        to={item.url}
+                        end
+                        className="hover:bg-sidebar-accent text-[13px] font-medium text-sidebar-foreground"
+                        activeClassName="bg-sidebar-accent text-sidebar-accent-foreground border-l-2 border-[#7B61FF] !rounded-l-none"
+                      >
+                        <item.icon className="h-4 w-4" />
+                        {!collapsed && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -68,6 +81,46 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border">
         <SidebarMenu>
+          {/* Theme toggle */}
+          <SidebarMenuItem>
+            {!collapsed ? (
+              <div className="mx-2 my-1 inline-flex items-center rounded-md border border-sidebar-border bg-sidebar-accent p-0.5 w-full">
+                <button
+                  type="button"
+                  onClick={() => setTheme("light")}
+                  className={`flex-1 inline-flex items-center justify-center gap-1.5 px-2 py-1 rounded text-[12px] font-medium transition-colors ${
+                    theme === "light"
+                      ? "bg-background text-foreground"
+                      : "text-sidebar-muted hover:text-sidebar-accent-foreground"
+                  }`}
+                  aria-label="Tema claro"
+                >
+                  <Sun className="h-3.5 w-3.5" /> Light
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme("dark")}
+                  className={`flex-1 inline-flex items-center justify-center gap-1.5 px-2 py-1 rounded text-[12px] font-medium transition-colors ${
+                    theme === "dark"
+                      ? "bg-background text-foreground"
+                      : "text-sidebar-muted hover:text-sidebar-accent-foreground"
+                  }`}
+                  aria-label="Tema oscuro"
+                >
+                  <Moon className="h-3.5 w-3.5" /> Dark
+                </button>
+              </div>
+            ) : (
+              <SidebarMenuButton
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="hover:bg-sidebar-accent text-sidebar-muted"
+                aria-label="Cambiar tema"
+              >
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </SidebarMenuButton>
+            )}
+          </SidebarMenuItem>
+
           <SidebarMenuItem>
             <SidebarMenuButton onClick={signOut} className="hover:bg-sidebar-accent text-sidebar-muted">
               <LogOut className="h-4 w-4" />

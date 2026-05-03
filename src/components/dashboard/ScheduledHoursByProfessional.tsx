@@ -97,7 +97,7 @@ export default function ScheduledHoursByProfessional({ period }: Props) {
         </h2>
       </div>
 
-      <div className="bg-card border rounded-lg p-5 space-y-6">
+      <div className="mictio-card space-y-6">
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Cargando...</p>
         ) : !data || data.length === 0 ? (

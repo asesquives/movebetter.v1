@@ -1,0 +1,74 @@
+/* Mictio Design System — raw tokens */
+
+:root {
+  /* Marble (light) */
+  --mictio-bg: #FFFFFF;
+  --mictio-surface: #F7F7F7;
+  --mictio-border: #E8E8E8;
+  --mictio-text: #111111;
+  --mictio-text-sec: #666666;
+  --mictio-muted: #AAAAAA;
+  --mictio-accent: #7B61FF;
+  --mictio-accent-dim: rgba(123, 97, 255, 0.10);
+
+  /* Status (shared) */
+  --mictio-red: #EF4444;
+  --mictio-red-dim: rgba(239, 68, 68, 0.10);
+  --mictio-green: #22C55E;
+  --mictio-green-dim: rgba(34, 197, 94, 0.10);
+  --mictio-amber: #F59E0B;
+  --mictio-amber-dim: rgba(245, 158, 11, 0.10);
+}
+
+.dark {
+  /* Obsidian (dark) */
+  --mictio-bg: #0E0E0E;
+  --mictio-surface: #1C1C1C;
+  --mictio-border: #2A2A2A;
+  --mictio-text: #F7F8F8;
+  --mictio-text-sec: #95A2B3;
+  --mictio-muted: #555555;
+  --mictio-accent: #7B61FF;
+  --mictio-accent-dim: rgba(123, 97, 255, 0.12);
+}
+
+/* Smooth theme transitions */
+html, body, * {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Card fadeUp stagger */
+@keyframes mictio-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.mictio-stagger > *:nth-child(1) { animation: mictio-fade-up 0.3s ease 0.05s both; }
+.mictio-stagger > *:nth-child(2) { animation: mictio-fade-up 0.3s ease 0.10s both; }
+.mictio-stagger > *:nth-child(3) { animation: mictio-fade-up 0.3s ease 0.15s both; }
+.mictio-stagger > *:nth-child(4) { animation: mictio-fade-up 0.3s ease 0.20s both; }
+.mictio-stagger > *:nth-child(5) { animation: mictio-fade-up 0.3s ease 0.25s both; }
+.mictio-stagger > *:nth-child(6) { animation: mictio-fade-up 0.3s ease 0.30s both; }
+
+/* Mictio card primitive (no shadow, border-only) */
+.mictio-card {
+  background-color: var(--mictio-surface);
+  border: 1px solid var(--mictio-border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  box-shadow: none !important;
+}
+
+/* Delta pills */
+.mictio-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+.mictio-delta-pos { color: var(--mictio-green); background-color: var(--mictio-green-dim); }
+.mictio-delta-neg { color: var(--mictio-red);   background-color: var(--mictio-red-dim); }
+.mictio-delta-neu { color: var(--mictio-text-sec); background-color: transparent; }

@@ -159,17 +159,17 @@ export default function IngresosPage() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-card rounded-lg border p-5">
+        <div className="mictio-card">
           <p className="text-sm text-muted-foreground">Cobrado</p>
           <p className="text-2xl font-bold mt-1">{formatCurrency(cobrado, { decimals: 2 })}</p>
           <p className="text-xs text-muted-foreground mt-1">Paquetes vendidos en el período</p>
         </div>
-        <div className="bg-card rounded-lg border p-5">
+        <div className="mictio-card">
           <p className="text-sm text-muted-foreground">Devengado</p>
           <p className="text-2xl font-bold mt-1">{formatCurrency(devengado, { decimals: 2 })}</p>
           <p className="text-xs text-muted-foreground mt-1">Sesiones realizadas en el período</p>
         </div>
-        <div className="bg-card rounded-lg border p-5">
+        <div className="mictio-card">
           <p className="text-sm text-muted-foreground">Saldo diferido</p>
           <p className="text-2xl font-bold mt-1">{formatCurrency(diferido, { decimals: 2 })}</p>
           <p className="text-xs text-muted-foreground mt-1">Cobrado − Devengado</p>
