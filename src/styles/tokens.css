@@ -2,8 +2,8 @@
 
 :root, .light {
   /* Marble (light) */
-  --mictio-bg: #EBEBEB;
-  --mictio-surface: #FFFFFF;
+  --mictio-bg: #FFFFFF;
+  --mictio-surface: #F0F0F0;
   --mictio-border: #D4D4D4;
   --mictio-text: #111111;
   --mictio-text-sec: #666666;
