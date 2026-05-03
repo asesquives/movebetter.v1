@@ -139,17 +139,13 @@ export default function NoShowsSection({ period }: Props) {
   const prev = data?.prevCount ?? 0;
   const diff = cur - prev;
   const pct = prev !== 0 ? (diff / prev) * 100 : null;
-  // For no-shows: down = good (green), up = bad (red)
+  // Regla global: diff positivo = verde + ↑, diff negativo = rojo + ↓
   const sign = diff > 0 ? 1 : diff < 0 ? -1 : 0;
   const Icon = sign > 0 ? ArrowUp : sign < 0 ? ArrowDown : Minus;
-  const diffColor =
-    prev === 0 && cur === 0
-      ? "text-muted-foreground"
-      : sign > 0
-        ? "text-red-600"
-        : sign < 0
-          ? "text-emerald-600"
-          : "text-muted-foreground";
+  const deltaClass =
+    sign > 0 ? "mictio-delta mictio-delta--pos"
+    : sign < 0 ? "mictio-delta mictio-delta--neg"
+    : "mictio-delta mictio-delta--neu";
 
   const rate = data?.noShowRate;
   const rateColor =
