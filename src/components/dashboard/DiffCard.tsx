@@ -42,10 +42,12 @@ export default function DiffCard({
     return `${prefix}${body}`;
   };
 
+  const formatAbsolute = (n: number) => formatter ? formatter(n) : formatNumber(n);
+
   return (
     <MetricCard
       label={title}
-      value={!hasData ? "—" : formatDiff(diff as number)}
+      value={!hasData ? "—" : formatAbsolute(cur as number)}
       valueStyle={{ color: valueColor }}
       footer={
         !hasData ? (
