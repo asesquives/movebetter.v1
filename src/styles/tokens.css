@@ -1,10 +1,10 @@
 /* Mictio Design System — raw tokens */
 
-:root {
+:root, .light {
   /* Marble (light) */
-  --mictio-bg: #FFFFFF;
-  --mictio-surface: #F7F7F7;
-  --mictio-border: #E8E8E8;
+  --mictio-bg: #EBEBEB;
+  --mictio-surface: #FFFFFF;
+  --mictio-border: #D4D4D4;
   --mictio-text: #111111;
   --mictio-text-sec: #666666;
   --mictio-muted: #AAAAAA;
