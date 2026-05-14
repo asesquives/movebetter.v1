@@ -21,6 +21,7 @@ import { Plus, Calendar, Clock, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import type { Database } from "@/integrations/supabase/types";
+import PhysioOccupancyChart from "@/components/equipo/PhysioOccupancyChart";
 
 type Professional = Database["public"]["Tables"]["professionals"]["Row"];
 
@@ -253,6 +254,8 @@ export default function EquipoPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      <PhysioOccupancyChart />
 
       {isLoading ? (
         <p className="text-muted-foreground">Cargando...</p>
