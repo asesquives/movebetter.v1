@@ -255,6 +255,8 @@ export default function EquipoPage() {
         </Dialog>
       </div>
 
+      <PhysioOccupancyChart />
+
       {isLoading ? (
         <p className="text-muted-foreground">Cargando...</p>
       ) : !professionals?.length ? (
