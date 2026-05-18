@@ -13,7 +13,13 @@ export function MictioLogo({ size = 28, className }: Props) {
       height={size}
       alt="Mictio"
       className={className}
-      style={{ borderRadius: 6, objectFit: "contain" }}
+      style={{
+        width: size,
+        height: size,
+        objectFit: "cover",
+        borderRadius: Math.round(size * 0.22),
+        display: "block",
+      }}
     />
   );
 }
