@@ -169,17 +169,10 @@ export default function PaquetesPage() {
   const updatePackage = useMutation({
     mutationFn: async () => {
       if (!editingPkg) throw new Error("No hay paquete seleccionado");
-      const totalPaid = parseFloat(editForm.total_paid);
-      if (isNaN(totalPaid) || totalPaid < 0) throw new Error("Total pagado inválido");
-      const sessions = editingPkg.total_sessions || 0;
-      const pps = sessions > 0 ? totalPaid / sessions : 0;
 
       const { error } = await supabase
         .from("packages")
         .update({
-          name: editForm.name,
-          total_paid: totalPaid,
-          price_per_session: pps,
           payment_method: editForm.payment_method,
           receipt_type: editForm.receipt_type,
           notes: editForm.notes || null,
@@ -369,6 +362,10 @@ export default function PaquetesPage() {
                   <span className="font-medium">{(editingPkg.clients as any)?.name ?? "—"}</span>
                 </p>
                 <p>
+                  <span className="text-muted-foreground">Paquete:</span>{" "}
+                  <span className="font-medium">{editingPkg.name}</span>
+                </p>
+                <p>
                   <span className="text-muted-foreground">Tipo:</span>{" "}
                   <span className="font-medium">{editingPkg.type}</span>
                 </p>
@@ -376,43 +373,32 @@ export default function PaquetesPage() {
                   <span className="text-muted-foreground">Sesiones:</span>{" "}
                   <span className="font-medium">{editingPkg.sessions_used}/{editingPkg.total_sessions}</span>
                 </p>
+                <p>
+                  <span className="text-muted-foreground">Total pagado:</span>{" "}
+                  <span className="font-medium">{formatCurrency(Number(editingPkg.total_paid ?? 0), { decimals: 2 })}</span>
+                </p>
+                <p>
+                  <span className="text-muted-foreground">Precio por sesión:</span>{" "}
+                  <span className="font-medium">
+                    {formatCurrency(
+                      editingPkg.total_sessions > 0
+                        ? Number(editingPkg.total_paid ?? 0) / editingPkg.total_sessions
+                        : 0,
+                      { decimals: 2 },
+                    )}
+                  </span>
+                </p>
                 {editingPkg.expires_at && (
                   <p>
                     <span className="text-muted-foreground">Vence:</span>{" "}
                     <span className="font-medium">{format(new Date(editingPkg.expires_at), "dd/MM/yyyy")}</span>
                   </p>
                 )}
-              </div>
-
-              <div>
-                <Label>Nombre del paquete</Label>
-                <Input
-                  value={editForm.name}
-                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div>
-                <Label>Total pagado (S/)</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={editForm.total_paid}
-                  onChange={(e) => setEditForm({ ...editForm, total_paid: e.target.value })}
-                  required
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Precio por sesión:{" "}
-                  {formatCurrency(
-                    editingPkg.total_sessions > 0
-                      ? (parseFloat(editForm.total_paid || "0") || 0) / editingPkg.total_sessions
-                      : 0,
-                    { decimals: 2 },
-                  )}
+                <p className="text-xs text-muted-foreground pt-1">
+                  Para cambiar nombre, sesiones o precio edita el paquete en Catálogo.
                 </p>
               </div>
+
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
