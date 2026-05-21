@@ -15,14 +15,23 @@ import { formatCurrency } from "@/lib/format";
 type CatalogProgram = Database["public"]["Enums"]["catalog_program"];
 type CatalogRow = Database["public"]["Views"]["package_catalog"]["Row"];
 
-const PROGRAM_LABELS: Record<CatalogProgram, string> = {
+const PROGRAM_LABELS: Record<string, string> = {
   diagnosis: "Diagnóstico",
+  "Evaluación": "Diagnóstico",
   prehabilitation: "Prehabilitation",
+  Prehabilitation: "Prehabilitation",
   rehabilitation: "Rehabilitación",
+  "Rehabilitación": "Rehabilitación",
   recovery: "Recovery",
+  Recovery: "Recovery",
 };
 
-const PROGRAM_ORDER: CatalogProgram[] = ["diagnosis", "prehabilitation", "rehabilitation", "recovery"];
+const PROGRAM_ORDER: string[] = [
+  "diagnosis", "Evaluación",
+  "prehabilitation", "Prehabilitation",
+  "rehabilitation", "Rehabilitación",
+  "recovery", "Recovery",
+];
 
 export default function CatalogoPage() {
   const queryClient = useQueryClient();
