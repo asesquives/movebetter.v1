@@ -3,13 +3,12 @@ import { Database } from "@/integrations/supabase/types";
 export type AppointmentType = Database["public"]["Enums"]["appointment_type"];
 export type AppointmentStatus = Database["public"]["Enums"]["appointment_status"];
 
-export type SessionTypeConfig = { bg: string; text: string; label: string; marker: string };
+export type SessionTypeConfig = { bg: string; text: string; label: string };
 
 export const UNKNOWN_SESSION_TYPE_CONFIG: SessionTypeConfig = {
   bg: "bg-muted",
   text: "text-muted-foreground",
   label: "Tipo desconocido",
-  marker: "hsl(var(--muted-foreground))",
 };
 
 export const SESSION_TYPE_COLORS: Record<AppointmentType, SessionTypeConfig> = {
