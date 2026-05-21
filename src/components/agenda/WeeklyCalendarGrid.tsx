@@ -1,5 +1,5 @@
 import { format, isSameDay } from "date-fns";
-import { SESSION_TYPE_COLORS, STATUS_LABELS, STATUS_COLORS, HOURS, AppointmentType, AppointmentStatus } from "@/lib/agenda-constants";
+import { getSessionTypeConfig, STATUS_LABELS, STATUS_COLORS, HOURS, AppointmentType, AppointmentStatus } from "@/lib/agenda-constants";
 import { isPeruHoliday, getHolidayName } from "@/lib/peru-holidays";
 
 interface CalendarAppointment {
@@ -79,7 +79,7 @@ export function WeeklyCalendarGrid({ weekDays, appointments, onSlotClick, onAppo
                   }}
                 >
                   {slotAppts.map((apt) => {
-                    const typeConfig = SESSION_TYPE_COLORS[apt.type];
+                    const typeConfig = getSessionTypeConfig(apt.type);
                     return (
                       <div
                         key={apt.id}
@@ -116,13 +116,13 @@ export function WeeklyCalendarGrid({ weekDays, appointments, onSlotClick, onAppo
   );
 }
 
-function getTypeColor(type: AppointmentType): string {
+function getTypeColor(type: AppointmentType | string | null | undefined): string {
   const map: Record<AppointmentType, string> = {
-    medical_diagnosis: "#3b82f6",
-    physio_diagnosis: "#38bdf8",
-    rehabilitation: "#10b981",
-    prehabilitation: "#f59e0b",
-    recovery: "#9ca3af",
+    medical_diagnosis: "var(--mictio-accent)",
+    physio_diagnosis: "hsl(var(--primary))",
+    rehabilitation: "var(--mictio-success)",
+    prehabilitation: "var(--mictio-warning)",
+    recovery: "hsl(var(--muted-foreground))",
   };
-  return map[type];
+  return type ? map[type as AppointmentType] ?? "hsl(var(--muted-foreground))" : "hsl(var(--muted-foreground))";
 }
