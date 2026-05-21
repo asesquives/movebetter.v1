@@ -17,6 +17,7 @@ export const STATUS_LABELS: Record<AppointmentStatus, string> = {
   done: "Realizada",
   cancelled: "Cancelada",
   no_show: "No-show",
+  pending: "Pendiente",
 };
 
 export const STATUS_COLORS: Record<AppointmentStatus, string> = {
@@ -25,6 +26,7 @@ export const STATUS_COLORS: Record<AppointmentStatus, string> = {
   done: "bg-muted text-muted-foreground",
   cancelled: "bg-red-100 text-red-700",
   no_show: "bg-orange-100 text-orange-700",
+  pending: "bg-amber-100 text-amber-700",
 };
 
 export const HOURS = Array.from({ length: 13 }, (_, i) => i + 7); // 7am to 7pm
