@@ -232,7 +232,15 @@ export default function ClientesPage() {
                         </span>
                       </div>
                       <Progress value={(pkg.sessions_used / pkg.total_sessions) * 100} className="h-2" />
-                      <p className="text-xs text-muted-foreground">{formatCurrency(Number(pkg.total_paid), { decimals: 2 })} pagado · {formatCurrency(Number(pkg.price_per_session), { decimals: 2 })}/sesión</p>
+                      {(() => {
+                        const paid = Number(pkg.total_paid ?? 0);
+                        const pps = pkg.price_per_session != null && Number(pkg.price_per_session) > 0
+                          ? Number(pkg.price_per_session)
+                          : (pkg.total_sessions > 0 ? paid / pkg.total_sessions : 0);
+                        return (
+                          <p className="text-xs text-muted-foreground">{formatCurrency(paid, { decimals: 2 })} pagado · {formatCurrency(pps, { decimals: 2 })}/sesión</p>
+                        );
+                      })()}
                     </div>
                   ))
                 )}
