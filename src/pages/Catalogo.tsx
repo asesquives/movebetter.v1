@@ -13,7 +13,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { formatCurrency } from "@/lib/format";
 
 type CatalogProgram = Database["public"]["Enums"]["catalog_program"];
-type CatalogRow = Database["public"]["Tables"]["package_catalog"]["Row"];
+type CatalogRow = Database["public"]["Views"]["package_catalog"]["Row"];
 
 const PROGRAM_LABELS: Record<CatalogProgram, string> = {
   diagnosis: "Diagnóstico",
