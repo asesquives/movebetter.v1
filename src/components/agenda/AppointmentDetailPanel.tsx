@@ -58,6 +58,8 @@ export function AppointmentDetailPanel({ open, onOpenChange, appointment }: Appo
   const handleStatusChange = (newStatus: AppointmentStatus) => {
     if (newStatus === "no_show") {
       setNoShowDialog(true);
+    } else if (newStatus === "done") {
+      setDoneDialog(true);
     } else {
       updateStatus.mutate(newStatus);
     }
