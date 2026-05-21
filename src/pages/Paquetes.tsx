@@ -58,7 +58,7 @@ export default function PaquetesPage() {
       const { data, error } = await supabase
         .from("package_catalog")
         .select("*")
-        .eq("is_active", true)
+        .eq("active", true)
         .order("program")
         .order("price");
       if (error) throw error;
