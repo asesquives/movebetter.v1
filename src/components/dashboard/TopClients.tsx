@@ -8,7 +8,7 @@ interface ClientPayment {
   client_id: string;
   client_name: string;
   total: number;
-  transactions: number;
+  sessions: number;
 }
 
 const STANDALONE_PRICES: Record<string, number> = {
@@ -18,54 +18,57 @@ const STANDALONE_PRICES: Record<string, number> = {
 };
 
 /**
- * Ranks clients by money paid in the period:
- *  A) packages.total_paid where packages.created_at in [start, end]
- *  B) standalone done appointments (package_id IS NULL, status='done') priced by type
+ * Ranks clients by revenue actually realized in the period:
+ * for each completed appointment (status='done') in [start, end],
+ * add price_per_session of its package, or the appointment's own price
+ * (falling back to STANDALONE_PRICES by type) if it has no package.
  */
 async function fetchTopClientsByPaid(
   startIso: string | undefined,
   endIso: string | undefined,
   limit = 3,
 ): Promise<ClientPayment[]> {
-  // A) Packages purchased in the period
-  let pkgQuery = supabase
-    .from("packages")
-    .select("client_id, total_paid, created_at");
-  if (startIso) pkgQuery = pkgQuery.gte("created_at", startIso);
-  if (endIso) pkgQuery = pkgQuery.lte("created_at", endIso);
-  const { data: packages, error: pkgErr } = await pkgQuery;
-  if (pkgErr) throw pkgErr;
-
-  // B) Standalone done appointments in the period
   let apptQuery = supabase
     .from("appointments")
-    .select("client_id, type, start_time, status, package_id")
-    .eq("status", "done")
-    .is("package_id", null);
-  if (startIso) apptQuery = apptQuery.gte("start_time", startIso);
-  if (endIso) apptQuery = apptQuery.lte("start_time", endIso);
+    .select("client_id, type, scheduled_at, price, package_id")
+    .eq("status", "done");
+  if (startIso) apptQuery = apptQuery.gte("scheduled_at", startIso);
+  if (endIso) apptQuery = apptQuery.lte("scheduled_at", endIso);
   const { data: appts, error: apptErr } = await apptQuery;
   if (apptErr) throw apptErr;
 
-  const totals = new Map<string, { total: number; transactions: number }>();
-
-  for (const p of packages ?? []) {
-    if (!p.client_id) continue;
-    const prev = totals.get(p.client_id) ?? { total: 0, transactions: 0 };
-    totals.set(p.client_id, {
-      total: prev.total + Number(p.total_paid ?? 0),
-      transactions: prev.transactions + 1,
-    });
+  const pkgIds = Array.from(
+    new Set((appts ?? []).map((a) => a.package_id).filter(Boolean) as string[]),
+  );
+  const pkgPriceById = new Map<string, number>();
+  if (pkgIds.length > 0) {
+    const { data: pkgs, error: pkgErr } = await supabase
+      .from("packages")
+      .select("id, price_per_session, price_paid, total_sessions")
+      .in("id", pkgIds);
+    if (pkgErr) throw pkgErr;
+    for (const p of pkgs ?? []) {
+      let pps = Number(p.price_per_session ?? 0);
+      if (!pps && p.total_sessions && Number(p.total_sessions) > 0) {
+        pps = Number(p.price_paid ?? 0) / Number(p.total_sessions);
+      }
+      pkgPriceById.set(p.id, pps);
+    }
   }
 
+  const totals = new Map<string, { total: number; sessions: number }>();
   for (const a of appts ?? []) {
     if (!a.client_id) continue;
-    const price = STANDALONE_PRICES[a.type as string] ?? 0;
-    if (price === 0) continue;
-    const prev = totals.get(a.client_id) ?? { total: 0, transactions: 0 };
+    let price = 0;
+    if (a.package_id) {
+      price = pkgPriceById.get(a.package_id) ?? 0;
+    } else {
+      price = Number(a.price ?? 0) || STANDALONE_PRICES[a.type as string] || 0;
+    }
+    const prev = totals.get(a.client_id) ?? { total: 0, sessions: 0 };
     totals.set(a.client_id, {
       total: prev.total + price,
-      transactions: prev.transactions + 1,
+      sessions: prev.sessions + 1,
     });
   }
 
@@ -82,7 +85,7 @@ async function fetchTopClientsByPaid(
       client_id: id,
       client_name: clients?.find((c) => c.id === id)?.name ?? "Desconocido",
       total: totals.get(id)!.total,
-      transactions: totals.get(id)!.transactions,
+      sessions: totals.get(id)!.sessions,
     }))
     .sort((a, b) => b.total - a.total)
     .slice(0, limit);
@@ -120,7 +123,7 @@ function RankingList({
               <div className="min-w-0">
                 <p className="text-sm font-medium truncate">{c.client_name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {c.transactions} {c.transactions === 1 ? "transacción" : "transacciones"}
+                  {c.sessions} {c.sessions === 1 ? "sesión realizada" : "sesiones realizadas"}
                 </p>
               </div>
             </div>
@@ -177,7 +180,7 @@ export default function TopClients({ period }: TopClientsProps) {
               <>
                 <p className="text-xl font-bold mt-3 truncate">{featured.client_name}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {featured.transactions} {featured.transactions === 1 ? "transacción" : "transacciones"} en el período
+                  {featured.sessions} {featured.sessions === 1 ? "sesión realizada" : "sesiones realizadas"} en el período
                 </p>
               </>
             ) : (
@@ -186,7 +189,7 @@ export default function TopClients({ period }: TopClientsProps) {
           </div>
           {featured && (
             <div className="mt-4">
-              <p className="text-xs text-muted-foreground">Total pagado</p>
+              <p className="text-xs text-muted-foreground">Ingresos generados</p>
               <p className="text-2xl font-bold tabular-nums">{formatCurrency(featured.total)}</p>
             </div>
           )}
