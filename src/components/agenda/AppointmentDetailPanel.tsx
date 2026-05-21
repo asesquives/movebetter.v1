@@ -29,6 +29,7 @@ interface AppointmentDetailPanelProps {
 export function AppointmentDetailPanel({ open, onOpenChange, appointment }: AppointmentDetailPanelProps) {
   const queryClient = useQueryClient();
   const [noShowDialog, setNoShowDialog] = useState(false);
+  const [doneDialog, setDoneDialog] = useState(false);
 
   const updateStatus = useMutation({
     mutationFn: async (newStatus: AppointmentStatus) => {
@@ -57,6 +58,8 @@ export function AppointmentDetailPanel({ open, onOpenChange, appointment }: Appo
   const handleStatusChange = (newStatus: AppointmentStatus) => {
     if (newStatus === "no_show") {
       setNoShowDialog(true);
+    } else if (newStatus === "done") {
+      setDoneDialog(true);
     } else {
       updateStatus.mutate(newStatus);
     }
@@ -126,7 +129,7 @@ export function AppointmentDetailPanel({ open, onOpenChange, appointment }: Appo
                 <p className="text-sm mt-1">{appointment.notes}</p>
               </div>
             )}
-            {appointment.status !== "done" && appointment.status !== "cancelled" && (
+            {appointment.status !== "done" && (
               <div className="space-y-2 pt-4 border-t">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Cambiar estado</p>
                 <div className="grid grid-cols-2 gap-2">
@@ -146,9 +149,40 @@ export function AppointmentDetailPanel({ open, onOpenChange, appointment }: Appo
                 </div>
               </div>
             )}
+            {appointment.status === "done" && (
+              <div className="pt-4 border-t">
+                <p className="text-xs text-muted-foreground">
+                  Esta cita está marcada como <strong>realizada</strong> y ya no puede modificarse.
+                </p>
+              </div>
+            )}
           </div>
         </SheetContent>
       </Sheet>
+
+      <Dialog open={doneDialog} onOpenChange={setDoneDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Marcar cita como realizada</DialogTitle>
+            <DialogDescription>
+              Una vez marcada como realizada, <strong>no podrás cambiar el estado</strong> de esta cita. Esta acción es definitiva.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setDoneDialog(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => {
+                setDoneDialog(false);
+                updateStatus.mutate("done");
+              }}
+            >
+              Sí, marcar realizada
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={noShowDialog} onOpenChange={setNoShowDialog}>
         <DialogContent>
