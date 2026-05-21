@@ -12,7 +12,7 @@ import { Plus, Search, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { SESSION_TYPE_COLORS } from "@/lib/agenda-constants";
+import { getSessionTypeConfig } from "@/lib/agenda-constants";
 import { formatCurrency } from "@/lib/format";
 
 export default function ClientesPage() {
@@ -222,7 +222,7 @@ export default function ClientesPage() {
                 ) : (
                   <div className="space-y-1">
                     {clientAppointments.map((appt) => {
-                      const typeConfig = SESSION_TYPE_COLORS[appt.type as keyof typeof SESSION_TYPE_COLORS];
+                      const typeConfig = getSessionTypeConfig(appt.type);
                       return (
                         <div key={appt.id} className="bg-card rounded-lg border p-3 flex items-center justify-between">
                           <div className="flex items-center gap-2">

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Download } from "lucide-react";
-import { SESSION_TYPE_COLORS } from "@/lib/agenda-constants";
+import { getSessionTypeConfig } from "@/lib/agenda-constants";
 import { formatCurrency } from "@/lib/format";
 
 type FilterType = "month" | "week" | "custom";
@@ -109,11 +109,11 @@ export default function IngresosPage() {
     const headers = ["Fecha", "Cliente", "Tipo de sesión", "Profesional", "Paquete", "Monto"];
     const rows = detailedEntries.map((e) => {
       const appt = e.appointments as any;
-      const typeConfig = appt?.type ? SESSION_TYPE_COLORS[appt.type as keyof typeof SESSION_TYPE_COLORS] : null;
+      const typeConfig = getSessionTypeConfig(appt?.type);
       return [
         format(new Date(e.recognized_at), "dd/MM/yyyy"),
         (e.clients as any)?.name || "—",
-        typeConfig?.label || appt?.type || "—",
+        appt?.type ? typeConfig.label : "—",
         appt?.professionals?.name || "—",
         (e.packages as any)?.name || "Sesión suelta",
         Number(e.amount).toFixed(2),
@@ -201,7 +201,7 @@ export default function IngresosPage() {
               {detailedEntries.map((e) => {
                 const appt = e.appointments as any;
                 const pkg = e.packages as any;
-                const typeConfig = appt?.type ? SESSION_TYPE_COLORS[appt.type as keyof typeof SESSION_TYPE_COLORS] : null;
+                const typeConfig = appt?.type ? getSessionTypeConfig(appt.type) : null;
                 return (
                   <TableRow key={e.id}>
                     <TableCell className="text-sm">{format(new Date(e.recognized_at), "dd/MM/yyyy")}</TableCell>
