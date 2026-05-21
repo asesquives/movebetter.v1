@@ -28,12 +28,12 @@ export type Database = {
           price: number | null
           professional_id: string | null
           revenue_amount: number | null
-          scheduled_at: string
+          scheduled_at: string | null
           service_id: string | null
           staff_id: string | null
           start_time: string | null
           status: string
-          tenant_id: string
+          tenant_id: string | null
           type: string | null
           updated_at: string | null
         }
@@ -50,12 +50,12 @@ export type Database = {
           price?: number | null
           professional_id?: string | null
           revenue_amount?: number | null
-          scheduled_at: string
+          scheduled_at?: string | null
           service_id?: string | null
           staff_id?: string | null
           start_time?: string | null
           status?: string
-          tenant_id: string
+          tenant_id?: string | null
           type?: string | null
           updated_at?: string | null
         }
@@ -72,12 +72,12 @@ export type Database = {
           price?: number | null
           professional_id?: string | null
           revenue_amount?: number | null
-          scheduled_at?: string
+          scheduled_at?: string | null
           service_id?: string | null
           staff_id?: string | null
           start_time?: string | null
           status?: string
-          tenant_id?: string
+          tenant_id?: string | null
           type?: string | null
           updated_at?: string | null
         }
@@ -134,9 +134,9 @@ export type Database = {
           id: string
           is_available: boolean
           professional_id: string | null
-          staff_id: string
+          staff_id: string | null
           start_time: string
-          tenant_id: string
+          tenant_id: string | null
         }
         Insert: {
           created_at?: string
@@ -145,9 +145,9 @@ export type Database = {
           id?: string
           is_available?: boolean
           professional_id?: string | null
-          staff_id: string
+          staff_id?: string | null
           start_time: string
-          tenant_id: string
+          tenant_id?: string | null
         }
         Update: {
           created_at?: string
@@ -156,9 +156,9 @@ export type Database = {
           id?: string
           is_available?: boolean
           professional_id?: string | null
-          staff_id?: string
+          staff_id?: string | null
           start_time?: string
-          tenant_id?: string
+          tenant_id?: string | null
         }
         Relationships: []
       }
@@ -168,7 +168,7 @@ export type Database = {
           created_at: string | null
           email: string | null
           first_visit_at: string | null
-          full_name: string
+          full_name: string | null
           id: string
           last_visit_at: string | null
           lifetime_value: number | null
@@ -177,7 +177,7 @@ export type Database = {
           notes: string | null
           phone: string | null
           tags: string[] | null
-          tenant_id: string
+          tenant_id: string | null
           total_visits: number | null
           updated_at: string | null
           whatsapp: string | null
@@ -187,7 +187,7 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           first_visit_at?: string | null
-          full_name: string
+          full_name?: string | null
           id?: string
           last_visit_at?: string | null
           lifetime_value?: number | null
@@ -196,7 +196,7 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           tags?: string[] | null
-          tenant_id: string
+          tenant_id?: string | null
           total_visits?: number | null
           updated_at?: string | null
           whatsapp?: string | null
@@ -206,7 +206,7 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           first_visit_at?: string | null
-          full_name?: string
+          full_name?: string | null
           id?: string
           last_visit_at?: string | null
           lifetime_value?: number | null
@@ -215,7 +215,7 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           tags?: string[] | null
-          tenant_id?: string
+          tenant_id?: string | null
           total_visits?: number | null
           updated_at?: string | null
           whatsapp?: string | null
@@ -292,13 +292,13 @@ export type Database = {
           is_monthly_pass: boolean
           name: string
           payment_method: string | null
-          price_paid: number
+          price_paid: number | null
           price_per_session: number | null
           receipt_type: string | null
           service_id: string | null
           sessions_used: number | null
           status: string | null
-          tenant_id: string
+          tenant_id: string | null
           total_paid: number | null
           total_sessions: number
           type: string | null
@@ -311,13 +311,13 @@ export type Database = {
           is_monthly_pass?: boolean
           name: string
           payment_method?: string | null
-          price_paid: number
+          price_paid?: number | null
           price_per_session?: number | null
           receipt_type?: string | null
           service_id?: string | null
           sessions_used?: number | null
           status?: string | null
-          tenant_id: string
+          tenant_id?: string | null
           total_paid?: number | null
           total_sessions: number
           type?: string | null
@@ -330,13 +330,13 @@ export type Database = {
           is_monthly_pass?: boolean
           name?: string
           payment_method?: string | null
-          price_paid?: number
+          price_paid?: number | null
           price_per_session?: number | null
           receipt_type?: string | null
           service_id?: string | null
           sessions_used?: number | null
           status?: string | null
-          tenant_id?: string
+          tenant_id?: string | null
           total_paid?: number | null
           total_sessions?: number
           type?: string | null
@@ -385,7 +385,7 @@ export type Database = {
           package_id: string | null
           paid_at: string | null
           status: string
-          tenant_id: string
+          tenant_id: string | null
         }
         Insert: {
           amount: number
@@ -399,7 +399,7 @@ export type Database = {
           package_id?: string | null
           paid_at?: string | null
           status?: string
-          tenant_id: string
+          tenant_id?: string | null
         }
         Update: {
           amount?: number
@@ -413,7 +413,7 @@ export type Database = {
           package_id?: string | null
           paid_at?: string | null
           status?: string
-          tenant_id?: string
+          tenant_id?: string | null
         }
         Relationships: [
           {
@@ -494,7 +494,7 @@ export type Database = {
           price_per_session: number | null
           program: string | null
           sessions: number | null
-          tenant_id: string
+          tenant_id: string | null
         }
         Insert: {
           active?: boolean | null
@@ -508,7 +508,7 @@ export type Database = {
           price_per_session?: number | null
           program?: string | null
           sessions?: number | null
-          tenant_id: string
+          tenant_id?: string | null
         }
         Update: {
           active?: boolean | null
@@ -522,7 +522,7 @@ export type Database = {
           price_per_session?: number | null
           program?: string | null
           sessions?: number | null
-          tenant_id?: string
+          tenant_id?: string | null
         }
         Relationships: [
           {
@@ -545,7 +545,7 @@ export type Database = {
           schedule_days: string[] | null
           schedule_end: string | null
           schedule_start: string | null
-          tenant_id: string
+          tenant_id: string | null
           type: string | null
         }
         Insert: {
@@ -558,7 +558,7 @@ export type Database = {
           schedule_days?: string[] | null
           schedule_end?: string | null
           schedule_start?: string | null
-          tenant_id: string
+          tenant_id?: string | null
           type?: string | null
         }
         Update: {
@@ -571,7 +571,7 @@ export type Database = {
           schedule_days?: string[] | null
           schedule_end?: string | null
           schedule_start?: string | null
-          tenant_id?: string
+          tenant_id?: string | null
           type?: string | null
         }
         Relationships: [
@@ -887,6 +887,10 @@ export type Database = {
         | "prehabilitation"
         | "rehabilitation"
         | "recovery"
+      package_type: "rehabilitation" | "prehabilitation" | "recovery"
+      payment_method: "yape" | "transfer" | "card" | "cash"
+      professional_type: "physio" | "evaluator"
+      receipt_type: "boleta" | "factura"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1035,6 +1039,10 @@ export const Constants = {
         "rehabilitation",
         "recovery",
       ],
+      package_type: ["rehabilitation", "prehabilitation", "recovery"],
+      payment_method: ["yape", "transfer", "card", "cash"],
+      professional_type: ["physio", "evaluator"],
+      receipt_type: ["boleta", "factura"],
     },
   },
 } as const
