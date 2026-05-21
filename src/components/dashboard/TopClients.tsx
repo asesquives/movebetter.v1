@@ -180,7 +180,7 @@ export default function TopClients({ period }: TopClientsProps) {
               <>
                 <p className="text-xl font-bold mt-3 truncate">{featured.client_name}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {featured.transactions} {featured.transactions === 1 ? "transacción" : "transacciones"} en el período
+                  {featured.sessions} {featured.sessions === 1 ? "sesión realizada" : "sesiones realizadas"} en el período
                 </p>
               </>
             ) : (
