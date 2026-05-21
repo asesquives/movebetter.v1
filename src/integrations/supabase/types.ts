@@ -20,15 +20,20 @@ export type Database = {
           confirmed_via_bot: boolean | null
           created_at: string | null
           duration_minutes: number | null
+          end_time: string | null
           id: string
           metadata: Json | null
           notes: string | null
+          package_id: string | null
           price: number | null
+          professional_id: string | null
           scheduled_at: string
           service_id: string | null
           staff_id: string | null
+          start_time: string | null
           status: string
           tenant_id: string
+          type: string | null
           updated_at: string | null
         }
         Insert: {
@@ -36,15 +41,20 @@ export type Database = {
           confirmed_via_bot?: boolean | null
           created_at?: string | null
           duration_minutes?: number | null
+          end_time?: string | null
           id?: string
           metadata?: Json | null
           notes?: string | null
+          package_id?: string | null
           price?: number | null
+          professional_id?: string | null
           scheduled_at: string
           service_id?: string | null
           staff_id?: string | null
+          start_time?: string | null
           status?: string
           tenant_id: string
+          type?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -52,15 +62,20 @@ export type Database = {
           confirmed_via_bot?: boolean | null
           created_at?: string | null
           duration_minutes?: number | null
+          end_time?: string | null
           id?: string
           metadata?: Json | null
           notes?: string | null
+          package_id?: string | null
           price?: number | null
+          professional_id?: string | null
           scheduled_at?: string
           service_id?: string | null
           staff_id?: string | null
+          start_time?: string | null
           status?: string
           tenant_id?: string
+          type?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -75,7 +90,21 @@ export type Database = {
             foreignKeyName: "appointments_service_id_fkey"
             columns: ["service_id"]
             isOneToOne: false
+            referencedRelation: "package_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
             referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
             referencedColumns: ["id"]
           },
           {
@@ -94,6 +123,42 @@ export type Database = {
           },
         ]
       }
+      availability_blocks: {
+        Row: {
+          created_at: string
+          date: string
+          end_time: string
+          id: string
+          is_available: boolean
+          professional_id: string | null
+          staff_id: string
+          start_time: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          end_time: string
+          id?: string
+          is_available?: boolean
+          professional_id?: string | null
+          staff_id: string
+          start_time: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          end_time?: string
+          id?: string
+          is_available?: boolean
+          professional_id?: string | null
+          staff_id?: string
+          start_time?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           churn_risk: string | null
@@ -105,6 +170,7 @@ export type Database = {
           last_visit_at: string | null
           lifetime_value: number | null
           metadata: Json | null
+          name: string | null
           notes: string | null
           phone: string | null
           tags: string[] | null
@@ -123,6 +189,7 @@ export type Database = {
           last_visit_at?: string | null
           lifetime_value?: number | null
           metadata?: Json | null
+          name?: string | null
           notes?: string | null
           phone?: string | null
           tags?: string[] | null
@@ -141,6 +208,7 @@ export type Database = {
           last_visit_at?: string | null
           lifetime_value?: number | null
           metadata?: Json | null
+          name?: string | null
           notes?: string | null
           phone?: string | null
           tags?: string[] | null
@@ -218,39 +286,57 @@ export type Database = {
           created_at: string | null
           expires_at: string | null
           id: string
+          is_monthly_pass: boolean
           name: string
+          payment_method: string | null
           price_paid: number
+          price_per_session: number | null
+          receipt_type: string | null
           service_id: string | null
           sessions_used: number | null
           status: string | null
           tenant_id: string
+          total_paid: number | null
           total_sessions: number
+          type: string | null
         }
         Insert: {
           client_id: string
           created_at?: string | null
           expires_at?: string | null
           id?: string
+          is_monthly_pass?: boolean
           name: string
+          payment_method?: string | null
           price_paid: number
+          price_per_session?: number | null
+          receipt_type?: string | null
           service_id?: string | null
           sessions_used?: number | null
           status?: string | null
           tenant_id: string
+          total_paid?: number | null
           total_sessions: number
+          type?: string | null
         }
         Update: {
           client_id?: string
           created_at?: string | null
           expires_at?: string | null
           id?: string
+          is_monthly_pass?: boolean
           name?: string
+          payment_method?: string | null
           price_paid?: number
+          price_per_session?: number | null
+          receipt_type?: string | null
           service_id?: string | null
           sessions_used?: number | null
           status?: string | null
           tenant_id?: string
+          total_paid?: number | null
           total_sessions?: number
+          type?: string | null
         }
         Relationships: [
           {
@@ -258,6 +344,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "packages_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "package_catalog"
             referencedColumns: ["id"]
           },
           {
@@ -392,8 +485,12 @@ export type Database = {
           created_at: string | null
           duration_minutes: number | null
           id: string
+          is_monthly_pass: boolean
           name: string
           price: number
+          price_per_session: number | null
+          program: string | null
+          sessions: number | null
           tenant_id: string
         }
         Insert: {
@@ -402,8 +499,12 @@ export type Database = {
           created_at?: string | null
           duration_minutes?: number | null
           id?: string
+          is_monthly_pass?: boolean
           name: string
           price: number
+          price_per_session?: number | null
+          program?: string | null
+          sessions?: number | null
           tenant_id: string
         }
         Update: {
@@ -412,8 +513,12 @@ export type Database = {
           created_at?: string | null
           duration_minutes?: number | null
           id?: string
+          is_monthly_pass?: boolean
           name?: string
           price?: number
+          price_per_session?: number | null
+          program?: string | null
+          sessions?: number | null
           tenant_id?: string
         }
         Relationships: [
@@ -437,6 +542,7 @@ export type Database = {
           schedule_end: string | null
           schedule_start: string | null
           tenant_id: string
+          type: string | null
         }
         Insert: {
           created_at?: string | null
@@ -448,6 +554,7 @@ export type Database = {
           schedule_end?: string | null
           schedule_start?: string | null
           tenant_id: string
+          type?: string | null
         }
         Update: {
           created_at?: string | null
@@ -459,6 +566,7 @@ export type Database = {
           schedule_end?: string | null
           schedule_start?: string | null
           tenant_id?: string
+          type?: string | null
         }
         Relationships: [
           {
@@ -569,7 +677,180 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      package_catalog: {
+        Row: {
+          active: boolean | null
+          category: string | null
+          created_at: string | null
+          duration_minutes: number | null
+          id: string | null
+          is_monthly_pass: boolean | null
+          name: string | null
+          price: number | null
+          price_per_session: number | null
+          program: string | null
+          sessions: number | null
+          tenant_id: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string | null
+          is_monthly_pass?: boolean | null
+          name?: string | null
+          price?: number | null
+          price_per_session?: number | null
+          program?: string | null
+          sessions?: number | null
+          tenant_id?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string | null
+          is_monthly_pass?: boolean | null
+          name?: string | null
+          price?: number | null
+          price_per_session?: number | null
+          program?: string | null
+          sessions?: number | null
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professionals: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          is_active: boolean | null
+          metadata: Json | null
+          name: string | null
+          role: string | null
+          schedule_end: string | null
+          schedule_start: string | null
+          tenant_id: string | null
+          type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          metadata?: Json | null
+          name?: string | null
+          role?: string | null
+          schedule_end?: string | null
+          schedule_start?: string | null
+          tenant_id?: string | null
+          type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          metadata?: Json | null
+          name?: string | null
+          role?: string | null
+          schedule_end?: string | null
+          schedule_start?: string | null
+          tenant_id?: string | null
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      revenue_entries: {
+        Row: {
+          amount: number | null
+          appointment_id: string | null
+          client_id: string | null
+          created_at: string | null
+          currency: string | null
+          id: string | null
+          notes: string | null
+          package_id: string | null
+          paid_at: string | null
+          payment_method: string | null
+          status: string | null
+          tenant_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          appointment_id?: string | null
+          client_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string | null
+          notes?: string | null
+          package_id?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          status?: string | null
+          tenant_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          appointment_id?: string | null
+          client_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string | null
+          notes?: string | null
+          package_id?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          status?: string | null
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       current_tenant_id: { Args: never; Returns: string }
