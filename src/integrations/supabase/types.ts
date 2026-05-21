@@ -27,6 +27,7 @@ export type Database = {
           package_id: string | null
           price: number | null
           professional_id: string | null
+          revenue_amount: number | null
           scheduled_at: string
           service_id: string | null
           staff_id: string | null
@@ -48,6 +49,7 @@ export type Database = {
           package_id?: string | null
           price?: number | null
           professional_id?: string | null
+          revenue_amount?: number | null
           scheduled_at: string
           service_id?: string | null
           staff_id?: string | null
@@ -69,6 +71,7 @@ export type Database = {
           package_id?: string | null
           price?: number | null
           professional_id?: string | null
+          revenue_amount?: number | null
           scheduled_at?: string
           service_id?: string | null
           staff_id?: string | null
@@ -539,6 +542,7 @@ export type Database = {
           metadata: Json | null
           name: string
           role: string | null
+          schedule_days: string[] | null
           schedule_end: string | null
           schedule_start: string | null
           tenant_id: string
@@ -551,6 +555,7 @@ export type Database = {
           metadata?: Json | null
           name: string
           role?: string | null
+          schedule_days?: string[] | null
           schedule_end?: string | null
           schedule_start?: string | null
           tenant_id: string
@@ -563,6 +568,7 @@ export type Database = {
           metadata?: Json | null
           name?: string
           role?: string | null
+          schedule_days?: string[] | null
           schedule_end?: string | null
           schedule_start?: string | null
           tenant_id?: string
@@ -789,6 +795,7 @@ export type Database = {
           package_id: string | null
           paid_at: string | null
           payment_method: string | null
+          recognized_at: string | null
           status: string | null
           tenant_id: string | null
         }
@@ -803,6 +810,7 @@ export type Database = {
           package_id?: string | null
           paid_at?: string | null
           payment_method?: string | null
+          recognized_at?: string | null
           status?: string | null
           tenant_id?: string | null
         }
@@ -817,6 +825,7 @@ export type Database = {
           package_id?: string | null
           paid_at?: string | null
           payment_method?: string | null
+          recognized_at?: string | null
           status?: string | null
           tenant_id?: string | null
         }
@@ -857,7 +866,24 @@ export type Database = {
       is_owner: { Args: never; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      appointment_status:
+        | "scheduled"
+        | "confirmed"
+        | "done"
+        | "cancelled"
+        | "no_show"
+        | "pending"
+      appointment_type:
+        | "medical_diagnosis"
+        | "physio_diagnosis"
+        | "rehabilitation"
+        | "prehabilitation"
+        | "recovery"
+      catalog_program:
+        | "diagnosis"
+        | "prehabilitation"
+        | "rehabilitation"
+        | "recovery"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -984,6 +1010,28 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      appointment_status: [
+        "scheduled",
+        "confirmed",
+        "done",
+        "cancelled",
+        "no_show",
+        "pending",
+      ],
+      appointment_type: [
+        "medical_diagnosis",
+        "physio_diagnosis",
+        "rehabilitation",
+        "prehabilitation",
+        "recovery",
+      ],
+      catalog_program: [
+        "diagnosis",
+        "prehabilitation",
+        "rehabilitation",
+        "recovery",
+      ],
+    },
   },
 } as const
