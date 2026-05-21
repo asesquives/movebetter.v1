@@ -107,9 +107,24 @@ export default function ClientesPage() {
   });
 
   const activePackages = clientPackages?.filter((p) => p.status === "active") || [];
-  const totalPaid = clientPackages?.reduce((s, p) => s + Number(p.total_paid), 0) || 0;
+  const totalPaid = clientPackages?.reduce((s, p) => s + Number(p.total_paid ?? 0), 0) || 0;
   const totalRecognized = clientRevenue?.reduce((s, r) => s + Number(r.amount), 0) || 0;
   const pendingBalance = totalPaid - totalRecognized;
+
+  // Standalone revenue: completed appointments without a package (paid at visit time)
+  const STANDALONE_PRICES: Record<string, number> = {
+    medical_diagnosis: 200,
+    physio_diagnosis: 150,
+    recovery: 70,
+  };
+  const standaloneRevenue =
+    clientAppointments?.reduce((s, a) => {
+      if (a.package_id) return s;
+      if (a.status !== "done") return s;
+      const p = Number(a.price ?? 0) || STANDALONE_PRICES[a.type as string] || 0;
+      return s + p;
+    }, 0) || 0;
+  const totalGenerated = totalPaid + standaloneRevenue;
 
   const statusLabels: Record<string, string> = { active: "Activo", expired: "Expirado", completed: "Completado" };
   const statusColors: Record<string, string> = { active: "bg-green-100 text-green-700", expired: "bg-red-100 text-red-700", completed: "bg-muted text-muted-foreground" };
@@ -182,6 +197,15 @@ export default function ClientesPage() {
                   <p><span className="text-muted-foreground">Email:</span> {clientDetail.email || "—"}</p>
                   {clientDetail.notes && <p><span className="text-muted-foreground">Notas:</span> {clientDetail.notes}</p>}
                 </div>
+              </div>
+
+              {/* Value generated */}
+              <div className="bg-card rounded-lg border p-4">
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Valor generado a la clínica</p>
+                <p className="text-2xl font-bold mt-1">{formatCurrency(totalGenerated, { decimals: 2 })}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Incluye todo lo pagado por paquetes (se haya o no usado la sesión) y sesiones sueltas realizadas.
+                </p>
               </div>
 
               {/* Pending balance */}
