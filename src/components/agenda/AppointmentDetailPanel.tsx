@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { SESSION_TYPE_COLORS, STATUS_LABELS, STATUS_COLORS, AppointmentType, AppointmentStatus } from "@/lib/agenda-constants";
+import { getSessionTypeConfig, STATUS_LABELS, STATUS_COLORS, AppointmentType, AppointmentStatus } from "@/lib/agenda-constants";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
@@ -74,7 +74,7 @@ export function AppointmentDetailPanel({ open, onOpenChange, appointment }: Appo
 
   if (!appointment) return null;
 
-  const typeConfig = SESSION_TYPE_COLORS[appointment.type];
+  const typeConfig = getSessionTypeConfig(appointment.type);
   const statusActions: { status: AppointmentStatus; label: string; variant: "default" | "outline" | "secondary" | "destructive" }[] = [
     { status: "confirmed", label: "Confirmar", variant: "default" },
     { status: "done", label: "Marcar realizada", variant: "secondary" },
