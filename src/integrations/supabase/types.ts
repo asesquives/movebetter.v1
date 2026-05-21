@@ -291,6 +291,7 @@ export type Database = {
           id: string
           is_monthly_pass: boolean
           name: string
+          notes: string | null
           payment_method: string | null
           price_paid: number | null
           price_per_session: number | null
@@ -310,6 +311,7 @@ export type Database = {
           id?: string
           is_monthly_pass?: boolean
           name: string
+          notes?: string | null
           payment_method?: string | null
           price_paid?: number | null
           price_per_session?: number | null
@@ -329,6 +331,7 @@ export type Database = {
           id?: string
           is_monthly_pass?: boolean
           name?: string
+          notes?: string | null
           payment_method?: string | null
           price_paid?: number | null
           price_per_session?: number | null

@@ -62,7 +62,7 @@ export default function CatalogoPage() {
       name: pkg.name,
       price: String(pkg.price),
       sessions: pkg.sessions ? String(pkg.sessions) : "1",
-      is_active: pkg.is_active,
+      is_active: (pkg as any).active,
     });
   };
 
@@ -80,14 +80,14 @@ export default function CatalogoPage() {
       const sessions = editing.is_monthly_pass ? null : parseInt(form.sessions);
       const pps = editing.is_monthly_pass ? null : price / (sessions || 1);
 
-      const { error } = await supabase
-        .from("package_catalog")
+      const { error } = await (supabase
+        .from("package_catalog") as any)
         .update({
           name: form.name,
           price,
           sessions,
           price_per_session: pps,
-          is_active: form.is_active,
+          active: form.is_active,
         })
         .eq("id", editing.id);
       if (error) throw error;
@@ -133,14 +133,14 @@ export default function CatalogoPage() {
                   </TableHeader>
                   <TableBody>
                     {items.map((pkg) => (
-                      <TableRow key={pkg.id} className={!pkg.is_active ? "opacity-50" : ""}>
+                      <TableRow key={pkg.id} className={!pkg.active ? "opacity-50" : ""}>
                         <TableCell className="font-medium">{pkg.name}</TableCell>
                         <TableCell>{pkg.is_monthly_pass ? "Pase mensual" : pkg.sessions}</TableCell>
                         <TableCell>{formatCurrency(Number(pkg.price), { decimals: 2 })}</TableCell>
                         <TableCell>{pkg.price_per_session ? formatCurrency(Number(pkg.price_per_session), { decimals: 2 }) : "—"}</TableCell>
                         <TableCell>
-                          <span className={`text-xs px-2 py-1 rounded-full font-medium ${pkg.is_active ? "bg-green-100 text-green-700" : "bg-muted text-muted-foreground"}`}>
-                            {pkg.is_active ? "Activo" : "Inactivo"}
+                          <span className={`text-xs px-2 py-1 rounded-full font-medium ${pkg.active ? "bg-green-100 text-green-700" : "bg-muted text-muted-foreground"}`}>
+                            {pkg.active ? "Activo" : "Inactivo"}
                           </span>
                         </TableCell>
                         <TableCell>

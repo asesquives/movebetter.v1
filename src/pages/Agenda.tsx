@@ -82,7 +82,7 @@ export default function AgendaPage() {
       ) : (
         <WeeklyCalendarGrid
           weekDays={weekDays}
-          appointments={appointments || []}
+          appointments={(appointments as any) || []}
           onSlotClick={handleSlotClick}
           onAppointmentClick={handleAppointmentClick}
         />
