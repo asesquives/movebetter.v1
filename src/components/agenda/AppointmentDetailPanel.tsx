@@ -79,6 +79,7 @@ export function AppointmentDetailPanel({ open, onOpenChange, appointment }: Appo
   if (!appointment) return null;
 
   const typeConfig = getSessionTypeConfig(appointment.type);
+  const isFuture = isAfter(new Date(appointment.start_time), startOfTomorrow());
   const statusActions: { status: AppointmentStatus; label: string; variant: "default" | "outline" | "secondary" | "destructive" }[] = [
     { status: "confirmed", label: "Confirmar", variant: "default" },
     { status: "done", label: "Marcar realizada", variant: "secondary" },
