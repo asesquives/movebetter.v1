@@ -121,13 +121,19 @@ export default function CatalogoPage() {
         <p className="text-muted-foreground">Cargando...</p>
       ) : (
         <div className="space-y-6">
-          {PROGRAM_ORDER.map((program) => {
+          {(() => {
+            const seen = new Set<string>();
+            const ordered = [
+              ...PROGRAM_ORDER.filter((p) => grouped[p]),
+              ...Object.keys(grouped).filter((p) => !PROGRAM_ORDER.includes(p)),
+            ].filter((p) => (seen.has(p) ? false : (seen.add(p), true)));
+            return ordered.map((program) => {
             const items = grouped[program] || [];
             if (!items.length) return null;
             return (
               <div key={program} className="bg-card rounded-lg border">
                 <div className="px-4 py-3 border-b">
-                  <h2 className="font-semibold">{PROGRAM_LABELS[program]}</h2>
+                  <h2 className="font-semibold">{PROGRAM_LABELS[program] ?? program}</h2>
                 </div>
                 <Table>
                   <TableHeader>
