@@ -189,7 +189,7 @@ export default function TopClients({ period }: TopClientsProps) {
           </div>
           {featured && (
             <div className="mt-4">
-              <p className="text-xs text-muted-foreground">Total pagado</p>
+              <p className="text-xs text-muted-foreground">Ingresos generados</p>
               <p className="text-2xl font-bold tabular-nums">{formatCurrency(featured.total)}</p>
             </div>
           )}
