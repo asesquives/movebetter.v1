@@ -169,7 +169,8 @@ export default function CatalogoPage() {
                 </Table>
               </div>
             );
-          })}
+          });
+          })()}
         </div>
       )}
 
