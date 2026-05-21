@@ -338,21 +338,20 @@ export default function AdvancedMetrics({ period }: Props) {
             <p className="text-3xl font-bold mt-1 tabular-nums">{dash}</p>
             <p className="text-xs text-muted-foreground mt-2">Sin citas en el período</p>
           </>
-        ) : (
-          <>
-            <p className="text-3xl font-bold mt-1 tabular-nums">{topType[0].count}</p>
-            <div className="mt-1">
-              <span
-                className={`inline-flex items-center gap-1.5 text-xs font-medium ${SESSION_TYPE_COLORS[topType[0].type].text}`}
-              >
-                <span
-                  className={`inline-block h-2 w-2 rounded-full ${SESSION_TYPE_COLORS[topType[0].type].bg}`}
-                />
-                {SESSION_TYPE_COLORS[topType[0].type].label}
-              </span>
-            </div>
-          </>
-        )}
+        ) : (() => {
+          const meta = SESSION_TYPE_COLORS[topType[0].type as keyof typeof SESSION_TYPE_COLORS] ?? { text: "text-muted-foreground", bg: "bg-muted", label: String(topType[0].type ?? "—") };
+          return (
+            <>
+              <p className="text-3xl font-bold mt-1 tabular-nums">{topType[0].count}</p>
+              <div className="mt-1">
+                <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${meta.text}`}>
+                  <span className={`inline-block h-2 w-2 rounded-full ${meta.bg}`} />
+                  {meta.label}
+                </span>
+              </div>
+            </>
+          );
+        })()}
       </Card>
 
       {/* 4. Ingresos vs período anterior */}
