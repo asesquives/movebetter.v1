@@ -199,6 +199,15 @@ export default function ClientesPage() {
                 </div>
               </div>
 
+              {/* Value generated */}
+              <div className="bg-card rounded-lg border p-4">
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Valor generado a la clínica</p>
+                <p className="text-2xl font-bold mt-1">{formatCurrency(totalGenerated, { decimals: 2 })}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Incluye todo lo pagado por paquetes (se haya o no usado la sesión) y sesiones sueltas realizadas.
+                </p>
+              </div>
+
               {/* Pending balance */}
               <div className="bg-card rounded-lg border p-4">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Saldo pendiente de devengar</p>
