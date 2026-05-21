@@ -123,7 +123,7 @@ function RankingList({
               <div className="min-w-0">
                 <p className="text-sm font-medium truncate">{c.client_name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {c.transactions} {c.transactions === 1 ? "transacción" : "transacciones"}
+                  {c.sessions} {c.sessions === 1 ? "sesión realizada" : "sesiones realizadas"}
                 </p>
               </div>
             </div>
