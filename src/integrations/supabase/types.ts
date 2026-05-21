@@ -16,43 +16,52 @@ export type Database = {
     Tables: {
       appointments: {
         Row: {
-          client_id: string
-          created_at: string
-          end_time: string
+          client_id: string | null
+          confirmed_via_bot: boolean | null
+          created_at: string | null
+          duration_minutes: number | null
           id: string
+          metadata: Json | null
           notes: string | null
-          package_id: string | null
-          professional_id: string | null
-          revenue_amount: number | null
-          start_time: string
-          status: Database["public"]["Enums"]["appointment_status"]
-          type: Database["public"]["Enums"]["appointment_type"]
+          price: number | null
+          scheduled_at: string
+          service_id: string | null
+          staff_id: string | null
+          status: string
+          tenant_id: string
+          updated_at: string | null
         }
         Insert: {
-          client_id: string
-          created_at?: string
-          end_time: string
+          client_id?: string | null
+          confirmed_via_bot?: boolean | null
+          created_at?: string | null
+          duration_minutes?: number | null
           id?: string
+          metadata?: Json | null
           notes?: string | null
-          package_id?: string | null
-          professional_id?: string | null
-          revenue_amount?: number | null
-          start_time: string
-          status?: Database["public"]["Enums"]["appointment_status"]
-          type: Database["public"]["Enums"]["appointment_type"]
+          price?: number | null
+          scheduled_at: string
+          service_id?: string | null
+          staff_id?: string | null
+          status?: string
+          tenant_id: string
+          updated_at?: string | null
         }
         Update: {
-          client_id?: string
-          created_at?: string
-          end_time?: string
+          client_id?: string | null
+          confirmed_via_bot?: boolean | null
+          created_at?: string | null
+          duration_minutes?: number | null
           id?: string
+          metadata?: Json | null
           notes?: string | null
-          package_id?: string | null
-          professional_id?: string | null
-          revenue_amount?: number | null
-          start_time?: string
-          status?: Database["public"]["Enums"]["appointment_status"]
-          type?: Database["public"]["Enums"]["appointment_type"]
+          price?: number | null
+          scheduled_at?: string
+          service_id?: string | null
+          staff_id?: string | null
+          status?: string
+          tenant_id?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -63,176 +72,185 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "appointments_package_id_fkey"
-            columns: ["package_id"]
+            foreignKeyName: "appointments_service_id_fkey"
+            columns: ["service_id"]
             isOneToOne: false
-            referencedRelation: "packages"
+            referencedRelation: "services"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "appointments_professional_id_fkey"
-            columns: ["professional_id"]
+            foreignKeyName: "appointments_staff_id_fkey"
+            columns: ["staff_id"]
             isOneToOne: false
-            referencedRelation: "professionals"
+            referencedRelation: "staff"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      availability_blocks: {
-        Row: {
-          created_at: string
-          date: string
-          end_time: string
-          id: string
-          is_available: boolean
-          professional_id: string
-          start_time: string
-        }
-        Insert: {
-          created_at?: string
-          date: string
-          end_time: string
-          id?: string
-          is_available?: boolean
-          professional_id: string
-          start_time: string
-        }
-        Update: {
-          created_at?: string
-          date?: string
-          end_time?: string
-          id?: string
-          is_available?: boolean
-          professional_id?: string
-          start_time?: string
-        }
-        Relationships: [
           {
-            foreignKeyName: "availability_blocks_professional_id_fkey"
-            columns: ["professional_id"]
+            foreignKeyName: "appointments_tenant_id_fkey"
+            columns: ["tenant_id"]
             isOneToOne: false
-            referencedRelation: "professionals"
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
       }
       clients: {
         Row: {
-          created_at: string
+          churn_risk: string | null
+          created_at: string | null
           email: string | null
+          first_visit_at: string | null
+          full_name: string
           id: string
-          name: string
+          last_visit_at: string | null
+          lifetime_value: number | null
+          metadata: Json | null
           notes: string | null
           phone: string | null
+          tags: string[] | null
+          tenant_id: string
+          total_visits: number | null
+          updated_at: string | null
+          whatsapp: string | null
         }
         Insert: {
-          created_at?: string
+          churn_risk?: string | null
+          created_at?: string | null
           email?: string | null
+          first_visit_at?: string | null
+          full_name: string
           id?: string
-          name: string
+          last_visit_at?: string | null
+          lifetime_value?: number | null
+          metadata?: Json | null
           notes?: string | null
           phone?: string | null
+          tags?: string[] | null
+          tenant_id: string
+          total_visits?: number | null
+          updated_at?: string | null
+          whatsapp?: string | null
         }
         Update: {
-          created_at?: string
+          churn_risk?: string | null
+          created_at?: string | null
           email?: string | null
+          first_visit_at?: string | null
+          full_name?: string
           id?: string
-          name?: string
+          last_visit_at?: string | null
+          lifetime_value?: number | null
+          metadata?: Json | null
           notes?: string | null
           phone?: string | null
+          tags?: string[] | null
+          tenant_id?: string
+          total_visits?: number | null
+          updated_at?: string | null
+          whatsapp?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "clients_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      package_catalog: {
+      metrics_daily: {
         Row: {
-          created_at: string
+          active_clients: number | null
+          appointments_completed: number | null
+          appointments_no_show: number | null
+          appointments_total: number | null
+          churn_risk_count: number | null
+          created_at: string | null
+          date: string
           id: string
-          is_active: boolean
-          is_monthly_pass: boolean
-          name: string
-          price: number
-          price_per_session: number | null
-          program: Database["public"]["Enums"]["catalog_program"]
-          sessions: number | null
-          updated_at: string
+          new_clients: number | null
+          occupancy_rate: number | null
+          revenue: number | null
+          tenant_id: string
         }
         Insert: {
-          created_at?: string
+          active_clients?: number | null
+          appointments_completed?: number | null
+          appointments_no_show?: number | null
+          appointments_total?: number | null
+          churn_risk_count?: number | null
+          created_at?: string | null
+          date: string
           id?: string
-          is_active?: boolean
-          is_monthly_pass?: boolean
-          name: string
-          price?: number
-          price_per_session?: number | null
-          program: Database["public"]["Enums"]["catalog_program"]
-          sessions?: number | null
-          updated_at?: string
+          new_clients?: number | null
+          occupancy_rate?: number | null
+          revenue?: number | null
+          tenant_id: string
         }
         Update: {
-          created_at?: string
+          active_clients?: number | null
+          appointments_completed?: number | null
+          appointments_no_show?: number | null
+          appointments_total?: number | null
+          churn_risk_count?: number | null
+          created_at?: string | null
+          date?: string
           id?: string
-          is_active?: boolean
-          is_monthly_pass?: boolean
-          name?: string
-          price?: number
-          price_per_session?: number | null
-          program?: Database["public"]["Enums"]["catalog_program"]
-          sessions?: number | null
-          updated_at?: string
+          new_clients?: number | null
+          occupancy_rate?: number | null
+          revenue?: number | null
+          tenant_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "metrics_daily_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       packages: {
         Row: {
           client_id: string
-          created_at: string
+          created_at: string | null
           expires_at: string | null
           id: string
-          is_monthly_pass: boolean
           name: string
-          notes: string | null
-          payment_method: Database["public"]["Enums"]["payment_method"]
-          price_per_session: number
-          receipt_type: Database["public"]["Enums"]["receipt_type"]
-          sessions_used: number
-          status: Database["public"]["Enums"]["package_status"]
-          total_paid: number
+          price_paid: number
+          service_id: string | null
+          sessions_used: number | null
+          status: string | null
+          tenant_id: string
           total_sessions: number
-          type: Database["public"]["Enums"]["package_type"]
         }
         Insert: {
           client_id: string
-          created_at?: string
+          created_at?: string | null
           expires_at?: string | null
           id?: string
-          is_monthly_pass?: boolean
           name: string
-          notes?: string | null
-          payment_method?: Database["public"]["Enums"]["payment_method"]
-          price_per_session?: number
-          receipt_type?: Database["public"]["Enums"]["receipt_type"]
-          sessions_used?: number
-          status?: Database["public"]["Enums"]["package_status"]
-          total_paid?: number
-          total_sessions?: number
-          type: Database["public"]["Enums"]["package_type"]
+          price_paid: number
+          service_id?: string | null
+          sessions_used?: number | null
+          status?: string | null
+          tenant_id: string
+          total_sessions: number
         }
         Update: {
           client_id?: string
-          created_at?: string
+          created_at?: string | null
           expires_at?: string | null
           id?: string
-          is_monthly_pass?: boolean
           name?: string
-          notes?: string | null
-          payment_method?: Database["public"]["Enums"]["payment_method"]
-          price_per_session?: number
-          receipt_type?: Database["public"]["Enums"]["receipt_type"]
-          sessions_used?: number
-          status?: Database["public"]["Enums"]["package_status"]
-          total_paid?: number
+          price_paid?: number
+          service_id?: string | null
+          sessions_used?: number | null
+          status?: string | null
+          tenant_id?: string
           total_sessions?: number
-          type?: Database["public"]["Enums"]["package_type"]
         }
         Relationships: [
           {
@@ -242,89 +260,309 @@ export type Database = {
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "packages_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "packages_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
         ]
       }
-      professionals: {
-        Row: {
-          created_at: string
-          id: string
-          is_active: boolean
-          name: string
-          schedule_days: string[] | null
-          schedule_end: string | null
-          schedule_start: string | null
-          type: Database["public"]["Enums"]["professional_type"]
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          is_active?: boolean
-          name: string
-          schedule_days?: string[] | null
-          schedule_end?: string | null
-          schedule_start?: string | null
-          type?: Database["public"]["Enums"]["professional_type"]
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_active?: boolean
-          name?: string
-          schedule_days?: string[] | null
-          schedule_end?: string | null
-          schedule_start?: string | null
-          type?: Database["public"]["Enums"]["professional_type"]
-        }
-        Relationships: []
-      }
-      revenue_entries: {
+      payments: {
         Row: {
           amount: number
           appointment_id: string | null
           client_id: string | null
-          created_at: string
+          created_at: string | null
+          currency: string | null
           id: string
+          method: string | null
+          notes: string | null
           package_id: string | null
-          recognized_at: string
+          paid_at: string | null
+          status: string
+          tenant_id: string
         }
         Insert: {
-          amount?: number
+          amount: number
           appointment_id?: string | null
           client_id?: string | null
-          created_at?: string
+          created_at?: string | null
+          currency?: string | null
           id?: string
+          method?: string | null
+          notes?: string | null
           package_id?: string | null
-          recognized_at?: string
+          paid_at?: string | null
+          status?: string
+          tenant_id: string
         }
         Update: {
           amount?: number
           appointment_id?: string | null
           client_id?: string | null
-          created_at?: string
+          created_at?: string | null
+          currency?: string | null
           id?: string
+          method?: string | null
+          notes?: string | null
           package_id?: string | null
-          recognized_at?: string
+          paid_at?: string | null
+          status?: string
+          tenant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "revenue_entries_appointment_id_fkey"
+            foreignKeyName: "payments_appointment_id_fkey"
             columns: ["appointment_id"]
             isOneToOne: false
             referencedRelation: "appointments"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "revenue_entries_client_id_fkey"
+            foreignKeyName: "payments_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "revenue_entries_package_id_fkey"
+            foreignKeyName: "payments_package_id_fkey"
             columns: ["package_id"]
             isOneToOne: false
             referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          role: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          role?: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          role?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          active: boolean | null
+          category: string | null
+          created_at: string | null
+          duration_minutes: number | null
+          id: string
+          name: string
+          price: number
+          tenant_id: string
+        }
+        Insert: {
+          active?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string
+          name: string
+          price: number
+          tenant_id: string
+        }
+        Update: {
+          active?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string
+          name?: string
+          price?: number
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          metadata: Json | null
+          name: string
+          role: string | null
+          schedule_end: string | null
+          schedule_start: string | null
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          name: string
+          role?: string | null
+          schedule_end?: string | null
+          schedule_start?: string | null
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          name?: string
+          role?: string | null
+          schedule_end?: string | null
+          schedule_start?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenants: {
+        Row: {
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          plan: string
+          slug: string
+          status: string
+          timezone: string | null
+          vertical: string
+          whatsapp_number: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          plan?: string
+          slug: string
+          status?: string
+          timezone?: string | null
+          vertical: string
+          whatsapp_number?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          plan?: string
+          slug?: string
+          status?: string
+          timezone?: string | null
+          vertical?: string
+          whatsapp_number?: string | null
+        }
+        Relationships: []
+      }
+      whatsapp_messages: {
+        Row: {
+          appointment_id: string | null
+          body: string
+          client_id: string | null
+          direction: string
+          id: string
+          intent: string | null
+          responded_by: string | null
+          sent_at: string | null
+          tenant_id: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          body: string
+          client_id?: string | null
+          direction: string
+          id?: string
+          intent?: string | null
+          responded_by?: string | null
+          sent_at?: string | null
+          tenant_id: string
+        }
+        Update: {
+          appointment_id?: string | null
+          body?: string
+          client_id?: string | null
+          direction?: string
+          id?: string
+          intent?: string | null
+          responded_by?: string | null
+          sent_at?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_messages_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_messages_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_messages_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -334,35 +572,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_tenant_id: { Args: never; Returns: string }
+      is_owner: { Args: never; Returns: boolean }
     }
     Enums: {
-      appointment_status:
-        | "scheduled"
-        | "confirmed"
-        | "done"
-        | "cancelled"
-        | "no_show"
-      appointment_type:
-        | "medical_diagnosis"
-        | "physio_diagnosis"
-        | "rehabilitation"
-        | "prehabilitation"
-        | "recovery"
-      catalog_program:
-        | "rehabilitation"
-        | "prehabilitation"
-        | "recovery"
-        | "diagnosis"
-      package_status: "active" | "expired" | "completed"
-      package_type:
-        | "rehabilitation"
-        | "prehabilitation"
-        | "recovery"
-        | "diagnosis"
-      payment_method: "yape" | "transfer" | "cash" | "card"
-      professional_type: "physio" | "evaluator"
-      receipt_type: "boleta" | "factura"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -489,37 +703,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      appointment_status: [
-        "scheduled",
-        "confirmed",
-        "done",
-        "cancelled",
-        "no_show",
-      ],
-      appointment_type: [
-        "medical_diagnosis",
-        "physio_diagnosis",
-        "rehabilitation",
-        "prehabilitation",
-        "recovery",
-      ],
-      catalog_program: [
-        "rehabilitation",
-        "prehabilitation",
-        "recovery",
-        "diagnosis",
-      ],
-      package_status: ["active", "expired", "completed"],
-      package_type: [
-        "rehabilitation",
-        "prehabilitation",
-        "recovery",
-        "diagnosis",
-      ],
-      payment_method: ["yape", "transfer", "cash", "card"],
-      professional_type: ["physio", "evaluator"],
-      receipt_type: ["boleta", "factura"],
-    },
+    Enums: {},
   },
 } as const
