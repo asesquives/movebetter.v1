@@ -29,6 +29,7 @@ interface AppointmentDetailPanelProps {
 export function AppointmentDetailPanel({ open, onOpenChange, appointment }: AppointmentDetailPanelProps) {
   const queryClient = useQueryClient();
   const [noShowDialog, setNoShowDialog] = useState(false);
+  const [doneDialog, setDoneDialog] = useState(false);
 
   const updateStatus = useMutation({
     mutationFn: async (newStatus: AppointmentStatus) => {
