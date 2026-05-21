@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
+import { format, isAfter, startOfTomorrow } from "date-fns";
 import { es } from "date-fns/locale";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { getSessionTypeConfig, STATUS_LABELS, STATUS_COLORS, AppointmentType, AppointmentStatus } from "@/lib/agenda-constants";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { Info } from "lucide-react";
 
 interface AppointmentDetailPanelProps {
   open: boolean;
@@ -78,6 +79,7 @@ export function AppointmentDetailPanel({ open, onOpenChange, appointment }: Appo
   if (!appointment) return null;
 
   const typeConfig = getSessionTypeConfig(appointment.type);
+  const isFuture = isAfter(new Date(appointment.start_time), startOfTomorrow());
   const statusActions: { status: AppointmentStatus; label: string; variant: "default" | "outline" | "secondary" | "destructive" }[] = [
     { status: "confirmed", label: "Confirmar", variant: "default" },
     { status: "done", label: "Marcar realizada", variant: "secondary" },
@@ -132,9 +134,15 @@ export function AppointmentDetailPanel({ open, onOpenChange, appointment }: Appo
             {appointment.status !== "done" && (
               <div className="space-y-2 pt-4 border-t">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Cambiar estado</p>
+                {isFuture && (
+                  <div className="flex items-start gap-2 text-xs text-amber-400 bg-amber-400/10 rounded-md p-2">
+                    <Info className="w-4 h-4 shrink-0 mt-0.5" />
+                    <p>Esta cita es futura. No se puede marcar como realizada hasta el día de la sesión.</p>
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-2">
                   {statusActions
-                    .filter((a) => a.status !== appointment.status)
+                    .filter((a) => a.status !== appointment.status && !(isFuture && a.status === "done"))
                     .map((action) => (
                       <Button
                         key={action.status}
