@@ -169,17 +169,10 @@ export default function PaquetesPage() {
   const updatePackage = useMutation({
     mutationFn: async () => {
       if (!editingPkg) throw new Error("No hay paquete seleccionado");
-      const totalPaid = parseFloat(editForm.total_paid);
-      if (isNaN(totalPaid) || totalPaid < 0) throw new Error("Total pagado inválido");
-      const sessions = editingPkg.total_sessions || 0;
-      const pps = sessions > 0 ? totalPaid / sessions : 0;
 
       const { error } = await supabase
         .from("packages")
         .update({
-          name: editForm.name,
-          total_paid: totalPaid,
-          price_per_session: pps,
           payment_method: editForm.payment_method,
           receipt_type: editForm.receipt_type,
           notes: editForm.notes || null,
