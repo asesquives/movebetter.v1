@@ -744,6 +744,7 @@ export type Database = {
           metadata: Json | null
           name: string | null
           role: string | null
+          schedule_days: string[] | null
           schedule_end: string | null
           schedule_start: string | null
           tenant_id: string | null
@@ -756,6 +757,7 @@ export type Database = {
           metadata?: Json | null
           name?: string | null
           role?: string | null
+          schedule_days?: string[] | null
           schedule_end?: string | null
           schedule_start?: string | null
           tenant_id?: string | null
@@ -768,6 +770,7 @@ export type Database = {
           metadata?: Json | null
           name?: string | null
           role?: string | null
+          schedule_days?: string[] | null
           schedule_end?: string | null
           schedule_start?: string | null
           tenant_id?: string | null
