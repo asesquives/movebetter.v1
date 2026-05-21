@@ -103,7 +103,7 @@ export default function EquipoPage() {
     const sp: any = p;
     setEditForm({
       name: p.name,
-      type: p.type,
+      type: (p.type ?? "physio") as ProfessionalType,
       is_active: p.is_active,
       schedule_days: Array.isArray(sp.schedule_days) ? sp.schedule_days : [],
       schedule_start: sp.schedule_start ? sp.schedule_start.slice(0, 5) : "08:00",
