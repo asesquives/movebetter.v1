@@ -253,9 +253,13 @@ export default function BusinessTrends({ period }: Props) {
                       border: "1px solid hsl(var(--border))",
                       borderRadius: "8px",
                       fontSize: "12px",
+                      color: "hsl(var(--popover-foreground))",
                     }}
+                    labelStyle={{ color: "hsl(var(--popover-foreground))" }}
+                    itemStyle={{ color: "hsl(var(--popover-foreground))" }}
                     formatter={(v: number) => [formatCurrency(v), "Ingresos"]}
                   />
+
                   <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
                     {buckets.map((_, i) => (
                       <Cell key={i} fill={i === buckets.length - 1 ? barColorActive : barColor} />
