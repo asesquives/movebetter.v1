@@ -358,46 +358,6 @@ export default function IngresosPage() {
         </div>
       </div>
 
-      {/* Breakdowns */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="mictio-card">
-          <h2 className="font-semibold mb-3">Devengado por fisio / evaluador</h2>
-          {byStaff.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Sin datos en el período.</p>
-          ) : (
-            <ul className="space-y-2">
-              {byStaff.map((s) => (
-                <li key={s.name} className="flex items-center justify-between bg-muted/30 rounded-md px-3 py-2">
-                  <div>
-                    <p className="text-sm font-medium">{s.name}</p>
-                    <p className="text-xs text-muted-foreground">{s.sessions} {s.sessions === 1 ? "sesión" : "sesiones"}</p>
-                  </div>
-                  <span className="text-sm font-semibold tabular-nums">{formatCurrency(s.total, { decimals: 2 })}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="mictio-card">
-          <h2 className="font-semibold mb-3">Devengado por programa</h2>
-          {byProgram.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Sin datos en el período.</p>
-          ) : (
-            <ul className="space-y-2">
-              {byProgram.map((p) => (
-                <li key={p.program} className="flex items-center justify-between bg-muted/30 rounded-md px-3 py-2">
-                  <div>
-                    <p className="text-sm font-medium">{p.program}</p>
-                    <p className="text-xs text-muted-foreground">{p.sessions} {p.sessions === 1 ? "sesión" : "sesiones"}</p>
-                  </div>
-                  <span className="text-sm font-semibold tabular-nums">{formatCurrency(p.total, { decimals: 2 })}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
 
       {/* Detail table */}
       <div className="bg-card rounded-lg border">
