@@ -111,15 +111,56 @@ export default function BusinessTrends({ period }: Props) {
         : endOfWeek(anchor, { weekStartsOn: 1 }).toISOString())
     : periodEnd.toISOString();
 
+  // Accrual logic: revenue = sum of price-per-session for each done appointment.
+  async function fetchDoneWithAmount(fromIso: string, toIso: string) {
+    const { data: appts, error } = await supabase
+      .from("appointments")
+      .select("scheduled_at, start_time, type, price, package_id, service_id, status")
+      .eq("status", "done")
+      .gte("scheduled_at", fromIso)
+      .lte("scheduled_at", toIso);
+    if (error) throw error;
+    const rows = appts ?? [];
+    const pkgIds = Array.from(new Set(rows.map((r: any) => r.package_id).filter(Boolean)));
+    const svcIds = Array.from(new Set(rows.map((r: any) => r.service_id).filter(Boolean)));
+    const [pkgRes, svcRes] = await Promise.all([
+      pkgIds.length
+        ? supabase.from("packages").select("id, name, price_per_session, price_paid, total_sessions").in("id", pkgIds)
+        : Promise.resolve({ data: [] as any[], error: null }),
+      svcIds.length
+        ? supabase.from("services").select("id, price, price_per_session").in("id", svcIds)
+        : Promise.resolve({ data: [] as any[], error: null }),
+    ]);
+    const pkgMap = new Map((pkgRes.data ?? []).map((p: any) => [p.id, p]));
+    const svcMap = new Map((svcRes.data ?? []).map((s: any) => [s.id, s]));
+    const STANDALONE: Record<string, number> = { medical_diagnosis: 200, physio_diagnosis: 150, recovery: 70 };
+    return rows.map((a: any) => {
+      let amount = 0;
+      if (a.package_id) {
+        const p: any = pkgMap.get(a.package_id);
+        if (p) {
+          let pps = Number(p.price_per_session ?? 0);
+          if (!pps && p.total_sessions && Number(p.total_sessions) > 0) {
+            pps = Number(p.price_paid ?? 0) / Number(p.total_sessions);
+          }
+          amount = pps || 0;
+        }
+      } else if (a.price != null && Number(a.price) > 0) {
+        amount = Number(a.price);
+      } else if (a.service_id) {
+        const s: any = svcMap.get(a.service_id);
+        if (s) amount = Number(s.price_per_session ?? s.price ?? 0);
+      }
+      if (!amount && a.type) amount = STANDALONE[a.type] ?? 0;
+      return { scheduled_at: a.scheduled_at ?? a.start_time, amount };
+    });
+  }
+
   const { data, isLoading } = useQuery({
     queryKey: ["business-trends", granularity, rangeStart, rangeEnd],
     queryFn: async () => {
-      const [revenueRes, apptsRes] = await Promise.all([
-        supabase
-          .from("revenue_entries")
-          .select("amount, recognized_at")
-          .gte("recognized_at", rangeStart)
-          .lte("recognized_at", rangeEnd),
+      const [doneAppts, apptsRes] = await Promise.all([
+        fetchDoneWithAmount(rangeStart, rangeEnd),
         supabase
           .from("appointments")
           .select("start_time, status")
@@ -127,8 +168,6 @@ export default function BusinessTrends({ period }: Props) {
           .lte("start_time", rangeEnd)
           .neq("status", "cancelled"),
       ]);
-
-      if (revenueRes.error) throw revenueRes.error;
       if (apptsRes.error) throw apptsRes.error;
 
       const buckets = buildBuckets();
@@ -138,9 +177,9 @@ export default function BusinessTrends({ period }: Props) {
           ? format(d, "yyyy-MM")
           : format(startOfWeek(d, { weekStartsOn: 1 }), "yyyy-'W'II");
 
-      for (const r of revenueRes.data ?? []) {
-        const i = idx.get(keyFor(new Date(r.recognized_at)));
-        if (i !== undefined) buckets[i].revenue += Number(r.amount ?? 0);
+      for (const r of doneAppts) {
+        const i = idx.get(keyFor(new Date(r.scheduled_at)));
+        if (i !== undefined) buckets[i].revenue += r.amount;
       }
       for (const a of apptsRes.data ?? []) {
         const i = idx.get(keyFor(new Date(a.start_time)));
@@ -152,20 +191,14 @@ export default function BusinessTrends({ period }: Props) {
 
   const buckets = data ?? buildBuckets();
 
-  // Totals shown in headers must reflect ONLY the selected period,
-  // not the full chart window (which extends further back for trend context).
   const periodStartIso = periodStart.toISOString();
   const periodEndIso = periodEnd.toISOString();
 
   const { data: periodTotals } = useQuery({
     queryKey: ["business-trends-period-totals", periodStartIso, periodEndIso],
     queryFn: async () => {
-      const [revRes, apptRes] = await Promise.all([
-        supabase
-          .from("revenue_entries")
-          .select("amount")
-          .gte("recognized_at", periodStartIso)
-          .lte("recognized_at", periodEndIso),
+      const [doneAppts, apptRes] = await Promise.all([
+        fetchDoneWithAmount(periodStartIso, periodEndIso),
         supabase
           .from("appointments")
           .select("id", { count: "exact", head: true })
@@ -173,18 +206,15 @@ export default function BusinessTrends({ period }: Props) {
           .lte("start_time", periodEndIso)
           .neq("status", "cancelled"),
       ]);
-      if (revRes.error) throw revRes.error;
       if (apptRes.error) throw apptRes.error;
-      const revenue = (revRes.data ?? []).reduce(
-        (s, r) => s + Number(r.amount ?? 0),
-        0
-      );
+      const revenue = doneAppts.reduce((s, r) => s + r.amount, 0);
       return { revenue, appointments: apptRes.count ?? 0 };
     },
   });
 
   const totalRevenue = periodTotals?.revenue ?? 0;
   const totalAppts = periodTotals?.appointments ?? 0;
+
 
   const subtitle = isRelative
     ? granularity === "month"
@@ -223,9 +253,13 @@ export default function BusinessTrends({ period }: Props) {
                       border: "1px solid hsl(var(--border))",
                       borderRadius: "8px",
                       fontSize: "12px",
+                      color: "hsl(var(--popover-foreground))",
                     }}
+                    labelStyle={{ color: "hsl(var(--popover-foreground))" }}
+                    itemStyle={{ color: "hsl(var(--popover-foreground))" }}
                     formatter={(v: number) => [formatCurrency(v), "Ingresos"]}
                   />
+
                   <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
                     {buckets.map((_, i) => (
                       <Cell key={i} fill={i === buckets.length - 1 ? barColorActive : barColor} />
@@ -266,9 +300,13 @@ export default function BusinessTrends({ period }: Props) {
                       border: "1px solid hsl(var(--border))",
                       borderRadius: "8px",
                       fontSize: "12px",
+                      color: "hsl(var(--popover-foreground))",
                     }}
+                    labelStyle={{ color: "hsl(var(--popover-foreground))" }}
+                    itemStyle={{ color: "hsl(var(--popover-foreground))" }}
                     formatter={(v: number) => [v, "Citas"]}
                   />
+
                   <Area
                     type="monotone"
                     dataKey="appointments"
