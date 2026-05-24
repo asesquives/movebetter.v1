@@ -100,6 +100,7 @@ async function fetchDoneAppointments(startIso?: string, endIso?: string): Promis
   return rows.map((a) => {
     let amount = 0;
     let packageName: string | null = null;
+    let svcProgram: string | null = null;
     if (a.package_id) {
       const p = pkgMap.get(a.package_id);
       if (p) {
@@ -112,16 +113,32 @@ async function fetchDoneAppointments(startIso?: string, endIso?: string): Promis
       }
     } else if (a.price != null && Number(a.price) > 0) {
       amount = Number(a.price);
-    } else if (a.service_id) {
+    }
+    if (a.service_id) {
       const s = svcMap.get(a.service_id);
-      if (s) amount = Number(s.price_per_session ?? s.price ?? 0);
+      if (s) {
+        if (!amount) amount = Number(s.price_per_session ?? s.price ?? 0);
+        svcProgram = (s as any).program ?? null;
+      }
     }
     if (!amount && a.type) amount = STANDALONE_PRICES[a.type] ?? 0;
 
+    // Infer type from appointment.type, service.program, or package name
+    let inferredType: string | null = a.type ?? null;
+    if (!inferredType && svcProgram) inferredType = svcProgram.toLowerCase();
+    if (!inferredType) {
+      const src = `${packageName ?? ""}`.toLowerCase();
+      if (src.includes("prehab")) inferredType = "prehabilitation";
+      else if (src.includes("rehab")) inferredType = "rehabilitation";
+      else if (src.includes("recovery") || src.includes("recuper")) inferredType = "recovery";
+      else if (src.includes("diagnós") || src.includes("evalua")) inferredType = "physio_diagnosis";
+    }
+
     return {
       ...a,
+      type: inferredType,
       amount,
-      program: a.type ? PROGRAM_BY_TYPE[a.type] ?? "Otro" : "Otro",
+      program: inferredType ? PROGRAM_BY_TYPE[inferredType] ?? "Otro" : "Otro",
       client_name: a.client_id ? clientMap.get(a.client_id) ?? "—" : "—",
       staff_name: a.staff_id ? staffMap.get(a.staff_id) ?? "—" : "—",
       package_name: packageName,
