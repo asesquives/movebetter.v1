@@ -190,7 +190,12 @@ export default function ClientesPage() {
           </SheetHeader>
 
           {clientDetail && (
-            <div className="space-y-6 mt-6">
+            <Tabs defaultValue="resumen" className="mt-6">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="resumen">Resumen</TabsTrigger>
+                <TabsTrigger value="historia">Historia Clínica</TabsTrigger>
+              </TabsList>
+              <TabsContent value="resumen" className="space-y-6 mt-4">
               {/* Basic info */}
               <div className="space-y-2">
                 <h3 className="text-xs text-muted-foreground uppercase tracking-wide">Datos básicos</h3>
