@@ -295,6 +295,7 @@ export function ClinicalHistoryTab({ clientId }: Props) {
           }
         />
       </div>
+      <ClinicalSessionsHistory clientId={clientId} />
     </div>
   );
 }
