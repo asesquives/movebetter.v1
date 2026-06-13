@@ -8,12 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Search, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { getSessionTypeConfig } from "@/lib/agenda-constants";
 import { formatCurrency } from "@/lib/format";
+import { ClinicalHistoryTab } from "@/components/clients/ClinicalHistoryTab";
 
 export default function ClientesPage() {
   const queryClient = useQueryClient();
@@ -188,7 +190,12 @@ export default function ClientesPage() {
           </SheetHeader>
 
           {clientDetail && (
-            <div className="space-y-6 mt-6">
+            <Tabs defaultValue="resumen" className="mt-6">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="resumen">Resumen</TabsTrigger>
+                <TabsTrigger value="historia">Historia Clínica</TabsTrigger>
+              </TabsList>
+              <TabsContent value="resumen" className="space-y-6 mt-4">
               {/* Basic info */}
               <div className="space-y-2">
                 <h3 className="text-xs text-muted-foreground uppercase tracking-wide">Datos básicos</h3>
@@ -274,7 +281,11 @@ export default function ClientesPage() {
                   </div>
                 )}
               </div>
-            </div>
+              </TabsContent>
+              <TabsContent value="historia" className="mt-4">
+                <ClinicalHistoryTab clientId={selectedClientId!} />
+              </TabsContent>
+            </Tabs>
           )}
         </SheetContent>
       </Sheet>
