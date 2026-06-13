@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { FileText, Pencil } from "lucide-react";
+import { ClinicalSessionsHistory } from "./ClinicalSessionsHistory";
 
 interface Props {
   clientId: string;
@@ -295,6 +296,7 @@ export function ClinicalHistoryTab({ clientId }: Props) {
           }
         />
       </div>
+      <ClinicalSessionsHistory clientId={clientId} />
     </div>
   );
 }
