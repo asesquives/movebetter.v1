@@ -8,12 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Search, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { getSessionTypeConfig } from "@/lib/agenda-constants";
 import { formatCurrency } from "@/lib/format";
+import { ClinicalHistoryTab } from "@/components/clients/ClinicalHistoryTab";
 
 export default function ClientesPage() {
   const queryClient = useQueryClient();
