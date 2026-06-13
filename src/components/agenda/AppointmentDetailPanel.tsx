@@ -9,6 +9,7 @@ import { getSessionTypeConfig, STATUS_LABELS, STATUS_COLORS, AppointmentType, Ap
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Info } from "lucide-react";
+import { SessionRecordPanel } from "./SessionRecordPanel";
 
 interface AppointmentDetailPanelProps {
   open: boolean;
@@ -30,7 +31,7 @@ interface AppointmentDetailPanelProps {
 export function AppointmentDetailPanel({ open, onOpenChange, appointment }: AppointmentDetailPanelProps) {
   const queryClient = useQueryClient();
   const [noShowDialog, setNoShowDialog] = useState(false);
-  const [doneDialog, setDoneDialog] = useState(false);
+  const [sessionPanelOpen, setSessionPanelOpen] = useState(false);
 
   const updateStatus = useMutation({
     mutationFn: async (newStatus: AppointmentStatus) => {
@@ -60,7 +61,7 @@ export function AppointmentDetailPanel({ open, onOpenChange, appointment }: Appo
     if (newStatus === "no_show") {
       setNoShowDialog(true);
     } else if (newStatus === "done") {
-      setDoneDialog(true);
+      setSessionPanelOpen(true);
     } else {
       updateStatus.mutate(newStatus);
     }
@@ -168,29 +169,11 @@ export function AppointmentDetailPanel({ open, onOpenChange, appointment }: Appo
         </SheetContent>
       </Sheet>
 
-      <Dialog open={doneDialog} onOpenChange={setDoneDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Marcar cita como realizada</DialogTitle>
-            <DialogDescription>
-              Una vez marcada como realizada, <strong>no podrás cambiar el estado</strong> de esta cita. Esta acción es definitiva.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setDoneDialog(false)}>
-              Cancelar
-            </Button>
-            <Button
-              onClick={() => {
-                setDoneDialog(false);
-                updateStatus.mutate("done");
-              }}
-            >
-              Sí, marcar realizada
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <SessionRecordPanel
+        open={sessionPanelOpen}
+        onOpenChange={setSessionPanelOpen}
+        appointment={appointment}
+      />
 
       <Dialog open={noShowDialog} onOpenChange={setNoShowDialog}>
         <DialogContent>
