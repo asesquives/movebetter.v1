@@ -281,7 +281,11 @@ export default function ClientesPage() {
                   </div>
                 )}
               </div>
-            </div>
+              </TabsContent>
+              <TabsContent value="historia" className="mt-4">
+                <ClinicalHistoryTab clientId={selectedClientId!} />
+              </TabsContent>
+            </Tabs>
           )}
         </SheetContent>
       </Sheet>
