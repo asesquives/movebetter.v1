@@ -61,7 +61,7 @@ export function AppointmentDetailPanel({ open, onOpenChange, appointment }: Appo
     if (newStatus === "no_show") {
       setNoShowDialog(true);
     } else if (newStatus === "done") {
-      setDoneDialog(true);
+      setSessionPanelOpen(true);
     } else {
       updateStatus.mutate(newStatus);
     }
