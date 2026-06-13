@@ -169,29 +169,11 @@ export function AppointmentDetailPanel({ open, onOpenChange, appointment }: Appo
         </SheetContent>
       </Sheet>
 
-      <Dialog open={doneDialog} onOpenChange={setDoneDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Marcar cita como realizada</DialogTitle>
-            <DialogDescription>
-              Una vez marcada como realizada, <strong>no podrás cambiar el estado</strong> de esta cita. Esta acción es definitiva.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setDoneDialog(false)}>
-              Cancelar
-            </Button>
-            <Button
-              onClick={() => {
-                setDoneDialog(false);
-                updateStatus.mutate("done");
-              }}
-            >
-              Sí, marcar realizada
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <SessionRecordPanel
+        open={sessionPanelOpen}
+        onOpenChange={setSessionPanelOpen}
+        appointment={appointment}
+      />
 
       <Dialog open={noShowDialog} onOpenChange={setNoShowDialog}>
         <DialogContent>
