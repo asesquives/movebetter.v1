@@ -9,6 +9,7 @@ import { getSessionTypeConfig, STATUS_LABELS, STATUS_COLORS, AppointmentType, Ap
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Info } from "lucide-react";
+import { SessionRecordPanel } from "./SessionRecordPanel";
 
 interface AppointmentDetailPanelProps {
   open: boolean;
