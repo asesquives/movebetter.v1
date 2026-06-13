@@ -230,6 +230,138 @@ export type Database = {
           },
         ]
       }
+      clinical_audit_log: {
+        Row: {
+          action: string
+          campos_modificados: Json | null
+          client_id: string | null
+          id: string
+          ip_address: string | null
+          record_id: string | null
+          staff_id: string | null
+          table_name: string
+          tenant_id: string
+          timestamp: string | null
+          user_agent: string | null
+          valores_anteriores: Json | null
+        }
+        Insert: {
+          action: string
+          campos_modificados?: Json | null
+          client_id?: string | null
+          id?: string
+          ip_address?: string | null
+          record_id?: string | null
+          staff_id?: string | null
+          table_name: string
+          tenant_id: string
+          timestamp?: string | null
+          user_agent?: string | null
+          valores_anteriores?: Json | null
+        }
+        Update: {
+          action?: string
+          campos_modificados?: Json | null
+          client_id?: string | null
+          id?: string
+          ip_address?: string | null
+          record_id?: string | null
+          staff_id?: string | null
+          table_name?: string
+          tenant_id?: string
+          timestamp?: string | null
+          user_agent?: string | null
+          valores_anteriores?: Json | null
+        }
+        Relationships: []
+      }
+      clinical_records: {
+        Row: {
+          antecedentes_medicos: string | null
+          client_id: string
+          consentimiento_firmado: boolean | null
+          consentimiento_recibido_por: string | null
+          created_at: string | null
+          created_by: string | null
+          diagnostico_inicial: string
+          dni_paciente: string
+          fecha_consentimiento: string | null
+          id: string
+          motivo_consulta: string
+          plan_tratamiento: string
+          tenant_id: string
+          version_consentimiento: string | null
+        }
+        Insert: {
+          antecedentes_medicos?: string | null
+          client_id: string
+          consentimiento_firmado?: boolean | null
+          consentimiento_recibido_por?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          diagnostico_inicial: string
+          dni_paciente: string
+          fecha_consentimiento?: string | null
+          id?: string
+          motivo_consulta: string
+          plan_tratamiento: string
+          tenant_id: string
+          version_consentimiento?: string | null
+        }
+        Update: {
+          antecedentes_medicos?: string | null
+          client_id?: string
+          consentimiento_firmado?: boolean | null
+          consentimiento_recibido_por?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          diagnostico_inicial?: string
+          dni_paciente?: string
+          fecha_consentimiento?: string | null
+          id?: string
+          motivo_consulta?: string
+          plan_tratamiento?: string
+          tenant_id?: string
+          version_consentimiento?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinical_records_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinical_records_consentimiento_recibido_por_fkey"
+            columns: ["consentimiento_recibido_por"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinical_records_consentimiento_recibido_por_fkey"
+            columns: ["consentimiento_recibido_por"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinical_records_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinical_records_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       metrics_daily: {
         Row: {
           active_clients: number | null
@@ -533,6 +665,109 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      session_notes: {
+        Row: {
+          appointment_id: string
+          client_id: string
+          created_at: string | null
+          eva_final: number | null
+          eva_inicial: number | null
+          evolucion: string | null
+          fecha_firma: string | null
+          firma_hash: string | null
+          firmado: boolean | null
+          firmado_por: string | null
+          id: string
+          numero_colegiatura: string | null
+          observaciones: string
+          plan_siguiente: string | null
+          staff_id: string
+          tecnicas_aplicadas: string[] | null
+          tenant_id: string
+        }
+        Insert: {
+          appointment_id: string
+          client_id: string
+          created_at?: string | null
+          eva_final?: number | null
+          eva_inicial?: number | null
+          evolucion?: string | null
+          fecha_firma?: string | null
+          firma_hash?: string | null
+          firmado?: boolean | null
+          firmado_por?: string | null
+          id?: string
+          numero_colegiatura?: string | null
+          observaciones: string
+          plan_siguiente?: string | null
+          staff_id: string
+          tecnicas_aplicadas?: string[] | null
+          tenant_id: string
+        }
+        Update: {
+          appointment_id?: string
+          client_id?: string
+          created_at?: string | null
+          eva_final?: number | null
+          eva_inicial?: number | null
+          evolucion?: string | null
+          fecha_firma?: string | null
+          firma_hash?: string | null
+          firmado?: boolean | null
+          firmado_por?: string | null
+          id?: string
+          numero_colegiatura?: string | null
+          observaciones?: string
+          plan_siguiente?: string | null
+          staff_id?: string
+          tecnicas_aplicadas?: string[] | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_notes_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_notes_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_notes_firmado_por_fkey"
+            columns: ["firmado_por"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_notes_firmado_por_fkey"
+            columns: ["firmado_por"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_notes_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_notes_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
             referencedColumns: ["id"]
           },
         ]
