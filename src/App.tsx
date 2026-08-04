@@ -15,6 +15,7 @@ import IngresosPage from "@/pages/Ingresos";
 import DisponibilidadPage from "@/pages/Disponibilidad";
 import EquipoPage from "@/pages/Equipo";
 import CatalogoPage from "@/pages/Catalogo";
+import OAuthConsent from "@/pages/OAuthConsent";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ function AuthRoute({ children }: { children: React.ReactNode }) {
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<AuthRoute><LoginPage /></AuthRoute>} />
+    <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
     <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
     <Route path="/agenda" element={<ProtectedRoute><AgendaPage /></ProtectedRoute>} />
     <Route path="/clientes" element={<ProtectedRoute><ClientesPage /></ProtectedRoute>} />
