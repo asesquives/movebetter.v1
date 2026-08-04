@@ -15,6 +15,7 @@ import IngresosPage from "@/pages/Ingresos";
 import DisponibilidadPage from "@/pages/Disponibilidad";
 import EquipoPage from "@/pages/Equipo";
 import CatalogoPage from "@/pages/Catalogo";
+import OAuthConsent from "@/pages/OAuthConsent";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,16 +27,23 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <AppLayout>{children}</AppLayout>;
 }
 
+function safeNext(raw: string | null) {
+  if (!raw) return "/";
+  return raw.startsWith("/") && !raw.startsWith("//") ? raw : "/";
+}
+
 function AuthRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const next = safeNext(new URLSearchParams(window.location.search).get("next"));
   if (loading) return null;
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to={next} replace />;
   return <>{children}</>;
 }
 
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<AuthRoute><LoginPage /></AuthRoute>} />
+    <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
     <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
     <Route path="/agenda" element={<ProtectedRoute><AgendaPage /></ProtectedRoute>} />
     <Route path="/clientes" element={<ProtectedRoute><ClientesPage /></ProtectedRoute>} />

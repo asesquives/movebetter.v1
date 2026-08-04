@@ -1,0 +1,232 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://lccdqxhyasahghlmisct.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "movebetter-v1",
+      "version": "0.1.0",
+      "title": "movebetter.v1"
+    },
+    "tools": [
+      {
+        "name": "list_clients",
+        "title": "Listar clientes",
+        "description": "Lista los clientes de la clínica, con búsqueda opcional por nombre, email o teléfono.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "search": {
+              "description": "Texto a buscar en nombre, email o teléfono.",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Máximo de clientes a devolver (por defecto 25).",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_client",
+        "title": "Detalle de cliente",
+        "description": "Devuelve el detalle de un cliente: datos de contacto, paquetes contratados y próximas citas.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "client_id": {
+              "type": "string",
+              "description": "UUID del cliente."
+            }
+          },
+          "required": [
+            "client_id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_appointments",
+        "title": "Listar citas",
+        "description": "Lista las citas de la agenda en un rango de fechas, opcionalmente filtradas por estado o por profesional.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "Fecha inicial ISO (YYYY-MM-DD). Por defecto hoy.",
+              "type": "string"
+            },
+            "to": {
+              "description": "Fecha final ISO (YYYY-MM-DD). Por defecto 7 días después.",
+              "type": "string"
+            },
+            "status": {
+              "description": "Estado: scheduled, done, cancelled, no_show, pending.",
+              "type": "string"
+            },
+            "staff_id": {
+              "description": "UUID del profesional.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_appointment",
+        "title": "Agendar cita",
+        "description": "Crea una nueva cita agendada para un cliente con un profesional en una fecha y hora determinadas.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "client_id": {
+              "type": "string",
+              "description": "UUID del cliente."
+            },
+            "staff_id": {
+              "type": "string",
+              "description": "UUID del profesional que atenderá."
+            },
+            "scheduled_at": {
+              "type": "string",
+              "description": "Fecha y hora de inicio en ISO 8601."
+            },
+            "duration_minutes": {
+              "description": "Duración en minutos (por defecto 60).",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            "type": {
+              "description": "Tipo: rehabilitation, prehabilitation, recovery, medical_diagnosis, physio_diagnosis.",
+              "type": "string"
+            },
+            "package_id": {
+              "description": "UUID del paquete al que se descuenta la sesión.",
+              "type": "string"
+            },
+            "notes": {
+              "description": "Notas de la cita.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "client_id",
+            "staff_id",
+            "scheduled_at"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_services",
+        "title": "Catálogo de servicios",
+        "description": "Lista el catálogo de servicios/paquetes con su programa, número de sesiones y precios.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "program": {
+              "description": "Filtrar por programa, p. ej. Rehabilitación o Recovery.",
+              "type": "string"
+            },
+            "only_active": {
+              "description": "Solo servicios activos (por defecto true).",
+              "type": "boolean"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_staff",
+        "title": "Listar equipo",
+        "description": "Lista los profesionales del equipo con su rol, tipo y horario de disponibilidad.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "only_active": {
+              "description": "Solo profesionales activos (por defecto true).",
+              "type": "boolean"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "revenue_summary",
+        "title": "Resumen de ingresos",
+        "description": "Resume los ingresos de un periodo: cobrado (pagos registrados) y devengado (sesiones realizadas valorizadas).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "from": {
+              "type": "string",
+              "description": "Fecha inicial ISO (YYYY-MM-DD)."
+            },
+            "to": {
+              "type": "string",
+              "description": "Fecha final ISO (YYYY-MM-DD)."
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
