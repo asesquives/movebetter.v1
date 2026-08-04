@@ -27,10 +27,16 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <AppLayout>{children}</AppLayout>;
 }
 
+function safeNext(raw: string | null) {
+  if (!raw) return "/";
+  return raw.startsWith("/") && !raw.startsWith("//") ? raw : "/";
+}
+
 function AuthRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const next = safeNext(new URLSearchParams(window.location.search).get("next"));
   if (loading) return null;
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to={next} replace />;
   return <>{children}</>;
 }
 
