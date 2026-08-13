@@ -79,7 +79,7 @@ export default function OAuthConsent() {
         <div className="flex items-center gap-2 mb-6">
           <MictioLogo size={28} />
           <div>
-            <h2 className="text-sm font-bold tracking-tight">Move Better</h2>
+            <h2 className="text-sm font-bold tracking-tight">Wellness</h2>
             <p className="text-[11px] text-muted-foreground">Autorización de acceso</p>
           </div>
         </div>
@@ -92,7 +92,7 @@ export default function OAuthConsent() {
           <>
             <h1 className="text-lg font-semibold mb-2">Conectar {clientName} a tu cuenta</h1>
             <p className="text-sm text-muted-foreground mb-6">
-              {clientName} podrá consultar y crear información en Move Better actuando como tú.
+              {clientName} podrá consultar y crear información en Wellness actuando como tú.
             </p>
             <div className="flex gap-2">
               <Button className="flex-1" disabled={busy} onClick={() => decide(true)}>

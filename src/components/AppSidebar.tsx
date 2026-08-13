@@ -41,7 +41,7 @@ export function AppSidebar() {
           <div className="flex items-center gap-2">
             <MictioLogo size={28} />
             <div>
-              <h2 className="text-sm font-bold text-sidebar-accent-foreground tracking-tight">Move Better</h2>
+              <h2 className="text-sm font-bold text-sidebar-accent-foreground tracking-tight">Wellness</h2>
               <p className="text-[11px] text-sidebar-muted">Fisioterapia</p>
             </div>
           </div>

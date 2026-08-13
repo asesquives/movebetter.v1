@@ -35,7 +35,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm mx-auto">
         <div className="bg-popover rounded-lg border border-border p-8 shadow-lg">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-secondary-foreground">Move Better</h1>
+            <h1 className="text-2xl font-bold text-secondary-foreground">Wellness</h1>
             <p className="text-muted-foreground text-sm mt-1">CRM Clínica de Fisioterapia</p>
           </div>
 
@@ -45,7 +45,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="equipo@movebetter.com"
+                placeholder="equipo@wellness.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
