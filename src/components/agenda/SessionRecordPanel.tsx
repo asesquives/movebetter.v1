@@ -28,6 +28,7 @@ interface Appointment {
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSigned?: () => void;
   appointment: Appointment | null;
 }
 
@@ -57,7 +58,7 @@ async function sha256(text: string): Promise<string> {
     .join("");
 }
 
-export function SessionRecordPanel({ open, onOpenChange, appointment }: Props) {
+export function SessionRecordPanel({ open, onOpenChange, onSigned, appointment }: Props) {
   const { user } = useAuth();
   const qc = useQueryClient();
 
@@ -200,6 +201,7 @@ export function SessionRecordPanel({ open, onOpenChange, appointment }: Props) {
       qc.invalidateQueries({ queryKey: ["revenue-all"] });
       toast.success("Sesión cerrada y firmada correctamente");
       onOpenChange(false);
+      onSigned?.();
     },
     onError: (e: any) => toast.error(e.message),
   });

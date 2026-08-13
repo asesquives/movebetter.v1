@@ -172,6 +172,7 @@ export function AppointmentDetailPanel({ open, onOpenChange, appointment }: Appo
       <SessionRecordPanel
         open={sessionPanelOpen}
         onOpenChange={setSessionPanelOpen}
+        onSigned={() => onOpenChange(false)}
         appointment={appointment}
       />
 
